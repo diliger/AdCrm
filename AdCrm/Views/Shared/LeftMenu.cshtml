@@ -1,0 +1,273 @@
+﻿@{
+    bool wallets = AdCrm.Settings.GetValue("WalletsOnLeftMenu", "false").ToBool();
+}
+<div class="left-menu-button">
+    <a href="javascript:"></a>
+</div>
+<div class="box left-menu" id="divAccordion">
+    @if (ViewBag.Page == "Manager.Index" || ViewBag.Page.StartsWith("Manager.Contractors") || ViewBag.Page == "Manager.Tasks")
+    {
+        <div class="item selected">
+            <div class="container">
+                <ul>
+                    <li class="@(ViewBag.Page == "Manager.Index" ? "selected" : "")">
+                        <a href="@Url.Action("Index", "Manager")">ПРОЕКТЫ</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "Manager.Tasks" ? "selected" : "")">
+                        <a href="@Url.Action("Tasks", "Manager")">Задачи</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "Manager.Contractors.1" ? "selected" : "")">
+                        <a href="@Url.Action("Contractors", "Manager", new { ID = 1 })">Контрагенты</a>
+                    </li>
+                    @if (wallets)
+                    {
+                        <li class="@(ViewBag.Page == "Helpers.Wallets" ? "selected" : "")">
+                            <a href="@Url.Action("Wallets", "Helpers")">Кошельки</a>
+                        </li>
+                    }
+                </ul>
+                <div class="h50px"></div>
+                @{ Html.RenderPartial("_Calendar"); }
+            </div>
+            <div class="separator"></div>
+        </div>
+    }
+    else if (ViewBag.Page.StartsWith("Manager.Employees"))
+    {
+        <div class="item selected">
+            <div class="container">
+                <ul>
+                    <li class="@(ViewBag.Page == "Manager.Employees" ? "selected" : "")">
+                        <a href="@Url.Action("Employees", "Manager")">Сотрудники</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "Manager.Employees.Departments" ? "selected" : "")">
+                        <a href="@Url.Action("Departments", "Manager")">Настройки сотрудников</a>
+                    </li>
+                </ul>
+                <div class="h50px"></div>
+                @{ Html.RenderPartial("_Calendar"); }
+            </div>
+            <div class="separator"></div>
+        </div>
+    }
+    else if (ViewBag.Page.StartsWith("Products"))
+    {
+        <div class="item selected">
+            <div class="container">
+                <ul>
+                    <li class="@(ViewBag.Page == "Products.Orders" ? "selected" : "")">
+                        <a href="@Url.Action("Orders", "Products")">Заказы</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "Products.Dispatches" ? "selected" : "")">
+                        <a href="@Url.Action("Dispatches", "Products")">Выдачи</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "Products.Index" ? "selected" : "")">
+                        <a href="@Url.Action("Index", "Products")">Остатки</a>
+                    </li>
+                </ul>
+                <div class="h50px"></div>
+                @{ Html.RenderPartial("_Calendar"); }
+            </div>
+            <div class="separator"></div>
+        </div>
+    }
+    else if (ViewBag.Page == "Expenses.Index" || ViewBag.Page == "Payrolls.Index")
+    {
+        <div class="item selected">
+            <div class="container scroll-y">
+                <ul data-bind="foreach: $root.years">
+                    <li data-bind="css: { selected: koModel.filter.year() == year }, click: function() { $root.updateAll(); koModel.filter.year(year); }">
+                        <div>
+                            <span class="toRight bold"><span data-bind="text: z.toDs(total)"></span> руб.</span>
+                            <a href="javascript:" data-bind="html: year"></a>
+                        </div>
+                    </li>
+                    <div data-bind="foreach: months, visible: koModel.filter.year() == year" class="small ml10px mr10px">
+                        <div data-bind="click: function() { $root.updateAll(); $root.filter.month(month); }, css: { bold: $root.filter.month() == month, large: $root.filter.month() == month}">
+                            <span class="toRight cursorDefault"><span data-bind="text: z.toDs(total)"></span> руб.</span>
+                            <a href="javascript:" data-bind="html: name"></a>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </ul>
+            </div>
+            <div class="separator"></div>
+        </div>
+    }
+    else if (ViewBag.Page == "Transfers.Index")
+    {
+        <div class="item selected">
+            <div class="container scroll-y">
+                @{ Html.RenderPartial("_Calendar"); }
+            </div>
+            <div class="separator"></div>
+        </div>
+    }
+    else if (ViewBag.Page.StartsWith("Helpers"))
+    {
+        <div class="item selected">
+            <div class="container">
+                <ul>
+                    <li class="@(ViewBag.Page == "Helpers.TaskTypes" ? "selected" : "")">
+                        <a href="@Url.Action("TaskTypes", "Helpers")">Типы задач</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "Helpers.ExpenseTypes" ? "selected" : "")">
+                        <a href="@Url.Action("ExpenseTypes", "Helpers")">Типы расходов</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "Helpers.Wallets" ? "selected" : "")">
+                        <a href="@Url.Action("Wallets", "Helpers")">Кошельки</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "Helpers.EmailTemplates" ? "selected" : "")">
+                        <a href="@Url.Action("EmailTemplates", "Helpers")">Email шаблоны</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="separator"></div>
+        </div>
+    }
+    else if (ViewBag.Page == "Manager.WorkLogs")
+    {
+        <div class="item selected">
+            <div class="container scroll-y">
+                <ul data-bind="foreach: $root.years">
+                    <li data-bind="css: { selected: koModel.filter.year() == year }, click: function() { $root.updateAll(); koModel.filter.year(year); }">
+                        <div>
+                            <a href="javascript:" data-bind="html: year"></a>
+                        </div>
+                    </li>
+                    <div data-bind="foreach: months, visible: koModel.filter.year() == year" class="small ml10px mr10px">
+                        <div data-bind="click: function() { $root.updateAll(); $root.filter.month(month); }, css: { bold: $root.filter.month() == month, large: $root.filter.month() == month}">
+                            <a href="javascript:" data-bind="html: name"></a>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </ul>
+            </div>
+            <div class="separator"></div>
+        </div>
+    }
+    else if (ViewBag.Page.StartsWith("AllReports"))
+    {
+        <div class="item selected">
+            <div class="container">
+                <ul>
+                    @if (Context.CurrentUser().RoleID < (int)AdCrm.Models.RolesEnum.Manager)
+                    {
+                        <li class="@(ViewBag.Page == "AllReports.Gain" ? "selected" : "")">
+                            <a href="@Url.Action("Gain", "AllReports")">Отчет по финансам</a>
+                        </li>
+                    }
+                    <li class="@(ViewBag.Page == "AllReports.Invoices" ? "selected" : "")">
+                        <a href="@Url.Action("Invoices", "AllReports")">Отчет по задолженности</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "AllReports.Salary" ? "selected" : "")">
+                        <a href="@Url.Action("Salary", "AllReports")">Отчет по заработной плате</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "AllReports.Expenses" ? "selected" : "")">
+                        <a href="@Url.Action("Expenses", "AllReports")">Отчет по расходам</a>
+                    </li>
+                    <li class="@(ViewBag.Page == "AllReports.Tasks" ? "selected" : "")">
+                        <a href="@Url.Action("Tasks", "AllReports")">Отчет по задачам</a>
+                    </li>
+                </ul>
+                <div class="h50px"></div>
+                @{ Html.RenderPartial("_Calendar"); }
+            </div>
+            <div class="separator"></div>
+        </div>
+    }
+    else if (ViewBag.SystemSettings == true)
+    {
+        <div class="item selected">
+            <div class="container">
+                <ul>
+                    @if (Context.CurrentUser().RoleID < (int)AdCrm.Models.RolesEnum.Manager || Context.CurrentUser().RoleID == (int)AdCrm.Models.RolesEnum.Watcher)
+                    {
+                        <li class="@(ViewBag.Page == "User.List" ? "selected" : "")">
+                            <a href="@Url.Action("List", "User")">Пользователи</a>
+                        </li>
+                    }
+                    <li class="@(ViewBag.Page == "User.Edit" ? "selected" : "")">
+                        <a href="@Url.Action("Edit", "User")">Профиль</a>
+                    </li>
+                    @if (Context.CurrentUser().RoleID < (int)AdCrm.Models.RolesEnum.Manager)
+                    {
+                        <li>
+                            <a href="@Url.Action("FilesBackup", "Data")">Скачать файлы архивом</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="separator"></div>
+        </div>
+    }
+
+    @if (ViewBag.SystemSettings == true)
+    {
+        <h3 class="@(ViewBag.Page.StartsWith("User") ? "selected" : "")">
+            <a href="@Url.Action("List", "User")">Настройки</a>
+        </h3>
+        if (Context.CurrentUser().RoleID == (int)AdCrm.Models.RolesEnum.Employee)
+        {
+            <h3>
+                <a href="@Url.Action("Index", "Employee", new { ID = Context.CurrentUser().EmployeeID })">Рабочая область</a>
+            </h3>
+        }
+        else
+        {
+            <h3>
+                <a href="@Url.Action("Index", "Manager")">Рабочая область</a>
+            </h3>
+        }
+        if (Context.CurrentUser().RoleID < (int)AdCrm.Models.RolesEnum.Manager || Context.CurrentUser().RoleID == (int)AdCrm.Models.RolesEnum.Watcher)
+        {
+            <h3 class="@(ViewBag.Page.StartsWith("Helpers") ? "selected" : "")">
+                <a href="@Url.Action("TaskTypes", "Helpers")">Справочники</a>
+            </h3>
+        }
+    }
+    else
+    {
+        <div class="headers">
+            @if (Context.CurrentUser().RoleID != (int)AdCrm.Models.RolesEnum.Employee)
+            {
+                <h3 class="@(ViewBag.Page == "Manager.Index" || ViewBag.Page.StartsWith("Manager.Contractors") || ViewBag.Page == "Manager.Tasks" ? "selected" : "")">
+                    <a href="@Url.Action("Index", "Manager")">Проекты</a>
+                </h3>
+                <h3 class="@(ViewBag.Page.StartsWith("Products") ? "selected" : "")">
+                    <a href="@Url.Action("Index", "Products")">Склад</a>
+                </h3>
+                <h3 class="@(ViewBag.Page.StartsWith("Manager.Employees") ? "selected" : "")">
+                    <a href="@Url.Action("Employees", "Manager")">Сотрудники</a>
+                </h3>
+                <h3 class="@(ViewBag.Page.StartsWith("Transfers.Index") ? "selected" : "")">
+                    <a href="@Url.Action("Index", "Transfers")">Транзакции</a>
+                </h3>
+            }
+            else
+            {
+                <h3>
+                    <a href="@Url.Action("Index", "Employee")">Личный кабинет</a>
+                </h3>
+            }
+            @if (Context.CurrentUser().RoleID <= (int)AdCrm.Models.RolesEnum.Manager)
+            {
+                <h3 class="@(ViewBag.Page.StartsWith("Expenses.Index") ? "selected" : "")">
+                    <a href="@Url.Action("Index", "Expenses")">Расходы</a>
+                </h3>
+                <h3 class="@(ViewBag.Page.StartsWith("Payrolls.Index") ? "selected" : "")">
+                    <a href="@Url.Action("Index", "Payrolls")">Начисления</a>
+                </h3>
+                <h3 class="@(ViewBag.Page.StartsWith("AllReports") ? "selected" : "")">
+                    <a href="@Url.Action("Gain", "AllReports")">Отчеты</a>
+                </h3>
+            }
+            @if (Context.CurrentUser().RoleID <= (int)AdCrm.Models.RolesEnum.Admin)
+            {
+                <h3>
+                    <a href="@Url.Action("List", "User")">Настройки</a>
+                </h3>
+            }
+        </div>
+    }
+</div>

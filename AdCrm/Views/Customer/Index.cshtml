@@ -1,0 +1,711 @@
+﻿@using AdCrm.Models;
+@{
+    ViewBag.Title = "Клиент -- " + ViewBag.Customer.Name;
+    this.Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/jq.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/ko.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Customer/Index.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Customer/Index.Model.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+
+<div data-bind="with: $root.customer">
+    <div id="topMenu">
+        <div class="box">
+            <a href="@Url.Content("~/Manager/Contractors/" + (int)BuildingEntities.ContractorRolesEnum.Customer)" class="icon medium text back">Назад к списку</a> 
+            <span>&nbsp;</span>
+            <a href="javascript:" class="icon medium text archive" data-bind="visible: !archived(), click: function () { archived(true); }">Клиента в архив</a> 
+            <span data-bind="visible: archived">Клиент в архиве</span>
+        </div>
+    </div>
+    <div>
+        <table>
+            <tr>
+                <td>
+                    <img src="@Url.Content("~/Content/images/handshake.png")" alt="" class="nice" width="55" height="55" />
+                    <span>&nbsp;</span>
+                </td>
+                <td>
+                    <div>
+                        <span class="bold larger clickToEdit" data-bind="clickToEdit: name, text: name"></span>
+                        <input class="w400px" type="text" data-bind="value: name" placeholder="ФИО/Название" />
+                    </div>
+                    <div>
+                        <span class="larger" data-bind="text: address"></span>
+                        <span class="larger" data-bind="text: type() ? type().name : ''"></span>
+                    </div>
+                    <div>
+                        <span>Добавлен в систему: </span>
+                        <span data-bind="text: createDate"></span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div>
+    <ul class="tabs-iframe" data-bind="template: { foreach: itabs }">
+        <li data-bind="css: { selected: id == koModel.selected.itabID() }">
+            <a href="javascript:" data-bind="text: name, click: $root.selectTab"></a>
+        </li>
+    </ul>
+    <div class="clear-left"></div>
+    <div class="header actions">
+        <div class="p4px">
+            <a href="javascript:" class="icon medium save text" title="Сохранить изменения" data-bind="click: function() { $root.updateAll('', true); }, css: { disabled: !koModel.hasChanges() }" id="aSave">Сохранить</a>
+            <a class="icon medium separator"></a>
+            &nbsp;&nbsp;
+            <span data-bind="visible: $root.selected.itabID().toString().startsWith('contract_')">
+                <a href="javascript:" class="icon medium add text" title="Добавить запись" data-bind="click: $root.selected.view() == 'works' ? $root.createCw : $root.createCd">Добавить запись</a>
+                <a class="icon medium separator"></a>
+                &nbsp;
+                <a href="javascript:" class="icon medium remove text" title="Удалить все данные по текущему договору" data-bind="click: $root.clearWorks">Очистить</a>
+                <a class="icon medium separator"></a>
+                &nbsp;
+                <a href="@Url.Content("~/Customer/WorksTemplate")" class="icon medium excel-doc text" title="Скачать шаблон excel-документа для импорт цен">Скачать шаблон</a>
+                <a class="icon medium separator"></a>
+                &nbsp;
+                <a href="javascript:" class="icon medium excel-add text" title="Импорт цен из excel-документа" data-bind="click: $root.importWorks">Загрузить из файла</a>
+                <a class="icon medium separator"></a>
+
+                <a href="javascript:" class="toRight icon small delete" title="Закрыть вкладку" data-bind="click: $root.closeWorks"></a>
+            </span>
+        </div>
+    </div>
+    <div class="container">
+        <div id="divCustomerDetails" class="splitted">
+                <div class="left toLeft">
+                    <div>
+                        <div class="fieldset pr15px pl15px">
+                        <table class="max">
+                            <tbody data-bind="with: $root.customer">
+                                <tr>
+                                    <td>Создал:</td>
+                                    <td>
+                                        <input type="text" disabled="disabled" data-bind="value: creatorName" name="Creator" class="max small"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Статус:</td>
+                                    <td>
+                                        <select data-bind="options: $root.contractorStatuses, value: statusID, optionsText: 'name', optionsValue: 'id'" name="StatusID" class="max small"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ответственный:</td>
+                                    <td>
+                                        <select data-bind="options: $root.users.getActive(responsibleID()), value: responsibleID, optionsText: 'fullName', optionsValue: 'id', optionsCaption: 'Выберите ответственного...'" name="ResponsibleID" class="max small"></select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                        <fieldset class="collapsable eReadOnly" id="fldInformation">
+                            <legend>
+                                <span class="title">Информация</span>
+                            </legend>
+                            <div class="fieldset pr10px">
+                                <form onsubmit="return false;" data-bind="validate: true">
+                                    <table class="max">
+                                        <tbody data-bind="with: $root.customer">
+                                            <tr>
+                                                <td class="minw120px">
+                                                    <span >ФИО/Название: </span>
+                                                </td>
+                                                <td class="max">
+                                                    <input type="text" class="max small" data-bind="value: name" name="Name" placeholder="Название компании или ФИО клиента"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Тема обращения:
+                                                </td>
+                                                <td>
+                                                    <textarea data-bind="value: description" placeholder="По какому вопросу обратились?" class="max" rows="3"></textarea>
+                                                </td>
+                                            </tr>
+                                            @*<tr>
+                                                <td>Тип:</td>
+                                                <td>
+                                                    <select data-bind="options: $root.contractorTypes, value: typeID, optionsText: 'name', optionsValue: 'id'" name="TypeID" class="max small"></select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td>
+                                                    <select data-bind="options: $root.activeSubTypes(subTypeID(), typeID(), roleID()), value: subTypeID, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Не указано'" name="SubTypeID" class="max small"></select>
+                                                </td>
+                                            </tr>*@
+                                            <tr>
+                                                <td>Источник:</td>
+                                                <td>
+                                                    <select data-bind="options: $root.informationSources.getActive(sourceID()), value: sourceID, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Выберите источник...'" name="SourceID" class="max small"></select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Адрес:
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="max small" data-bind="value: address" name="Address"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Специализация:
+                                                </td>
+                                                <td>
+                                                    <textarea data-bind="value: specialization" class="max" rows="3" placeholder="Какая деятельность окмпании?"></textarea>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Примечание:
+                                                </td>
+                                                <td>
+                                                    <textarea data-bind="value: comments" class="max" rows="3" placeholder="Опишите результат разговора"></textarea>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </form>
+                            </div>
+                        </fieldset>
+                        <fieldset class="collapsable closed" id="fldDetails">
+                            <legend>
+                                <span class="title">Реквизиты</span>
+                            </legend>
+                            <div class="fieldset pr10px">
+                                <form onsubmit="return false;" data-bind="validate: true">
+                                    <div data-bind="with: $root.customer.typeID() == 1 ? $root.customer.details() : null">
+                                        <div class="title">Личные данные</div>
+                                        <div class="h10px"></div>
+                                        <table class="max">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="minw120px">
+                                                        <span>Фамилия:</span>
+                                                    </td>
+                                                    <td class="max">
+                                                        <input type="text" data-bind="value: surname, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Имя:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: name, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Отчество:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: patronymic, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Адрес проживания:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: liveAddress, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Телефон:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: phone, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>E-mail:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: email, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Примечание:</span>
+                                                    </td>
+                                                    <td>
+                                                        <textarea rows="4" cols="0" data-bind="value: comments, uniqueName: true" class=""></textarea>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="h20px"></div>
+                                        <div class="title">Паспорт</div>
+                                        <div class="h10px"></div>
+                                        <table class="max">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="minw120px">
+                                                        <span>Серия:</span>
+                                                    </td>
+                                                    <td class="max">
+                                                        <input type="text" data-bind="value: passportSerie, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Номер:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: passportNumber, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Кем выдан:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: passportIssuer, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Код подразделения:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: passportSubcode, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Дата выдачи:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: passportIssueDate, datepicker: true" class="max small" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>ИНН:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: inn, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Адрес регистрации:</span>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" data-bind="value: registerAddress, uniqueName: true" class="max small"/>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div data-bind="with: $root.customer.typeID() == 2 ? $root.customer.details() : null">
+                                        <div class="title">
+                                            Адреса и реквизиты
+                                        </div>
+                                        <div class="h10px"></div>
+                                        <table class="max">
+                                            <tr>
+                                                <td class="minw165px">
+                                                    <span>Полное наименование:</span>
+                                                </td>
+                                                <td class="max">
+                                                    <input type="text" data-bind="value: fullName, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Краткое наименование:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: name, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Руководитель:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: boss, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Юридический адрес:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: legalAddress, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Физический адрес:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: realAddress, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>ОГРН:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: ogrn, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>ИНН:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: inn, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>КПП:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: kpp, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Номер свидетельства СРО:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: certificate, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Главный бухгалтер:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: accountant, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Телефон:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: phone, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Факс:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: fax, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="h20px"></div>
+                                        <div class="title">
+                                            Банковские реквизиты
+                                        </div>
+                                        <div class="h10px"></div>
+                                        <table class="max">
+                                            <tr>
+                                                <td class="minw165px">
+                                                    <span>Название банка:</span>
+                                                </td>
+                                                <td class="max">
+                                                    <input type="text" data-bind="value: bankName, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Номер счета:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: bankAccount, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Корреспондентский счет:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: bankLoroAccount, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>БИК:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: bankBik, uniqueName: true" class="max small"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </form>
+                            </div>
+                        </fieldset>
+                        <fieldset class="collapsable">
+                            <legend>
+                                <span class="toRight">
+                                    <a href="javascript:" class="icon small add" data-bind="click: $root.addFile" title="Добавить файл"></a>
+                                </span>
+                                <span class="title">Файлы</span>
+                            </legend>
+                            <div class="fieldset pr10px">
+                                <form onsubmit="return false;" data-bind="validate: true">
+                                    <table class="max">
+                                        <tbody data-bind="template: { foreach: contractorFiles() }">
+                                            <tr>
+                                                <td>
+                                                    <a href="javascript:" class="icon small delete" data-bind="click: $root.removeFile" title="Удалить файл"></a>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="if: id()>0">
+                                                        <a class="file" title="Скачать файл" data-bind="text: fileName, attr: { href: url }"></a>
+                                                    </span>
+                                                    @*<span data-bind="if: id()<0">
+                                                        <input type="text" readonly="readonly" class="required w250px" data-bind="uniqueName: true, value: fileName"> 
+                                                        <a href="javascript:" class="icon small text" data-bind="click: $root.selectFile">Выбрать</a> 
+                                                        <iframe style="display:none;" class="upload" frameborder="0" width="100%" scrolling="no" seamless="seamless" data-bind="attr: { src: ejs.fup('contractorFileID_' + id()), id: 'frmUploadContractorFile' + id() }"></iframe>
+                                                    </span>*@
+                                                </td>
+                                                <td data-bind="if: id()>0">
+                                                    <span data-bind="text: sizeText"></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </form>
+                            </div>
+                        </fieldset>
+                        <fieldset class="collapsable">
+                            <legend>
+                                <span class="title">События</span>
+                            </legend>
+                            <div class="fieldset pr10px mAuto">
+                                @{ Html.RenderPartial("_Calendar"); }
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="splitter toLeft">
+                    <div class="line">
+                        <div class="button"></div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="pl10px">
+                        <div data-bind="visible: 1 == $root.selected.itabID(), with: $root.customer" class="tab-content scroll">
+                            <div>
+                                <fieldset class="collapsable">
+                                    <legend>
+                                        <span class="title">Контактные лица</span>
+                                    </legend>
+                                    <div class="fieldset" id="divContactsTab">
+                                        <form onsubmit="return false;" data-bind="validate: true">
+                                            <div class="text-left">
+                                                <div class="pt10px">
+                                                    <a href="javascript:" class="icon small add text toLeft" data-bind="click: $root.createContactPerson" >Добавить контактное лицо</a>
+                                                    <div data-bind="template: { name: 'divContactPerson', foreach: contactPersons().where('val=>val.id()<0').orderBy('val=>val.id()') }"></div>
+                                                    <div data-bind="template: { name: 'divContactPerson', foreach: contactPersons().where('val=>val.id()>0').orderByDesc('val=>val.id()') }"></div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </fieldset>
+                                <div class="h10px"></div>
+                                <fieldset class="collapsable">
+                                    <legend>
+                                        <span class="title">Заметки</span>
+                                    </legend>
+                                    <a href="javascript:" class="icon small add text toRight" data-bind="click: $root.createNote" title="Добавить заметку">Добавить заметку</a>
+                                    <div class="fieldset">
+                                        <div>
+                                            <div data-bind="template: { name: 'divContractorNote', foreach: contractorNotes().where('val=>val.id()<0').orderBy('val=>val.id()') }"></div>
+                                            <div data-bind="template: { name: 'divContractorNote', foreach: contractorNotes().where('val=>val.id()>0').orderByDesc('val=>val.id()') }"></div>
+                                            <div class="text-center" data-bind="visible: contractorNotes.total() > contractorNotes().length">
+                                                <button data-bind="click: $root.loadNotes">Еще события...</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div data-bind="visible: 2 == $root.selected.itabID()" class="tab-content">
+                            <div id="divContracts" class="ejsgrid beige"></div>
+                        </div>
+                        @*<div data-bind="visible: $root.selected.itabID().toString().startsWith('contract_')" class="tab-content">
+                            <div class="excel-tabs-contianer">
+                                <ul class="tabs-iframe">
+                                    <li class="tab toRight" data-bind="css: { selected: $root.selected.view() == 'demounts' }">
+                                        <a href="javascript:" data-bind="click: function() { $root.selected.view('demounts'); $root.refresh(); }">Демонтаж</a>
+                                    </li>
+                                    <li class="tab toRight" data-bind="css: { selected: $root.selected.view() == 'works' }">
+                                        <a href="javascript:" data-bind="click: function() { $root.selected.view('works'); $root.refresh(); }">Работы</a>
+                                    </li>
+                                    <!-- ko foreach: $root.cwcps().where('val=>val.contractID()==' + $root.selected.itab().contractID || -1).orderBy('val=>val.orderNumber()') -->
+                                    <li class="tab" data-bind="css: { selected: $root.selected.contractPageID() == id() }">
+                                        <a href="javascript:" data-bind="html: name, click: function() { $root.selected.contractPageID(id()); $root.refresh(); }"></a>
+                                    </li>
+                                    <!-- /ko -->
+                                </ul>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="header"></div>
+                            <div id="divContractorWorks" class="ejsgrid beige" data-bind="visible: $root.selected.view() == 'works'"></div>
+                            <div id="divContractorDemounts" class="ejsgrid beige" data-bind="visible: $root.selected.view() == 'demounts'"></div>
+                        </div>*@
+                    </div>
+                </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+
+<div id="divFileDialog" title="Добавить файл" data-bind="with: $root.contractorFile">
+    <form data-bind="validate: true" onsubmit="return false;">
+        <table class="adjuster">
+            @*<tr>
+                <th>
+                    Категория:
+                </th>
+                <td>
+                    <select class="max" data-bind="value: categoryID, options: $root.projectFileCategories, optionsText: 'name', optionsValue: 'id'"></select> 
+                </td>
+            </tr>*@
+            <tr>
+                <th>
+                    Файл:
+                </th>
+                <td>
+                    <div>
+                        <input type="text" readonly="readonly" class="required" data-bind="uniqueName: true, value: fileName"> 
+                        <a href="javascript:" data-bind="click: $root.selectFile">Выбрать</a> 
+                        <iframe style="display:none;" class="upload" frameborder="0" width="100%" scrolling="no" seamless="seamless" data-bind="attr: { src:  ejs.fup('contractorFileID') }" id="frmUploadContractorFile"></iframe>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="divImportDialog" title="Импорт цен из файла" data-bind="with: $root.worksImport">
+    <form data-bind="validate: true" onsubmit="return false;">
+        <table class="adjuster">
+            <tr>
+                <th>
+                    № столбца, код:
+                </th>
+                <td>
+                    <input type="text" class="required" data-bind="uniqueName: true, value: codeColumn"/> 
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    № столбца, название:
+                </th>
+                <td>
+                    <input type="text" class="required" data-bind="uniqueName: true, value: nameColumn"/> 
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    № столбца, ед. измерения:
+                </th>
+                <td>
+                    <input type="text" class="required" data-bind="uniqueName: true, value: unitColumn"/> 
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    № столбца, цена:
+                </th>
+                <td>
+                    <input type="text" class="required" data-bind="uniqueName: true, value: priceColumn"/> 
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Файл:
+                </th>
+                <td>
+                    <div>
+                        <input type="text" readonly="readonly" class="required" data-bind="uniqueName: true, value: fileName"> 
+                        <a href="javascript:" data-bind="click: function(a,b){ $root.selectFile(a,b);}">Выбрать</a> 
+                        <iframe style="display:none;" class="upload" frameborder="0" width="100%" scrolling="no" seamless="seamless" data-bind="attr: { src:  ejs.fup('worksFileID') }" id="frmUploadWorksFile"></iframe>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<script type="text/html" id="scrContractPages">
+    <tr>
+        <td colspan="2">
+            <div class="ml60px">
+                <div>
+                   <span class="large bold">Разделы</span> <a href="javascript:" data-bind="click: $root.createCwcp" class="icon small add text toRight">Добавить запись</a>
+                </div>
+                <div class="maxh200px scroll">
+                <table class="pages" style="border-spacing:0px;">
+                    <tbody data-bind="foreach: pages">
+                        <tr>
+                            <td style="padding:0px;">
+                                <a class="icon small delete" title="Удалить запись..." href="javascript:" data-bind="click: $root.removeCwcp"></a>
+                            </td>
+                            <td>
+                                <input type="text" data-bind="value: orderNumber, numeric: true" class="custom-width w50px" placeholder="Порядковый номер"/>
+                            </td>
+                            <td>
+                                <input type="text" class="max required" placeholder="Название" data-bind="value: name, uniqueName: true" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </td>
+    </tr>
+</script>
+
+<script type="text/html" id="divContractorNote">
+     <div>
+        <div class="spans">
+            <span data-bind="text: dateTime"></span>&nbsp;
+            <span class="editable" data-bind="clickToEdit: typeID">
+                <span data-bind="html: type().name"></span>
+                <a href="javascript:" class="icon small pencil"></a>
+            </span>
+            <select data-bind="options: $root.contractorNoteTypes(typeID), optionsText: 'name', optionsValue: 'id', value: typeID" class="w200px" ></select>&nbsp;
+            <span>Создатель:</span>&nbsp;
+            <span data-bind="text: creatorName"></span>&nbsp;
+            <span><a href="javascript:" data-bind="click: $root.removeNote" title="Удалить..." class="icon small delete-round"></a></span>
+        </div>
+        <div class="h5px"></div>
+        <div>
+            <textarea class="max" cols="0" rows="2" data-bind="value: description"></textarea>
+        </div>
+        <div class="h10px"></div>
+    </div>
+</script>
+@{ Html.RenderPartial("~/Views/Contractor/_ContactPersons.cshtml"); }

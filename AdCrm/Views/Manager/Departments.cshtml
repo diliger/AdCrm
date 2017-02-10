@@ -1,0 +1,251 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Отделы";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Manager/Departments.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.department.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.department.remove, css: { disabled: !koModel.department.selectedArray().any() && !koModel.position.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.departments().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="header">
+        <table class="max">
+            <tr>
+                <td class="w350px">
+                    <span class="input-wrapper max">
+                        <span class="image">
+                            <input type="text" class="max nice" placeholder="Введите фразу или слово для поиска" data-bind="value: $root.filter.text, event: { keypress: $root.searchKeyPress }" />
+                        </span>
+                    </span>
+                </td>
+                <td class="w150px">
+                </td>
+                <td class="w150px">
+                </td>
+                <td class="w120px">
+                </td>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="container two box-float">
+        <form action="" onsubmit="return false;" data-bind="validate: true">
+            <div class="col">
+                <h3>Отделы</h3>
+                <div class="scroll kogrid" id="divDepartments">
+                        <div id="divDepartmentsHeader"></div>
+                        <table class="grid kogrid input-max input-transparent nowrap" id="tblDepartments">
+                            <thead>
+                                <tr>
+                                    <th colname="Select">
+                                        <div class="th">&nbsp;</div>
+                                    </th>
+                                    <th colname="Name">
+                                        <div class="th"><span>Название</span></div>
+                                    </th>
+                                    <th colname="Manager" sortpath="Manager.Surname,Manager.Name,Manager.Patronymic">
+                                        <div class="th"><span>Руководитель</span></div>
+                                    </th>
+                                    <th colname="OrderNumber" >
+                                        <div class="th"><span>Номер</span></div>
+                                    </th>
+                                    <th colname="Comments" >
+                                        <div class="th"><span>Примечание</span></div>
+                                    </th>
+                                    <th colname="Save">
+                                        <div class="th">
+                                            <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: koModel.grid.departments.save, visible: !koModel.grid.departments.inProgress()"></a>
+                                            <span class="loading" data-bind="visible: koModel.grid.departments.inProgress()"></span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="template: { name: 'trDepartment', foreach: $root.departments }">
+
+                            </tbody>
+                            <tfoot>
+                                <tr data-bind="{ if: !$root.departments().any() }">
+                                    <td colname="Select"></td>
+                                    <td colname="Name"></td>
+                                    <td colname="Manager"></td>
+                                    <td colname="OrderNumber"></td>
+                                    <td colname="Comments"></td>
+                                    <td colname="Save"></td>
+                                </tr>                    
+                                <tr>
+                                    <td colspan="6" class="pager-container">
+                                        <div class="pager">
+                                            <div class="toLeft">
+                                                Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                            </div>
+                                            <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                                <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="separator"></div>
+                    </div>
+            </div>
+            <div class="col">
+                <div class="ml20px">
+                    <div class="box-float">
+                        <h3 class="toLeft">Должности отдела</h3>
+                        <button data-bind="click: $root.position.create" class="ml20px">Добавить должность</button>
+                    </div>
+                    <div class="scroll kogrid" id="divPositions">
+                        <div id="divPositionsHeader"></div>
+                        <table class="grid kogrid input-max input-transparent nowrap" id="tblPositions">
+                            <thead>
+                                <tr>
+                                    <th colname="Select" title="Столбец для выделения">
+                                        <div class="th">&nbsp;</div>
+                                    </th>
+                                    <th colname="Name">
+                                        <div class="th"><span>Название</span></div>
+                                    </th>
+                                    <th colname="OrderNumber" >
+                                        <div class="th"><span>Номер</span></div>
+                                    </th>
+                                    <th colname="Comments" >
+                                        <div class="th"><span>Примечание</span></div>
+                                    </th>
+                                    <th colname="Save">
+                                        <div class="th">
+                                            <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: $root.grid.positions.save, visible: !$root.grid.positions.inProgress()"></a>
+                                            <span class="loading" data-bind="visible: $root.grid.positions.inProgress()"></span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="template: { name: 'trPosition', foreach: $root.grid.positions.sorted }">
+
+                            </tbody>
+                            <tfoot>
+                                <tr data-bind="{ if: !$root.department.positions().any() }">
+                                    <td colname="Select"></td>
+                                    <td colname="Name"></td>
+                                    <td colname="OrderNumber"></td>
+                                    <td colname="Comments"></td>
+                                    <td colname="Save"></td>
+                                </tr>
+                                <tr data-bind="visible: !$root.department.positions().any()">
+                                    <td colspan="6" class="pager">
+                                        <div class="text-center text-italic disabled large" data-bind="text: $root.department.selected() ? 'Нет ни одной должности.' : 'Выберите отдел для просмотра должностей.'">
+                                        
+                                        </div>
+                                    </td>
+                                </tr>                    
+                                <tr>
+                                    <td colspan="6" class="pager-container">
+                                        <div class="pager">
+                                            <div class="toLeft">
+                                                Показано <span data-bind="html: $root.department.positions().length > 0 ? 1 : 0"></span>-
+                                                <span data-bind="html: $root.department.positions().length"></span> из <span data-bind="html: $root.department.positions().length"></span>
+                                            </div>
+                                            @*<div data-bind="foreach: $root.pager.pages" class="text-center">
+                                                <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                            </div>*@
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="separator"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/html" id="trDepartment">
+    <tr data-bind="css: { selected: koModel.department.selectedArray().contains(id().toString()) }, click: function() { $root.department.select($data); return true; }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: koModel.department.selectedArray, click: function() { return true; }, clickBubble: false" />
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td">
+                <input type="text" data-bind="value: name, uniqueName: true" class="required" />
+            </div>
+        </td>
+        <td colname="Manager">
+            <div class="td">
+                <div data-bind="html: manager() ? manager().fullName() : '', clickToEdit: manager"></div>
+                <select data-bind="value: managerID, options: $root.activeManagers($data), optionsText: 'fullName', optionsValue: 'id'"></select>
+            </div>
+        </td>
+        <td colname="OrderNumber">
+            <div class="td text-right">
+                <input type="text" class=" text-right " data-bind="numeric: true, value: orderNumber" precision="0" />
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="2" data-bind="value: comments, html: comments"></textarea>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small delete" title="Удалить запись" data-bind="click: $root.department.remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>
+<script type="text/html" id="trPosition">
+    <tr data-bind="css: { selected: koModel.position.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: $root.position.selectedArray" />
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td">
+                <input type="text" data-bind="value: name, uniqueName: true" class="required" />
+            </div>
+        </td>
+        <td colname="OrderNumber">
+            <div class="td text-right">
+                <input type="text" class=" text-right " data-bind="numeric: true, value: orderNumber" precision="0" />
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="2" data-bind="value: comments, html: comments"></textarea>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small delete" title="Удалить запись" data-bind="click: $root.position.remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>

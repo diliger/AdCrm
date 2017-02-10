@@ -1,0 +1,48 @@
+﻿<script id="divContactPerson" type="text/html">
+    <div class="toRight colorGray">
+        <label class="checkbox">
+            <input type="checkbox" value="true" data-bind="checked: isMain"/>
+            Основное контактное лицо
+        </label>
+        <label class="checkbox">
+            <input type="checkbox" value="true" data-bind="checked: isSigner"/>
+            Подписант договоров
+        </label>
+    </div>
+    @*<a href="javascript:" class="icon small add text" data-bind="click: $root.createContactPerson, visible: $index() == 0" >Добавить контактное лицо</a>*@
+    <div class="clear h10px"></div>
+    <div>
+        <a href="javascript:" class="icon small delete" data-bind="click: $root.removeContactPerson" title="Удалить контактное лицо"></a>
+        <select data-bind="value: typeID, options: $root.contactPersonTypes(typeID()), optionsText: 'name', optionsValue: 'id'" title="Категория" class="w50px"></select><!--
+        --><input type="text" data-bind="value: surname, uniqueName: true" class="w170px bold inner" placeholder="Фамилия"/><!--
+        --><input type="text" data-bind="value: name, uniqueName: true" class="w170px required bold inner" placeholder="Имя"/><!--
+        --><input type="text" data-bind="value: patronymic, uniqueName: true" class="w170px bold inner" placeholder="Отчество"/><!--
+        --><select data-bind="value: genderID, options: $root.genders(genderID()), optionsText: 'name', optionsValue: 'id'" title="Пол" class="w50px inner"></select><!--
+        --><input type="text" data-bind="value: birthDate, datepicker: true" class="w100px inner" placeholder="Дата рождения"/>
+    </div>
+    <div class="pt5px ml20px">
+        <input type="text" data-bind="value: position" class="max" placeholder="Должность"/>
+    </div>
+    <div class="pt5px ml20px">
+        <input type="text" data-bind="value: comments" class="max" placeholder="Заметка..."/>
+        @*<textarea data-bind="value: comments" class="max" placeholder="Заметка..."></textarea>*@
+    </div>
+    <div class="pt5px ml20px">
+        <!-- ko template: { foreach: contacts } -->
+            <div>
+                <select class="w100px" data-bind="value: typeID, options: $root.contactTypes, optionsText: 'name', optionsValue: 'id'"></select><!--
+                --><input type="text" class="w280px inner" data-bind="value: text, attr: { placeholder: type() ? type().name : '' }"/><!--
+                --><input type="text" class="w170px inner" data-bind="value: comments" placeholder="примечание"/>
+            </div>
+        <!-- /ko --> 
+
+        <div data-bind="with: $root.getEmptyContact($data)">
+            <select class="w100px" data-bind="value: typeID, options: $root.contactTypes, optionsText: 'name', optionsValue: 'id'"></select><!--
+            --><input type="text" class="w280px inner" data-bind="value: text, hasfocus: $parent.newContactFocused, attr: { placeholder: type() ? type().name : '' }"/><!--
+            --><input type="text" class="w170px inner" data-bind="value: comments" placeholder="примечание"/>
+        </div>
+    </div>
+    <div class="clear h10px">
+    @*<hr />*@
+    </div>
+</script>

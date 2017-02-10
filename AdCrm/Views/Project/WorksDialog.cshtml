@@ -1,0 +1,138 @@
+﻿@{
+    Layout = null;
+}
+<div id="divWorksDialog" title="Поиск работ">
+    <div class="box">
+        <div class="text-left nowrap">
+            <span class="input-wrapper max">
+                <a href="javascript:" class="icon medium toRight" style="margin-left:-26px;position:relative;" data-bind="click: $root.pager.refresh"></a>
+                <span class="image">
+                    <input type="text" class="max nice" data-bind="value: $root.filter.text, event: { keypress: $root.applyFilter }" placeholder="Введите текст для поиска"/>
+                </span>
+            </span>
+        </div>
+        <div class="separator small"></div>
+        <div class="h400px">
+            <div class="scroll kogrid" id="divWorkTypes">
+                <div id="divWorkTypesHeader"></div>
+                <table class="grid kogrid" id="tblWorkTypes">
+                    <thead>
+                        <tr>
+                            <th colname="Select" title="Столбец для выделения">
+                                <span class="th">&nbsp;</span>
+                            </th>
+                            <th colname="OrderNumber" sortpath="OrderNumber">
+                                <span class="th"><span>Номер</span></span>
+                            </th>
+                            <th colname="Code" sortpath="Code">
+                                <span class="th"><span>Код ТЦП</span></span>
+                            </th>
+                            <th colname="Name" sortpath="Name">
+                                <span class="th"><span>Название</span></span>
+                            </th>
+                            <th colname="ShortName" sortpath="ShortName">
+                                <span class="th"><span>Сокращенное</span></span>
+                            </th>
+                            <th colname="UnitName" sortpath="UnitName">
+                                <span class="th"><span>Ед. Измерения</span></span>
+                            </th>
+                            <th colname="Price">
+                                <span class="th"><span>Цена без НДС</span></span>
+                            </th>
+                            <th colname="Comments" sortpath="Comments">
+                                <span class="th"><span>Примечание</span></span>
+                            </th>
+                            <th colname="Save">
+                                <span class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { foreach: $root.workTypes, name: 'trWorkType' }">
+                        
+                    </tbody>
+                    <tfoot>
+                        <tr data-bind="{ if: !$root.workTypes().any() }">
+                            <td colname="Select"></td>
+                            <td colname="OrderNumber"></td>
+                            <td colname="Code"></td>
+                            <td colname="Name"></td>
+                            <td colname="ShortName"></td>
+                            <td colname="UnitName"></td>
+                            <td colname="Price"></td>
+                            <td colname="Comments"></td>
+                            <td colname="Save"></td>
+                        </tr> 
+                    </tfoot>
+                    <tfoot data-bind="if: $root.pager.pages().length > 1">
+                        <tr>
+                            <td colspan="10" class="pager">
+                                <div class="pager">
+                                    <div class="toLeft">
+                                        Показано <span data-bind="html: $root.pager.shownFrom"></span> - <span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="separator"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="scrWorksDialogData">
+    @MvcHtmlString.Create(ViewBag.Data)
+</script>
+<script type="text/javascript" src="@Url.ContentVersion("~/Scripts/Views/Project/WorksDialog.js")"></script>
+
+<script type="text/html" id="trWorkType">
+    <tr data-bind="css: { selected: $root.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: $root.selectedArray" />
+            </div>
+        </td>
+        <td colname="OrderNumber">
+            <div class="td text-right">
+                <span data-bind="text: orderNumber"></span>
+            </div>
+        </td>
+        <td colname="Code">
+            <div class="td">
+                <span data-bind="text: code"></span>
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td">
+                <span data-bind="text: name"></span>
+            </div>
+        </td>
+        <td colname="ShortName">
+            <div class="td">
+                <span data-bind="text: shortName"></span>
+            </div>
+        </td>
+        <td colname="UnitName">
+            <div class="td">
+                <span data-bind="text: unitName"></span>
+            </div>
+        </td>
+        <td colname="Price">
+            <div class="td text-right">
+                <span data-bind="text: ejs.toDs(price)"></span>
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <span data-bind="html: comments().html()"></span>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+            </div>
+        </td>
+    </tr>
+</script>

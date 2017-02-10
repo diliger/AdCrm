@@ -1,0 +1,268 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = ViewBag.Page.EndsWith(".1") ? "Клиенты" : ViewBag.Page.EndsWith(".2") ? "Субподрядчики" : "Другие специалисты";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Manager/Contractors.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+    int roleID = ViewBag.RoleID;
+    int? statusID = ViewBag.StatusID;
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.contractor.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item" data-bind="visible: !$root.filter.archived()">
+        <a href="javascript:" data-bind="click: $root.toggleArchived, css: { disabled: !koModel.contractor.selectedArray().any() }" class="icon big archive" >В архив</a>
+    </div>
+    <div class="item" data-bind="visible: $root.filter.archived()">
+        <a href="javascript:" data-bind="click: $root.toggleArchived, css: { disabled: !koModel.contractor.selectedArray().any() }" class="icon big redo" title="Извлечь проект из архива">Восстановить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.contractor.remove, css: { disabled: !koModel.contractor.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.contractors().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="header">
+        <table class="max">
+            <tr>
+                <td class="w350px">
+                    <span class="input-wrapper max">
+                        <span class="image">
+                            <input type="text" class="max nice" placeholder="Введите фразу или слово для поиска" data-bind="value: $root.filter.text, event: { keypress: $root.searchKeyPress }" />
+                        </span>
+                    </span>
+                </td>
+                <td class="w150px">
+                </td>
+                <td class="">
+                </td>
+                <td class="">
+                </td>
+                <td class="text-right nowrap">
+                    <a href="javascript:" data-bind="css: { selected: koModel.filter.archived }, click: function() { koModel.filter.archived(true); }, visible: !koModel.filter.archived()">Показать архивных</a>
+                    <a href="javascript:" data-bind="css: { selected: !koModel.filter.archived() }, click: function() { koModel.filter.archived(false); }, visible: koModel.filter.archived">Показать действующих</a>
+                    &nbsp;
+
+                    <span class="input-wrapper">
+                        <select class="w200px" data-bind="value: $root.filter.typeID, options: $root.contractorTypes, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Тип @(roleID == (int)AdCrm.Models.BuildingEntities.ContractorRolesEnum.Customer ? "клиента" : "")'"></select>
+                    </span>
+                    @if(!statusID.HasValue)
+                    {
+                    <span class="input-wrapper">
+                        <select class="w200px" data-bind="value: $root.filter.statusID, options: $root.contractorStatuses, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Статус @(roleID == (int)AdCrm.Models.BuildingEntities.ContractorRolesEnum.Customer ? "клиента" : "")'"></select>
+                    </span>
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="container">
+        <div class="scroll kogrid" id="divContractors">
+            <div id="divContractorsHeader"></div>
+            <table class="grid kogrid" id="tblContractors">
+                <thead>
+                    <tr>
+                        <th colname="Select">
+                            <div class="th">&nbsp;</div>
+                        </th>
+                        <th colname="Name">
+                            <div class="th"><span>Название</span></div>
+                        </th>
+                        @if(roleID == 1)
+                        {
+                        <th colname="Description">
+                            <div class="th"><span>Тема обращения</span></div>
+                        </th>
+                        }
+                        <th colname="Address">
+                            <div class="th"><span>Адрес</span></div>
+                        </th>
+                        <th colname="TypeID" sortpath="Type.Name,SubType.Name">
+                            <div class="th"><span>Тип</span></div>
+                        </th>
+                        <th colname="SourceID">
+                            <div class="th"><span>Источник</span></div>
+                        </th>
+                        <th colname="Specialization">
+                            <div class="th"><span>Специализация</span></div>
+                        </th>
+                        @if(roleID != 1)
+                        {
+                        <th colname="Department" sortpath="Department.Name">
+                            <div class="th"><span>Отдел</span></div>
+                        </th>
+                        }
+                        <th colname="Status" sortpath="Status.Name">
+                            <div class="th"><span>Статус</span></div>
+                        </th>
+                        <th colname="ContactPerson">
+                            <div class="th"><span>Контактное лицо</span></div>
+                        </th>
+                        <th colname="Contacts">
+                            <div class="th"><span>Контакты</span></div>
+                        </th>
+                        <th colname="Comments">
+                            <div class="th"><span>Примечание</span></div>
+                        </th>
+                        <th colname="Creator" sortpath="UserCreator.FullName">
+                            <div class="th"><span>Создал</span></div>
+                        </th>
+                        <th colname="Responsible" sortpath="UserResponsible.FullName">
+                            <div class="th"><span>Ответственный</span></div>
+                        </th>
+                        <th colname="Save">
+                            <div class="th">
+                                <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: koModel.grid.save, visible: !koModel.grid.inProgress()"></a>
+                                <span class="loading" data-bind="visible: koModel.grid.inProgress()"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="template: { name: 'trContractor', foreach: $root.contractors }">
+
+                </tbody>
+                <tfoot>
+                    <tr data-bind="{ if: !$root.contractors().any() }">
+                        <td colname="Select"></td>
+                        <td colname="Name"></td>
+                        @if(roleID == 1)
+                        {
+                        <td colname="Description"></td>
+                        }
+                        <td colname="Address"></td>
+                        <td colname="TypeID"></td>
+                        <td colname="SourceID"></td>
+                        <td colname="Specialization"></td>
+                        @if(roleID != 1)
+                        {
+                        <td colname="Department"></td>
+                        }
+                        <td colname="Status"></td>
+                        <td colname="ContactPerson"></td>
+                        <td colname="Contacts"></td>
+                        <td colname="Comments"></td>
+                        <td colname="Creator"></td>
+                        <td colname="Responsible"></td>
+                        <td colname="Save"></td>
+                    </tr>                    
+                    <tr>
+                        <td colspan="14" class="pager-container">
+                            <div class="pager">
+                                <div class="toLeft">
+                                    Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                </div>
+                                <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                    <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="separator"></div>
+        </div>
+    </div>
+</div>
+
+<div id="divContractorDialog" data-bind="with: $root.contractor.selected">
+    @{Html.RenderAction("Details", "Contractor");}
+</div>
+<script type="text/html" id="trContractor">
+    <tr data-bind="event: { dblclick: $root.contractor.edit }, css: { selected: koModel.contractor.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: koModel.contractor.selectedArray" />
+            </div>
+        </td>
+        <td  colname="Name">
+            <div class="td">
+                <a href="javascript:" data-bind="click: roleID() == 1 ? $root.contractor.open : $root.contractor.edit"><span data-bind="html: flname"></span></a>
+            </div>
+        </td>
+        @if (roleID == 1)
+        {
+        <td colname="Description">
+            <div class="td">
+                <span data-bind="html: description"></span>
+            </div>
+        </td>
+        }
+        <td colname="Address">
+            <div class="td">
+                <span data-bind="html: fladdress"></span>
+            </div>
+        </td>
+        <td colname="TypeID">
+            <div class="td">
+                <span data-bind="html: (type() ? type().name() : '') + ' ' + (subType() ? subType().name() : '')"></span>
+            </div>
+        </td>
+        <td colname="SourceID">
+            <div class="td">
+                <span data-bind="html: source() ? source().name : ''"></span>
+            </div>
+        </td>
+        <td colname="Specialization">
+            <div class="td">
+                <span data-bind="html: specialization"></span>
+            </div>
+        </td>
+        @if (roleID != 1)
+        {
+        <td colname="Department">
+            <div class="td">
+                <span data-bind="html: department().name"></span>
+            </div>
+        </td>
+        }
+        <td colname="Status">
+            <div class="td"><div data-bind="text: status() ? status().name : '', style: { backgroundColor: status() ? status().color : '' }" class="status"></div></div>
+        </td>
+        <td colname="ContactPerson">
+            <div class="td">
+                <span data-bind="html: mainContactPerson() ? mainContactPerson().fullName : ''"></span>
+            </div>
+        </td>
+        <td colname="Contacts">
+            <div class="td" data-bind="foreach: mainContactPerson() ? mainContactPerson().contacts : ''">
+                <span data-bind="html: type().name() + ': '"></span>
+                <span data-bind="html: text"></span>
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <span data-bind="html: comments"></span>
+            </div>
+        </td>
+        <td colname="Creator">
+            <div class="td">
+                <span data-bind="text: creatorName"></span>
+            </div>
+        </td>
+        <td colname="Responsible">
+            <div class="td">
+                <span data-bind="text: responsible() ? responsible().fullName : ''"></span>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small delete" title="Удалить запись" data-bind="click: $root.contractor.remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>

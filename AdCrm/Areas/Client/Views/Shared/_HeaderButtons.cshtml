@@ -1,0 +1,43 @@
+﻿<script type="text/javascript">
+    var fn = function () {
+        var div = $("div#header div.content div.buttons");
+        if (typeof localStorage == "undefined") {
+            div.remove();
+            return;
+        }
+
+        var key = "Tasks_Filter_" + host.uid;
+        var filter = localStorage.getItem(key);
+        if (!filter) {
+            div.remove();
+            return;
+        }
+
+        try {
+            filter = JSON.parse(filter);
+        } catch (ex) {
+            div.remove();
+            return;
+        }
+
+        if (!filter) {
+            div.remove();
+            return;
+        }
+        var p = window.location.pathname.contains("/Bugs") ? "Client/Bugs" : "Client/Tasks";
+        var html = [];
+        for (var i in filter.projects) {
+            var id = i.substring(1);
+            var name = filter.projects[i];
+            if (!name)
+                continue;
+
+            html.push(["<a href='", host.arp, p, "?ProjectID=", id, "' class='button button-w'>", name, "</a>"].join(""));
+        }
+        div.html(html.join(" "));
+    };
+    var host = window.host || { onLoad: [] };
+    host.onLoad.push(fn);
+</script>
+
+<div class="buttons"></div>

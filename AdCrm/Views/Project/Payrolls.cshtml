@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Начисления по проекту";
+    AdCrm.Models.Project project = ViewBag.Project;
+    bool sub = project.ParentID.HasValue;
+    this.Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Project/Payrolls.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+
+@{ Html.RenderPartial("_TopDetailsPart"); }
+
+<div>
+    <ul class="tabs-iframe" data-bind="template: { foreach: itabs }">
+        <li data-bind="css: { selected: $data.selected }">
+            <a href="javascript:" data-bind="text: name, attr: { href: url }"></a>
+        </li>
+    </ul>
+    <div class="clear-left"></div>
+    <div class="header actions">
+        <div class="p4px">
+            <a href="javascript:" class="icon medium save text" title="Сохранить изменения" data-bind="click: function() { $root.updateAll('', true); }, css: { disabled: !koModel.hasChanges() }" id="aSave">Сохранить</a>
+            <a class="icon medium separator"></a>
+            <a href="javascript:" class="icon medium document-add text" title="Добавить запись" data-bind="click: $root.createPayroll">Создать</a>
+            <a class="icon medium separator"></a>
+            <a href="javascript:" class="icon medium excel text" title="Выгрузка начислений в excel" data-bind="click: $root.payrollsCrud.export">Экспорт</a>
+
+            @*<div class="toRight">
+                <span>Знаков после запятой: 
+                    <a href="javascript:" data-bind="css: { bold: ko.precision() == 2 }, click: function() { ko.precision(2); }">два</a>
+                    <a href="javascript:" data-bind="css: { bold: ko.precision() == 8 }, click: function() { ko.precision(8); }">восемь</a>
+                </span>
+                <input type="text" data-bind="value: ko.precision, numeric: true" class="w50px text-right" />
+            </div>*@
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="tab-content">
+            <div class="ejsgrid beige" id="divPayrolls"></div>
+        </div>
+    </div>    
+</div>

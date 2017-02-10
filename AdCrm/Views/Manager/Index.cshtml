@@ -1,0 +1,272 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = this.BLocalResource("title");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/jq.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/ko.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Manager/Index.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.createProject" class="icon big document-add">Новый проект</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.duplicateProject, css: { disabled: !koModel.project.selectedArray().any() }" class="icon big copy">Копировать</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item" data-bind="visible: !$root.filter.archived()">
+        <a href="javascript:" data-bind="click: $root.toggleArchived, css: { disabled: !koModel.project.selectedArray().any() }" class="icon big archive" >В архив</a>
+    </div>
+    <div class="item" data-bind="visible: $root.filter.archived()">
+        <a href="javascript:" data-bind="click: $root.toggleArchived, css: { disabled: !koModel.project.selectedArray().any() }" class="icon big redo" title="Извлечь проект из архива">Восстановить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.removeProject, css: { disabled: !koModel.project.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.projects().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    @*<div class="separator"></div>
+    <div class="item" data-bind="visible: $root.filter.managerFee">
+        <a href="javascript:" data-bind="click: $root.payManagerFee, css: { disabled: !koModel.project.selectedArray().any() }" class="icon big cash two-line">Выдать % менеджера</a>
+    </div>*@
+    <div class="separator" data-bind="visible: $root.filter.managerFee"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="h25px bold smaller static">
+        <span class="toRight">
+            <a href="javascript:" data-bind="click: koModel.filter.clear">@this.BLocalResource("aClearFilter")</a>
+        </span>
+        @*<a href="javascript:" data-bind="click: function() { koModel.filter.onlyMy(true); }, visible: !koModel.filter.onlyMy()">Только мои проекты</a>
+        <a href="javascript:" data-bind="click: function() { koModel.filter.onlyMy(false); }, visible: koModel.filter.onlyMy()">Все проекты</a>
+        <span>&nbsp;</span>*@
+        <a href="javascript:" data-bind="css: { selected: koModel.filter.archived }, click: function() { koModel.filter.archived(true); }, visible: !koModel.filter.archived()">@this.BLocalResource("aShowArchive")</a>
+        <a href="javascript:" data-bind="css: { selected: !koModel.filter.archived() }, click: function() { koModel.filter.archived(false); }, visible: koModel.filter.archived">@this.BLocalResource("aShowCurrent")</a>
+        @*<a href="javascript:" data-bind="css: { selected: koModel.filter.managerFee }, click: function() { koModel.filter.managerFee(!koModel.filter.managerFee()); koModel.refresh(); }">Долги менеджерам</a>*@
+    </div>
+    <div class="header">
+        <table class="max">
+            <tr>
+                <td class="w350px">
+                    <span class="input-wrapper max">
+                        <span class="image">
+                            <input type="text" class="max nice" placeholder="@this.BLocalResource("txtSearch")" data-bind="value: $root.filter.text, event: { keypress: $root.searchKeyPress }" />
+                        </span>
+                    </span>
+                </td>
+                <td class="w150px">
+                </td>
+                <td class="w150px">
+                </td>
+                <td class="w120px">
+                </td>
+                <td class="text-right">
+                    <span class="input-wrapper">
+                        <select class="w200px" data-bind="value: $root.filter.statusID, options: $root.projectStatuses, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Все статусы...'"></select>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="container">
+        <div class="scroll kogrid" id="divProjects">
+            <div id="divProjectsHeader">
+            </div>
+            <table class="grid kogrid" id="tblProjects">
+                <thead>
+                    <tr>
+                        <th colname="Select">
+                            <div class="th">&nbsp;</div>
+                        </th>
+                        <th colname="EmployeeName" sortpath="Employee.Surname,Employee.Name,Employee.Patronymic">
+                            <div class="th"><span>Исполнитель</span></div>
+                        </th>
+                        <th colname="ContractorName" sortpath="Contractor.Name">
+                            <div class="th"><span>Контрагент</span></div>
+                        </th>
+                        <th colname="Contacts">
+                            <div class="th"><span>Контакты</span></div>
+                        </th>
+                        <th colname="Name">
+                            <div class="th"><span>Проект</span></div>
+                        </th>
+                        <th colname="Address">
+                            <div class="th"><span>Адрес</span></div>
+                        </th>
+                        <th colname="Number">
+                            <div class="th"><span>Номер БС</span></div>
+                        </th>
+                        <th colname="Status" sortpath="Status.Name">
+                            <div class="th"><span>Статус</span></div>
+                        </th>
+                        <th colname="Responsible" sortpath="ResponsibleName">
+                            <div class="th"><span>Ответственный</span></div>
+                        </th>
+                        <th colname="DateSign" >
+                            <div class="th"><span>Дата начала</span></div>
+                        </th>
+                        <th colname="DateEnd" >
+                            <div class="th"><span>Дата завершения</span></div>
+                        </th>
+                        @*<th colname="TypeName">
+                            <div class="th"><span>Тип проекта</span></div>
+                        </th>*@
+                        <th colname="Save">
+                            <div class="th">
+                                <a href="javascript:" class="icon small save" title="@this.BLocalResource("aSaveGridState")" data-bind="click: koModel.grid.save, visible: !koModel.grid.inProgress()"></a>
+                                <span class="loading" data-bind="visible: koModel.grid.inProgress()"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="template: { name: 'trProject', foreach: $root.projects }"></tbody>
+                <tfoot>
+                    <tr data-bind="if: !$root.projects().any()">
+                        <td colname="Select"></td>
+                        <td colname="EmployeeName"></td>
+                        <td colname="ContractorName"></td>
+                        <td colname="Contacts"></td>
+                        <td colname="Name"></td>
+                        <td colname="Address"></td>
+                        <td colname="Number"></td>
+                        <td colname="Status"></td>
+                        <td colname="Responsible"></td>
+                        <td colname="DateSign"></td>
+                        @*<td colname="Cost"></td>*@
+                        @*<td colname="DateSign"></td>*@
+                        <td colname="DateEnd"></td>
+                        @*<td colname="TypeName"></td>*@
+                        <td colname="Save"></td>
+                    </tr>                    
+                    <tr>
+                        <td colspan="15" class="pager-container">
+                            <div class="pager">
+                                @*<div class="toRight">
+                                    Итого по текущим проектам: <span class="bold"><span data-bind="text: z.toDs($root.projects().sum('val=>val.cost()'))"></span> руб.</span>
+                                </div>*@
+                                <div class="toLeft">
+                                    Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                </div>
+                                <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                    <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="separator"></div>
+        </div>
+    </div>
+</div>
+<div id="divProject" data-bind="with: $root.project.inserted()" title="Новый проект">
+    <div class="box">
+        <form id="frmProject" onsubmit="koModel.updateProject(); return false;" data-bind="validate: true">
+            <table class="adjuster">
+                <tr>
+                    <th>
+                        <span>Родительский проект:</span>
+                    </th>
+                    <td>
+                        <div class="nowrap">
+                            <a href="javascript:" data-bind="click: function(e,a){ $root.openAutocomplete(e,a);}" class="icon small lupa input-right"></a>
+                            <input type="text" class="max" data-bind="autocomplete: $root.loadProjects, value: parentName, selected: { source: 'id', target: 'parentID' }" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <span>Название проекта:</span>
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <input type="text" class="required max" data-bind="value: name" name="Name" />
+                    </td>
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                    <th>
+                    </th>
+                    <td>
+                        <input type="button" value="Добавить" data-bind="click: $root.updateProject" />
+                        <input type="button" value="Отмена" data-bind="click: $root.cancelProject" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+<div id="divDuplicateResult" title="Новые проекты">
+    <div class="box">
+        <div data-bind="foreach: $root.duplicates">
+            <div>
+                <a data-bind="text: name, attr: { href: host.arp + 'Project/Index/' + ko.get(id) }" target="_blank"></a>
+            </div>
+        </div>
+        <div class="p10px text-right">
+        <input type="button" value="Закрыть" onclick="$('#divDuplicateResult').dialog('close');" />
+        </div>
+    </div>
+</div>
+<script type="text/html" id="trProject">
+    <tr class="pointer" data-bind="event: { dblclick: $root.project.edit }, css: { selected: $root.project.selectedArray().contains(id().toString()), overdue: overdue() > 30, missingDocuments: cost() > 0 && cost() <= incomeSum() && (missingContract() || missingAct()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: koModel.project.selectedArray" />
+            </div>
+        </td>
+        <td colname="EmployeeName">
+            <div class="td"><span data-bind="text: employeeName"></span></div>
+        </td>
+        <td colname="ContractorName">
+            <div class="td"><a href="javascript:" data-bind="click: $root.editContractor, html: flcontractorName" ></a></div>
+        </td>
+        <td colname="Contacts">
+            <div class="td">
+                <span data-bind="html: contractor() ? contractor().mainContactsText() : ''"></span>
+            </div>
+        </td>
+        <td colname="Name">
+            <a href="javascript:" data-bind="attr: { href: ApplicationRootPath + 'Project/Index/' + id() }"><span data-bind="    html: flname"></span></a>
+        </td>
+        <td colname="Address">
+            <div class="td">
+                <span data-bind="html: fladdress"></span>
+            </div>
+        </td>
+        <td colname="Number">
+            <div class="td"><span data-bind="text: number"></span></div>
+        </td>
+        <td colname="Status">
+            <div class="td"><div data-bind="text: status() ? status().name : '', style: { backgroundColor: status() ? status().color : '' }" class="status"></div></div>
+        </td>
+        <td colname="Responsible">
+            <div class="td"><span data-bind="html: flresponsibleName"></span></div>
+        </td>
+        <td colname="DateSign">
+            <div class="td"><span data-bind="text: dateSign"></span></div>
+        </td>
+        <td colname="DateEnd">
+            <div class="td"><span data-bind="text: dateEnd"></span></div>
+        </td>
+        @*<td colname="TypeName">
+            <div class="td"><span data-bind="text: typeName"></span></div>
+        </td>*@
+        <td colname="Save">
+            <div class="td">&nbsp;</div>
+        </td>
+    </tr>
+</script>

@@ -1,0 +1,122 @@
+﻿@{
+    Layout = null;
+}
+<div id="divPaymentsPartial">
+    <form onsubmit="return false;" data-bind="validate: true">
+        <div>
+            <div class="scroll kogrid ">
+                <div id="divPaymentsHeader"></div>
+                <table class="grid kogrid input-max nowrap" id="tblPayments">
+                    <thead>
+                        <tr>
+                            <th colname="Select" title="Столбец для выделения">
+                                <div class="th">
+                                    <span>&nbsp;</span>
+                                </div>
+                            </th>
+                            <th colname="Index">
+                                <div class="th">
+                                    <span>№</span>
+                                </div>
+                            </th>
+                            <th colname="Date">
+                                <div class="th">
+                                    <span>Дата</span>
+                                </div>
+                            </th>
+                            <th colname="Amount">
+                                <div class="th">
+                                    <span>Сумма</span>
+                                </div>
+                            </th>
+                            <th colname="Comments">
+                                <div class="th">
+                                    <span>Примечание</span>
+                                </div>
+                            </th>
+                            <th colname="Save">
+                                <div class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размер и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { name: 'trPayment', foreach: $root.employeePayments }"></tbody>
+                    <tfoot>
+                        <tr data-bind="{ if: !$root.employeePayments().any() }">
+                            <td colname="Select"></td>
+                            <td colname="Index"></td>
+                            <td colname="Date"></td>
+                            <td colname="Amount"></td>
+                            <td colname="Comments"></td>
+                            <td colname="Save"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="pager-container">
+                                <div class="toRight">
+                                    <div data-bind="visible: $root.payment.selectedArray().any()" class="box-float">
+                                        <div class="toLeft w150px text-left">Сумма по выделенным:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.payment.selectedTotal()) + ' руб.'"></div>
+                                    </div>
+                                    <div class="box-float">
+                                        <div class="separator small" data-bind="visible: !$root.payment.selectedArray().any()"></div>
+                                        <div class="toLeft w150px text-left">Итого за период:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.employeePayments().sum('val=>val.amount()')) + ' руб.'"></div>
+                                    </div>
+                                </div>
+                                <div class="pager">
+                                    <div class="toLeft">
+                                        Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                    </div>
+                                    <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                        <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/html" id="trPayment">
+    <tr data-bind="css: { selected: $root.payment.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: $root.payment.selectedArray" />
+            </div>
+        </td>
+        <td colname="Index">
+            <div class="td text-right">
+                <span data-bind="text: $index() + 1"></span>
+            </div>
+        </td>
+        <td colname="Date">
+            <div class="td">
+                <input type="text" data-bind="value: date, datepicker: true, uniqueName: true" class="required" />
+            </div>
+        </td>
+        <td colname="Amount">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: amount.text" />
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="1" data-bind="value: comments"></textarea>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" data-bind="click: $root.payment.remove" class="icon small delete" title="Удалить запись"></a>
+            </div>
+        </td>
+    </tr>
+</script>
+<script type="text/javascript" src="@Url.ContentVersion("~/Scripts/Views/Employee/Payments.js")"></script>
+<script type="text/html" id="scrPaymentsPartialData">
+    @MvcHtmlString.Create(ViewBag.Data)
+</script>

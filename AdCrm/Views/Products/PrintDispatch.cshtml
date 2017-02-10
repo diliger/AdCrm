@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "Печать выдачи";
+    AdCrm.Models.ProjectDispatch dispatch = ViewBag.Dispatch;
+    List<AdCrm.Models.ProductDispatch> products = ViewBag.Products;
+    this.Layout = "~/Views/Shared/_LayoutClear.cshtml";
+    decimal total = products.Any() ? products.Sum(val => val.Price * val.Count) : 0;
+}
+
+<table>
+    <thead>
+        <tr>
+            <th colspan="2">
+                Выдача №@dispatch.ID
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                Заказ:
+            </td>
+            <td>
+                @dispatch.OrderName
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Проект:
+            </td>
+            <td>
+                @dispatch.ProjectName
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Дата выдачи:
+            </td>
+            <td>
+                @dispatch.Date.ToShortDateString()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Получатель:
+            </td>
+            <td>
+                @dispatch.EmployeeName
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Примечание:
+            </td>
+            <td>
+                @dispatch.Comments
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Автор:
+            </td>
+            <td>
+                @dispatch.Creator
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="grid-simple">
+    <thead>
+        <tr>
+            <th>Товар</th>
+            <th>Кол-во</th>
+            <th>Цена</th>
+            <th>Стоимость</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in products)
+        {
+            <tr>
+                <td>
+                    <span>@p.ProductName</span>
+                </td>
+                <td>
+                    <span>@p.Count</span>
+                </td>
+                <td>
+                    <span>@p.Price.ToString("# ###.00")</span>
+                </td>
+                <td>
+                    <span>@((p.Price * p.Count).ToString("# ###.00"))</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td class="pager-container pager"></td>
+            <td class="pager-container pager"></td>
+            <td class="pager-container pager"></td>
+            <td class="pager-container pager">
+                <strong>
+                    Итого: <span>@(total.ToString("# ###.00"))</span>
+                </strong>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="separator"></div>
+<div>
+    <span>Получатель: ____________________</span>
+    <span>Подпись: ____________________</span>
+</div>
+
+<script type="text/javascript">
+    window.print();
+</script>

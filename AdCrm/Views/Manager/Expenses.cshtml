@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Расходы";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Manager/Expenses.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.expense.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.expense.remove, css: { disabled: !koModel.expense.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.expenses().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="excel-tabs-contianer">
+        <ul class="tabs-iframe" data-bind="foreach: $root.months">
+            <li class="tab" data-bind="css: { selected: koModel.filter.month() == id }">
+                <a href="javascript:" data-bind="html: name, click: function() { $root.filter.month(id) }"></a>
+            </li>
+        </ul>
+    </div>
+    <div class="header"></div>
+    <div class="container" id="divExpenses">
+        <div class="scroll kogrid ">
+            <div id="divExpensesHeader"></div>
+            <table class="grid kogrid input-max input-transparent nowrap" id="tblExpenses">
+                <thead>
+                    <tr>
+                        <th colname="Select" title="Столбец для выделения">
+                            <div class="th">
+                                <span>&nbsp;</span>
+                            </div>
+                        </th>
+                        <th colname="Type" sortpath="Type.Name">
+                            <div class="th">
+                                <span>Тип</span>
+                            </div>
+                        </th>
+                        <th colname="Name">
+                            <div class="th">
+                                <span>Название</span>
+                            </div>
+                        </th>
+                        <th colname="PaymentType" sortpath="PaymentType.Name">
+                            <div class="th">
+                                <span>Вид оплаты (нал/безнал)</span>
+                            </div>
+                        </th>
+                        <th colname="Sum">
+                            <div class="th">
+                                <span>За текущий месяц (руб.)</span>
+                            </div>
+                        </th>
+                        <th colname="PeriodSum">
+                            <div class="th">
+                                <span>Общая сумма (руб.)</span>
+                            </div>
+                        </th>
+                        <th colname="Comments">
+                            <div class="th">
+                                <span>Примечание</span>
+                            </div>
+                        </th>
+                        <th colname="Save">
+                            <div class="th">
+                                <a href="javascript:" class="icon small save" title="Сохранить размер и положение колонок" data-bind="click: koModel.grid.save, visible: !koModel.grid.inProgress()"></a>
+                                <span class="loading" data-bind="visible: koModel.grid.inProgress()"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="template: { name: 'trExpense', foreach: $root.expenses }"></tbody>
+                <tfoot>
+                    <tr data-bind="visible: !$root.expenses().any()">
+                        <td colspan="8">
+                            <div class="text-center text-italic disabled large">
+                                 В этом месяце нет расходов.
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-bind="{ if: !$root.expenses().any() }">
+                        <td colname="Select"></td>
+                        <td colname="Type"></td>
+                        <td colname="Name"></td>
+                        <td colname="PaymentType"></td>
+                        <td colname="Sum"></td>
+                        <td colname="PeriodSum"></td>
+                        <td colname="Comments"></td>
+                        <td colname="Save"></td>
+                    </tr>                    
+                    <tr>
+                        <td colspan="8" class="pager-container">
+                            <div class="toRight">
+                                <div data-bind="visible: $root.expense.selectedArray().any()" class="box-float">
+                                    <div class="toLeft w150px text-left">Сумма по выделенным:</div>
+                                    <div class="toRight bold" data-bind="text: z.toDs($root.expense.selectedTotal()) + ' руб.'"></div>
+                                </div>
+                                <div class="box-float">
+                                    <div class="separator small" data-bind="visible: !$root.expense.selectedArray().any()"></div>
+                                    <div class="toLeft w150px text-left">Итого за период:</div>
+                                    <div class="toRight bold" data-bind="text: z.toDs($root.expenses().sum('val=>val.sum()')) + ' руб.'"></div>
+                                </div>
+                            </div>
+                            <div class="pager">
+                                <div class="toLeft">
+                                    Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                </div>
+                                <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                    <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="trExpense">
+    <tr data-bind="css: { selected: $root.expense.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: $root.expense.selectedArray" />
+            </div>
+        </td>
+        <td colname="Type">
+            <div class="td">
+                @*<div data-bind="html: type() ? type().name() : '', clickToEdit: type"></div>*@
+                <select data-bind="value: typeID, options: $root.activeExpenseTypes($data), optionsText: 'name', optionsValue: 'id', disable: parentID() > 0"></select>
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td">
+                <input type="text" data-bind="value: name, disable: parentID() > 0"/>
+            </div>
+        </td>
+        <td colname="PaymentType">
+            <div class="td">
+                @*<div data-bind="html: paymentType() ? paymentType().name() : '', clickToEdit: paymentType"></div>*@
+                <select data-bind="value: paymentTypeID, options: $root.paymentTypes, optionsText: 'name', optionsValue: 'id', disable: parentID() > 0"></select>
+            </div>
+        </td>
+        <td colname="Sum">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: sum.text" disabled="disabled"/>
+            </div>
+        </td>
+        <td colname="PeriodSum">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: periodSum.text, disable: parentID() > 0"/>
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="1" data-bind="value: comments, html: comments, disable: parentID() > 0"></textarea>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" data-bind="click: $root.expense.remove, css: { disabled: parentID() > 0 }" class="icon small delete" title="Удалить расход"></a>
+            </div>
+        </td>
+    </tr>
+</script>

@@ -1,0 +1,129 @@
+﻿@{
+    Layout = null;
+}
+<div id="divContractDialog">
+    <div class="separator"></div>
+    <div class="box">
+        <table class="splitter">
+            <tr>
+                <td class="left">
+                    <div>
+                        <fieldset class="collapsable">
+                            <legend>
+                                <span class="title">Договор</span>
+                            </legend>
+                            <div class="separator"></div>
+                            <div class="fieldset">
+                                <form onsubmit="return false;" data-bind="validate: true, if: $root.selected.work()">
+                                    <table class="adjuster">
+                                        <tbody data-bind="with: $root.selected.work().contract">
+                                            <tr>
+                                                <th>
+                                                    <span class="bold">№ договора: </span>
+                                                </th>
+                                                <td colspan="2">
+                                                    <input type="text" class="required" data-bind="value: number" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    Дата начала:
+                                                </th>
+                                                <td colspan="2">
+                                                    <input type="text" name="DateSign" class="required" data-bind="value: dateSign, datepicker: true" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    Наличие оригинала в бух.:
+                                                </th>
+                                                <td colspan="2">
+                                                    <input type="checkbox" data-bind="checked: originalExists" />
+                                                </td>
+                                            </tr>                                            
+                                        </tbody>
+                                        <tbody data-bind="with: $root.selected.work">
+                                            @*<tr>
+                                                <th>
+                                                    Сумма аванса:
+                                                </th>
+                                                <td colspan="2">
+                                                    <input type="text" class="text-right" data-bind="value: sumAdvance.text" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    Дата аванса:
+                                                </th>
+                                                <td colspan="2">
+                                                    <input type="text" data-bind="value: dateAdvance, datepicker: true" />
+                                                </td>
+                                            </tr>*@
+                                            <tr>
+                                                <th>
+                                                    <div class="w100px">
+                                                    Срок сдачи:
+                                                    </div>
+                                                </th>
+                                                <td class="w60px">
+                                                    <input type="text" class="small custom-width w60px" data-bind="value: dateEnd, datepicker: true" placeholder="Дата" />
+                                                </td>
+                                                <td class="w50px">
+                                                    <input type="text" class="small custom-width w50px" data-bind="value: daysEnd, numeric: true" precision="0" placeholder="Дней" />
+                                                </td>
+                                            </tr>
+                                            <tr data-bind="if: daysEnd() > 0">
+                                                <th colspan="3">
+                                                    <div class="text-right">
+                                                        <label>
+                                                            <input type="radio" value="1" data-bind="checked: daysTypeID" name="DialogDaysTypeID"/>
+                                                            Календарных
+                                                        </label>
+                                                        <label title="Не будут учитываться суббота и воскресенье">
+                                                            <input type="radio" id="rbtWork" value="2" data-bind="checked: daysTypeID" name="DialogDaysTypeID"/>
+                                                            Рабочих
+                                                        </label>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                            <tr data-bind="if: daysEnd() > 0">
+                                                <th colspan="3">
+                                                    <div class="text-right">
+                                                        от даты: <select class="small w120px" data-bind="value: daysFromTypeID, options: $root.daysFromTypes, optionsText: 'name', optionsValue: 'id'"></select> 
+                                                    </div>
+                                                    <div class="separator small"></div>
+                                                </th>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </form>
+                            </div>
+                        </fieldset>
+                    </div>
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td class="right">
+                    <div data-bind="with: $root.selected.work">
+                        <div data-bind="with: contract">
+                            <fieldset class="collapsable">
+                                <legend>
+                                    <span class="toRight">
+                                        <a href="javascript:" class="icon small add" data-bind="click: $root.createAct"></a>
+                                    </span>
+                                    <span class="title">Акты</span>
+                                </legend>
+                                <div class="fieldset">
+                                    <div id="divContractDialogActs">
+                                        @{Html.RenderPartial("ContractActs");}
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

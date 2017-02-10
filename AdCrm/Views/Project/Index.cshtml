@@ -1,0 +1,803 @@
+﻿@{
+    ViewBag.Title = "Детали проекта";
+    AdCrm.Models.Project project = ViewBag.Project;
+    bool sub = project.ParentID.HasValue;
+    this.Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/jq.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/ko.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Project/Index.Model.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Project/Index.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+
+<div id="topMenu">
+    <div class="box">
+        <a href="@Url.Content("~/Manager/Index")" class="icon medium text back">Назад на главную</a>
+        <span>&nbsp;</span>
+        <a href="javascript:" class="icon medium text archive" data-bind="visible: !project.archived(), click: function() { project.archived(true); }">Проект в архив</a>
+        <span data-bind="visible: project.archived">Проект в архиве</span>
+        <span>&nbsp;</span>
+        <a href="javascript:" class="icon medium text save" data-bind="visible: !project.archived(), click: function () { $root.updateAll('', true); }, css: { disabled: !koModel.hasChanges() }">Сохранить изменения</a>
+    </div>
+</div>
+<div>
+    <table>
+        <tr>
+            <td>
+                <img src="@Url.Content("~/Content/images/house.png")" alt="" class="nice" width="55" height="55" />
+                <span>&nbsp;</span>
+            </td>
+            <td>
+                <div>
+                    <span>
+                        <span class="bold f18px clickToEdit edit" data-bind="clickToEdit: project.code() || 'Код: ', text: (project.code() || 'Код') + ': '"></span>
+                        <input class="w50px" type="text" data-bind="value: project.code" placeholder="Код проекта" />
+                    </span>
+                    <span>
+                        <span class="bold f18px clickToEdit edit" data-bind="clickToEdit: project.name, text: project.name"></span>
+                        <input class="w400px" type="text" data-bind="value: project.name" placeholder="Название проекта" />
+                    </span>
+                </div>
+                <div class="f15px">
+                    <span>Создан: </span>
+                    <span data-bind="text: project.createDate"></span>
+                    <span>&nbsp;</span>
+                    @if (sub)
+                    {
+                        <span>Родительский проект: </span>
+                        <a href="@Url.Action("Index", new { ID = project.ParentID })" title="Открыть страницу родительского проекта">@project.ParentProject.Name</a>
+                        <span>&nbsp;</span>
+                    }
+                    else
+                    {
+                        <span>Родительский проект: отсутствует</span>
+                        <span>&nbsp;</span>
+                    }
+                    <span>Тип @(sub ? "подпроекта:" : "проекта:")</span>
+                    <span data-bind="text: project.typeName"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    <ul class="tabs-iframe" data-bind="template: { foreach: itabs }">
+        <li data-bind="css: { selected: id == koModel.selected.itabID() }">
+            <a href="javascript:" data-bind="text: name, click: $root.selectTab, attr: { href: ko.get($data.url) || '#' + frmID }"></a>
+        </li>
+    </ul>
+    <div class="clear-left"></div>
+    <div class="header actions">
+        <div class="p4px">
+            <a href="javascript:" class="icon medium save text" title="Сохранить изменения" data-bind="click: function() { $root.updateAll('', true); }, css: { disabled: !koModel.hasChanges() }" id="aSave">Сохранить</a>
+            @*<a class="icon medium separator"></a>
+                <a href="javascript:" class="icon medium contract text " title="Сгенерировать Заказ" data-bind="click: function() { $root.generateDocument(1); }">Заказ</a>
+                <a class="icon medium separator"></a>
+                <a href="javascript:" class="icon medium excel-doc text" title="Сгенерировать Смету" data-bind="click: function() { $root.generateDocument(2); }">Смета</a>
+                <a class="icon medium separator"></a>
+                <a href="javascript:" class="icon medium excel-doc text" title="Сгенерировать КС-2" data-bind="click: function() { $root.generateDocument(3); }" >КС-2</a>
+                <a class="icon medium separator"></a>
+                <a href="javascript:" class="icon medium excel-doc text" title="Сгенерировать КС-3" data-bind="click: function() { $root.generateDocument(4); }" >КС-3</a>
+                <a class="icon medium separator"></a>
+                <a href="javascript:" class="icon medium excel-doc text" title="Сгенерировать Счет на оплату" data-bind="click: function() { $root.generateDocument(5); }">Счет на оплату</a>
+                <a class="icon medium separator"></a>
+                <a href="javascript:" class="icon medium excel-doc text" title="Сгенерировать Счет фактуру" data-bind="click: function() { $root.generateDocument(6); }">Счет фактура</a>
+                <a class="icon medium separator"></a>
+                <a href="javascript:" class="icon medium report text" title="Сводный отчет по проекту" data-bind="click: $root.showReport">Отчет</a>
+                <a class="icon medium separator"></a>
+                <a href="javascript:" class="icon medium excel text" title="Сводный Excel-лист по проекту" data-bind="click: $root.toExcel">Экспорт</a>*@
+
+            @*<div class="toRight">
+                    <span>Знаков после запятой:
+                        <a href="javascript:" data-bind="css: { bold: ko.precision() == 2 }, click: function() { ko.precision(2); }">два</a>
+                        <a href="javascript:" data-bind="css: { bold: ko.precision() == 8 }, click: function() { ko.precision(8); }">восемь</a>
+                    </span>
+                    <input type="text" data-bind="value: ko.precision, numeric: true" class="w50px text-right" />
+                </div>*@
+            <strong class="toRight lh25px pr15px bold" data-bind="with: $root.project, visible: 4 == $root.selected.itabID()">Остаток(по счетам): <span data-bind="text: z.toDs(invoicesDebt())"></span> руб.</strong>
+
+
+        </div>
+    </div>
+    <div class="container" data-bind="visible: koModel.selected.itabID()==1">
+        <table class="splitter" id="tblProjectDetails">
+            <tr>
+                <td class="left @(sub ? "white" : "")">
+                    <div>
+                        <table class="adjuster">
+                            <tbody data-bind="with: $root.project">
+                                <tr>
+                                    <th>Код проекта:</th>
+                                    <td colspan="2">
+                                        <input type="text" class="max" data-bind="value: code" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Статус:</th>
+                                    <td colspan="2">
+                                        <select class="small max" data-bind="value: statusID, options: $root.projectStatuses, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Выберите статус...'"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Ответственный:</th>
+                                    <td colspan="2">
+                                        <select class="small max" data-bind="value: responsibleID, options: $root.activeManagers($data), optionsText: 'fullName', optionsValue: 'id'"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Исполнитель:</th>
+                                    <td colspan="2">
+                                        <div class="nowrap">
+                                            <a href="javascript:" data-bind="click: function(e,a){ $root.openAutocomplete(e,a);}" class="icon small lupa input-right"></a>
+                                            <input type="text" class="max" data-bind="autocomplete: $root.loadEmployees, value: employeeName, selected: { source: 'id', target: 'employeeID' }" />
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Адрес:</th>
+                                    <td colspan="2">
+                                        <textarea class="small max minw150px custom-width" rows="3" cols="" data-bind="value: address"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Номер:</th>
+                                    <td colspan="2">
+                                        <input type="text" class="max" data-bind="value: number, numeric: true" @(sub && project.Number.IsNotNullOrEmpty() ? "disabled=\"disabled\"" : "") />
+                                    </td>
+                                </tr>
+                                @if (sub)
+                                {
+                                    <tr>
+                                        <th>
+                                            Тип @(sub ? "подпроекта:" : "проекта:")
+                                        </th>
+                                        <td colspan="2">
+                                            <select class="small max" data-bind="value: typeID, options: $root.projectTypes, optionsText: 'name', optionsValue: 'id', optionsCaption: ' '" @(sub && project.TypeID.HasValue ? "disabled=\"disabled\"" : "")></select>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <th>Дата начала:</th>
+                                    <td colspan="2">
+                                        <input type="text" data-bind="value: dateSign, datepicker: true" class="w100px small max" placeholder="Дата начала" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Дата завершения:</th>
+                                    <td colspan="2">
+                                        <input type="text" data-bind="value: dateEnd, datepicker: true" class="w100px small max" placeholder="Дата завершения" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <fieldset class="collapsable" id="fldCustomer">
+                            <legend>
+                                <span class="title">Клиент</span>
+                            </legend>
+                            <div class="fieldset">
+                                <table class="adjuster">
+                                    @*<tr>
+                                            <th>
+                                                <input type="radio" value="2" data-bind="checked: project.contractorTypeID" id="rbtProjectContractorType1" name="ProjectContractorType" />
+                                                <label for="rbtProjectContractorType1">Организация</label>
+                                                <span>&nbsp;</span>
+                                                <input type="radio" value="1" data-bind="checked: project.contractorTypeID" id="rbtProjectContractorType2" name="ProjectContractorType" />
+                                                <label for="rbtProjectContractorType2">Физ. лицо</label>
+                                            </th>
+                                        </tr>*@
+                                    <tr>
+                                        <th>
+                                            <a href="javascript:" data-bind="click: $root.chooseMainContractor" class="toRight edit contractor">Выбрать</a>
+                                            <span data-bind="with: $root.project.contractor()">
+                                                <a href="javascript:" data-bind="click: $root.editMainContractor"><span data-bind="text: name"></span></a>
+                                            </span>
+                                        </th>
+                                    </tr>
+                                </table>
+                                <div>
+                                    <script type="text/html" id="divContact">
+                                        <span></span>
+                                        <span data-bind="html: text"></span>
+                                        <span></span>
+                                    </script>
+                                    <div data-bind="with: $root.project.contractor()">
+                                        <div>
+                                            <span data-bind="html: mainContactPerson().fullName"></span>
+                                            <span class="smaller" data-bind="template: { name: 'divContact', foreach: mainContactPerson().contacts }"></span>
+                                        </div>
+                                        <div class="smaller" data-bind="text: address"></div>
+                                    </div>
+                                </div>
+                                <div class="separator small"></div>
+
+                                @*<table class="max">
+                                        <tbody data-bind="with: $root.project, visible: $root.project.contractorID() > 0">
+                                            <tr>
+                                                <td>Договор:</td>
+                                                <td>
+                                                    <div class="nowrap">
+                                                        <a href="javascript:" data-bind="click: function(a,b,c) { $root.openAutocomplete(a,b,c); }" class="icon small lupa input-right"></a>
+                                                        <input type="text" class="max" data-bind="autocomplete: $root.loadCcs, value: ccName, selected: { source: 'id', target: 'contractorContractID' }, uniqueName: true" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Раздел:</td>
+                                                <td>
+                                                    <div class="nowrap">
+                                                        <a href="javascript:" data-bind="click: function(a,b,c) { $root.openAutocomplete(a,b,c); }" class="icon small lupa input-right"></a>
+                                                        <input type="text" class="max" data-bind="autocomplete: $root.loadCcps, value: ccpName, selected: { source: 'id', target: 'contractorContractPageID' }, uniqueName: true" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>*@
+                            </div>
+                        </fieldset>
+                        <fieldset class="collapsable" id="fldAddress">
+                            <legend>
+                                <span class="title">Контакты</span>
+                            </legend>
+                            <div class="fieldset">
+                                <div>Фио арендодателя, контакты, адрес</div>
+                                <textarea class="small max" rows="5" cols="" data-bind="value: $root.project.contacts"></textarea>
+                            </div>
+                        </fieldset>
+                        @*<fieldset class="collapsable closed" id="fldContractor">
+                                <legend>
+                                    <span class="title">Подрядчик</span>
+                                </legend>
+                                <div class="fieldset">
+                                    <table class="adjuster">
+                                        <tr>
+                                            <th>
+                                                <label>
+                                                <input type="radio" value="2" data-bind="checked: project.subcontractorTypeID" name="ProjectSubContractorType" />
+                                                Организация</label>
+                                                <span>&nbsp;</span>
+                                                <label>
+                                                <input type="radio" value="1" data-bind="checked: project.subcontractorTypeID" name="ProjectSubContractorType" />
+                                                Физ. лицо</label>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <a href="javascript:" data-bind="click: function() { $root.chooseMainContractor(3); }" class="toRight edit">Выбрать</a>
+                                                <span data-bind="with: $root.project.subcontractor()">
+                                                    <a href="javascript:" data-bind="click: $root.editMainContractor"><span data-bind="text: name"></span></a>
+                                                </span>
+                                            </th>
+                                        </tr>
+                                    </table>
+                                    <div>
+                                        <div data-bind="with: $root.project.subcontractor()">
+                                            <div>
+                                                <span data-bind="html: mainContactPerson().fullName"></span>
+                                                <span class="smaller" data-bind="template: { name: 'divContact', foreach: mainContactPerson().contacts }"></span>
+                                            </div>
+                                            <div class="smaller" data-bind="text: address"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>*@
+                    </div>
+                </td>
+                <td class="line">
+                    <div class="line">
+                        <div class="button"></div>
+                    </div>
+                </td>
+                <td class="right pl10px">
+                    <div>
+                        <div data-bind="visible: 1 == $root.selected.itabID()" class="tab-content">
+                            <div>
+                                <fieldset class="collapsable">
+                                    <legend>
+                                        <span class="title">Описание</span>
+                                    </legend>
+                                    <div class="fieldset">
+                                        <textarea class="max" cols="0" rows="4" data-bind="value: $root.project.comments"></textarea>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            @if (!sub)
+                            {
+                                <div>
+                                    <fieldset class="collapsable">
+                                        <legend>
+                                            <span class="title">Подпроекты</span>
+                                        </legend>
+                                        <div class="fieldset">
+                                            <table class="grid-simple" data-bind="visible: children().length > 0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Название проекта</th>
+                                                        <th>Тип проекта</th>
+                                                        <th>Ответственный</th>
+                                                        <th>Статус</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody data-bind="foreach: children">
+                                                    <tr>
+                                                        <td>
+                                                            <a href="javascript:" data-bind="attr: { href: host.arp + 'Project/Index/' + ko.get(id) }" target="_blank"><span data-bind="html: name"></span></a>
+                                                        </td>
+                                                        <td data-bind="text: typeName"></td>
+                                                        <td data-bind="text: responsibleName"></td>
+                                                        <td data-bind="with: status()"><div data-bind="text: name, style: { backgroundColor: color }" class="status"></div></td>
+                                                        <td>
+                                                            <a href="javascript:" data-bind="click: $root.removeProject" class="icon small delete" title="Удалить подпроект"></a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div class="mt10px">
+                                                <input type="button" value="Подпроект" data-bind="click: $root.createProject" />
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            }
+                            <div>
+                                <fieldset class="collapsable">
+                                    <legend>
+                                        <span class="title">Новости</span>
+                                    </legend>
+                                    <div class="fieldset">
+                                        <form data-bind="validate: true">
+                                            <table class="w50p" data-bind="visible: $root.projectNotes().length > 0">
+                                                <tbody data-bind="foreach: projectNotes">
+                                                    <tr>
+                                                        <td data-bind="text: userName"></td>
+                                                        <td data-bind="text: date" class="w50px"></td>
+                                                        <td class="w20px">
+                                                            <a href="javascript:" data-bind="click: $root.removeProjectNote, visible: !readOnly()" class="icon small delete" title="Удалить новость"></a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            <div class="textarea" data-bind="html: text().html(), visible: id() > 0, click: $root.editProjectNote"></div>
+                                                            <textarea data-bind="value: text, visible: id() < 0, valueUpdate: 'afterkeydown', uniqueName: true, hideOnClick: function(el) { if(id() < 0) return false; el.parent().find('div.textarea').show(); }" class="text required"></textarea>
+                                                            <div class="mt10px"></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </form>
+                                        <div class="mt10px">
+                                            <input type="button" value="Добавить новость" data-bind="click: $root.createProjectNote" />
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div data-bind="visible: 3 == $root.selected.itabID()" class="tab-content">
+                            <div data-bind="visible: !$root.project.contract()">
+                                <div class="disabled large text-italic">
+                                    Для внесения актов необходимо создать заказ!
+                                </div>
+                            </div>
+                            <div data-bind="with: $root.project.contract()" id="divMainContractActs" class=" scroll-no scroll-x pb20px">
+                            </div>
+                            <div data-bind="with: $root.project.contract()">
+                                <div>
+                                    <button data-bind="click: $root.createAct" class="edit">Добавить акт</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-bind="visible: 5 == $root.selected.itabID()" class="tab-content">
+                            <div data-bind="with: { payments: $root.project.contractorPayments, showContractor: true }" id="divContractorPayments" class="scroll-no scroll-x pb20px">
+                            </div>
+                            <div class="separator"></div>
+                            <div data-bind="with: $root.project">
+                                <div>
+                                    <button data-bind="click: function() { $root.createPayment(2); }">Добавить платеж</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-bind="visible: 6 == $root.selected.itabID()" class="tab-content">
+                            <div class="ejsgrid beige" id="divProjectEmployees"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="container" data-bind="visible: 2 == $root.selected.itabID()">
+        <div class="tab-content">
+            <div class=" scroll-no scroll-x pb20px" id="divProjectExpenses">
+            </div>
+            <div>
+                <button data-bind="click: $root.createExpense" class="edit">Добавить расход</button>
+            </div>
+        </div>
+    </div>
+    <div class="container" data-bind="visible: 4 == $root.selected.itabID()">
+        <div class="scroll-no two">
+            @{Html.RenderPartial("InvoicesList");}
+        </div>
+    </div>
+</div>
+<script id="trProjectWork" type="text/html">
+    <!-- ko if: $data.id -->
+    <tr data-bind="css: { selected: $root.projectWork.selectedArray().contains(id().toString()) }, event: { dblclick: $root.projectWork.edit }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: $root.projectWork.selectedArray" />
+            </div>
+        </td>
+        <td colname="OrderNumber">
+            <div class="td">
+                <span data-bind="text: orderNumber, visible: $root.projectWork.current() != $data"></span>
+
+                <div data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="max" data-bind="value: orderNumber, numeric: true" />
+                </div>
+            </div>
+        </td>
+        <td colname="Code">
+            <div class="td">
+                <span data-bind="text: code, visible: $root.projectWork.current() != $data"></span>
+
+                <div class="nowrap" data-bind="if: $root.projectWork.current() == $data">
+                    <a href="javascript:" data-bind="click: function(e,a){ $root.openAutocomplete(e,a);}" class="icon small lupa input-right"></a>
+                    <input type="text" class="max" data-bind="autocomplete: $root.loadWorksByCode, value: code, selected: { source: 'id', target: 'typeID' }, onchange: $root.workTypeChange" />
+                </div>
+            </div>
+        </td>
+        <td colname="Type">
+            <div class="td">
+                <span data-bind="visible: $root.projectWork.current() != $data">
+                    <span data-bind="text: name"></span>
+                    @*<span class="red invalid" data-bind="text: demountType() ? demountType().shortName() + ' ' + demountRate() + '%' : '', visible: demountType()"></span>*@
+                </span>
+
+                <span data-bind="if: $root.projectWork.current() == $data">
+                    <textarea data-bind="value: name, html: name, autocomplete: $root.loadWorks, value: name, selected: { source: 'id', target: 'typeID' }, onchange: $root.workTypeChange" class="max" rows="2"></textarea>
+                    @*<select class="" data-bind="value: demountTypeID, options: $root.demountTypes.getActive(demountTypeID()), optionsText: 'shortName', optionsValue: 'id', optionsCaption: 'Демонтаж...'" title="Выберите тип демонтажа если нужно"></select> *@
+                </span>
+                @*<div class="nowrap" data-bind="if: $root.projectWork.current() == $data">
+                        <a href="javascript:" data-bind="click: function(e,a){ $root.openAutocomplete(e,a);}" class="icon small lupa input-right"></a>
+                        <input type="text" class="max" data-bind="autocomplete: $root.loadWorksByName, value: name, selected: { source: 'id', target: 'typeID' }, onchange: $root.workTypeChange" />
+                    </div>*@
+                <a href="javascript:" data-bind="click: $root.chooseWork" class="toRight">Выбрать</a>
+            </div>
+        </td>
+        <td colname="Subcontractor">
+            <div class="td">
+                <div class="toRight">
+                    <a href="javascript:" data-bind="click: $root.chooseSubContractor" class="edit contractor">Выбрать</a>
+                </div>
+                <div class="mr60px">
+                    <input type="checkbox" data-bind="checked: contractorExists" />
+                    <span data-bind="if: contractor">
+                        <a href="javascript:" data-bind="html: contractor().name, click: $root.editSubContractor"></a>
+                    </span>
+                </div>
+            </div>
+        </td>
+        @*<td colname="UnitName">
+                <div class="td">
+                    <span data-bind="text: unitName, visible: $root.projectWork.current() != $data"></span>
+
+                    <span data-bind="if: $root.projectWork.current() == $data">
+                        <input type="text" class="max" data-bind="value: unitName" />
+                    </span>
+                </div>
+            </td>*@
+        <td colname="Price">
+            <div class="td text-right">
+                <span data-bind="text: price.text, visible: $root.projectWork.current() != $data"></span>
+
+                <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: price.text" />
+                </span>
+            </div>
+        </td>
+        @*<td colname="Count">
+                <div class="td text-right">
+                    <span data-bind="text: count.text, visible: $root.projectWork.current() != $data"></span>
+
+                    <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: count.text" />
+                    </span>
+                </div>
+            </td>*@
+        @*<td colname="CostCustomer">
+                <div class="td text-right">
+                    <span data-bind="text: costCustomer.text, visible: $root.projectWork.current() != $data"></span>
+
+                    <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: costCustomer.text" disabled="disabled"/>
+                    </span>
+                </div>
+            </td>*@
+        @*<td colname="Cost">
+                <div class="td text-right">
+                    <span data-bind="text: cost.text, visible: $root.projectWork.current() != $data"></span>
+
+                    <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: cost.text" disabled="disabled"/>
+                    </span>
+                </div>
+            </td>*@
+        <td colname="Factor">
+            <div class="td text-right">
+                <span data-bind="text: factor.text, visible: $root.projectWork.current() != $data && contractorExists()"></span>
+
+                <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: factor.text, visible: contractorExists" />
+                </span>
+            </div>
+        </td>
+        @*<td colname="ContractorVat">
+                <div class="td text-right">
+                    <span data-bind="text: contractorVat() ? 'Да' : 'Нет', visible: $root.projectWork.current() != $data && contractorExists()"></span>
+
+                    <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="checkbox" data-bind="checked: contractorVat, visible: contractorExists" />
+                    </span>
+                </div>
+            </td>*@
+        <td colname="CostContractor">
+            <div class="td text-right">
+                <span data-bind="text: costContractor.text, visible: $root.projectWork.current() != $data && contractorExists()"></span>
+
+                <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: costContractor.text, visible: contractorExists" />
+                </span>
+            </div>
+        </td>
+        @*<td colname="Kickback">
+                <div class="td text-right">
+                    <span data-bind="text: kickback.text, visible: $root.projectWork.current() != $data"></span>
+
+                    <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: kickback.text" />
+                    </span>
+                </div>
+            </td>
+            <td colname="KickbackSum">
+                <div class="td text-right">
+                    <span data-bind="text: kickbackSum.text, visible: $root.projectWork.current() != $data"></span>
+
+                    <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: kickbackSum.text" />
+                    </span>
+                </div>
+            </td>*@
+        @*<td colname="Payments">
+                <div class="td" data-bind="visible: contractorExists">
+                    <input type="text" class="text-right w100px" data-bind="value: payedSum.text" disabled />
+                    <a href="javascript:" data-bind="click: $root.editWorkPayments">Платежи</a>
+                </div>
+            </td>*@
+        <td colname="DateEnd">
+            <div class="td">
+                <span data-bind="text: dateEnd, visible: $root.projectWork.current() != $data"></span>
+
+                <span data-bind="if: $root.projectWork.current() == $data">
+                    <input type="text" class="max" data-bind="value: dateEnd, datepicker: true" />
+                </span>
+            </div>
+        </td>
+        <td colname="Contract">
+            <div class="td">
+                <input type="checkbox" data-bind="checked: contractExists, disable: !contractor()" />
+                <a href="javascript:" data-bind="click: $root.editWorkDocuments, css: { disabled: !contractor(), edit: !contractExists() }, disable: !contractor()">Документы</a>
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <span data-bind="text: comments().html(), visible: $root.projectWork.current() != $data"></span>
+
+                <span data-bind="if: $root.projectWork.current() == $data">
+                    <textarea data-bind="value: comments, html: comments" class="max" rows="1"></textarea>
+                </span>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" data-bind="click: $root.projectWork.edit, visible: $root.projectWork.current() != $data" class="icon small pencil" title="Редактировать работу"></a>
+                <a href="javascript:" data-bind="click: $root.projectWork.apply, visible: $root.projectWork.current() == $data" class="icon small check"></a>
+                <a href="javascript:" class="icon small delete" data-bind="click: $root.removeWork"></a>
+            </div>
+        </td>
+    </tr>
+    <!-- /ko -->
+    <!-- ko if: $data.totals -->
+    <tr class="totals">
+        <td colname="Select">
+            <div class="td">
+            </div>
+        </td>
+        <td colname="OrderNumber">
+            <div class="td">
+            </div>
+        </td>
+        <td colname="Code">
+            <div class="td">
+            </div>
+        </td>
+        <td colname="Type">
+            <div class="td">
+            </div>
+        </td>
+        <td colname="Subcontractor">
+            <div class="td">
+            </div>
+        </td>
+        @*<td colname="UnitName">
+                <div class="td">
+                </div>
+            </td>*@
+        @*<td colname="Price">
+                <div class="td">
+                </div>
+            </td>*@
+        @*<td colname="Count">
+                <div class="td text-right" data-bind="with: selected">
+                    <span class="toLeft">Выделено: </span>
+                    <span class="value" data-bind="text: z.toDs(count, ko.precision())"></span>
+                </div>
+                <div class="td text-right">
+                    <span class="toLeft">Всего: </span>
+                    <span class="value" data-bind="text: z.toDs(count, ko.precision())"></span>
+                </div>
+            </td>*@
+        @*<td colname="CostCustomer">
+                <div class="td text-right" data-bind="with: selected">
+                    <span class="toLeft">Выделено: </span>
+                    <span class="value" data-bind="text: z.toDs(costCustomer, ko.precision())"></span>
+                </div>
+                <div class="td text-right">
+                    <span class="toLeft">Всего: </span>
+                    <span class="value" data-bind="text: z.toDs(costCustomer, ko.precision())"></span>
+                </div>
+            </td>*@
+        <td colname="Price">
+            <div class="td text-right" data-bind="with: selected">
+                <span class="toLeft">Выделено: </span>
+                <span class="value" data-bind="text: z.toDs(cost, ko.precision())"></span>
+            </div>
+            <div class="td text-right">
+                <span class="toLeft">Всего: </span>
+                <span class="value" data-bind="text: z.toDs(cost, ko.precision())"></span>
+            </div>
+        </td>
+        <td colname="Factor">
+            <div class="td">
+            </div>
+        </td>
+        @*<td colname="ContractorVat">
+                <div class="td">
+                </div>
+            </td>*@
+        <td colname="CostContractor">
+            <div class="td text-right" data-bind="with: selected">
+                <span class="toLeft">Выделено: </span>
+                <span class="value" data-bind="text: z.toDs(costContractor, ko.precision())"></span>
+            </div>
+            <div class="td text-right">
+                <span class="toLeft">Всего: </span>
+                <span class="value" data-bind="text: z.toDs(costContractor, ko.precision())"></span>
+            </div>
+        </td>
+        @*<td colname="Kickback">
+                <div class="td">
+                </div>
+            </td>
+            <td colname="KickbackSum">
+                <div class="td text-right" data-bind="with: selected">
+                    <span class="toLeft">Выделено: </span>
+                    <span class="value" data-bind="text: z.toDs(kickbackSum, ko.precision())"></span>
+                </div>
+                <div class="td text-right">
+                    <span class="toLeft">Всего: </span>
+                    <span class="value" data-bind="text: z.toDs(kickbackSum, ko.precision())"></span>
+                </div>
+            </td>*@
+        @*<td colname="Payments">
+                <div class="td text-right" data-bind="with: selected">
+                    <span class="toLeft">Выделено: </span>
+                    <span class="value" data-bind="text: z.toDs(paidSum)"></span>
+                </div>
+                <div class="td text-right">
+                    <span class="toLeft">Всего: </span>
+                    <span class="value" data-bind="text: z.toDs(paidSum)"></span>
+                </div>
+            </td>*@
+        <td colname="DateEnd">
+            <div class="td">
+            </div>
+        </td>
+        <td colname="Contract">
+            <div class="td">
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+            </div>
+        </td>
+    </tr>
+    <!-- /ko -->
+</script>
+<div id="divAttachmentDialog" title="Добавить приложение" data-bind="with: $root.projectFile">
+    <form data-bind="validate: true" onsubmit="return false;">
+        <table class="adjuster">
+            <tr>
+                <th>
+                    Категория:
+                </th>
+                <td>
+                    <select class="max" data-bind="value: categoryID, options: $root.projectFileCategories, optionsText: 'name', optionsValue: 'id'"></select>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Файл:
+                </th>
+                <td>
+                    <div>
+                        <input type="text" readonly="readonly" class="required" data-bind="uniqueName: true, value: fileName">
+                        <a href="javascript:" data-bind="click: $root.selectFile">Выбрать</a>
+                        <iframe style="display: none;" class="upload" frameborder="0" width="100%" scrolling="no" seamless="seamless" data-bind="attr: { src:  ejs.fup('projectFileID') }" id="frmUploadProjectFile"></iframe>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="divProject" data-bind="with: koModel.inserted()" title="Новый проект">
+    <div class="box">
+        <form id="frmProject" onsubmit="koModel.updateProject(); return false;" data-bind="validate: true">
+            <table class="adjuster">
+                <tr>
+                    <th>
+                        <span>Название проекта:</span>
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <input type="text" class="required max" data-bind="value: name" name="Name" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <span>Тип подпроекта:</span>
+                    </th>
+                    <td>
+                        <select class="small max" data-bind="value: typeID, options: $root.projectTypes, optionsText: 'name', optionsValue: 'id', optionsCaption: ' '"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                    </th>
+                    <td>
+                        <input type="button" value="Добавить" data-bind="click: $root.updateProject" />
+                        <input type="button" value="Отмена" data-bind="click: $root.cancelProject" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>

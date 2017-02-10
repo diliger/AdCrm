@@ -1,0 +1,276 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Сотрудники";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Manager/Employees.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.employee.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.employee.remove, css: { disabled: !koModel.employee.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.employees().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="header">
+        <table class="max">
+            <tr>
+                <td>
+                    <span class="input-wrapper">
+                        <span class="image">
+                            <input type="text" class="w350px nice" placeholder="Введите фразу или слово для поиска" data-bind="value: $root.filter.text, event: { keypress: $root.searchKeyPress }" />
+                        </span>
+                    </span>
+                </td>
+                <td class="">
+                    <div class="bold smaller text-right">
+                        <a href="javascript:" data-bind="css: { selected: koModel.filter.archived }, click: function() { koModel.filter.archived(true); }, visible: !koModel.filter.archived()">Показать уволенных</a>
+                        <a href="javascript:" data-bind="css: { selected: !koModel.filter.archived() }, click: function() { koModel.filter.archived(false); }, visible: koModel.filter.archived">Показать работающих</a>
+                    </div>
+                </td>
+                <td>
+                    &nbsp;
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="container">
+        <div class="scroll kogrid" id="divEmployees">
+            <div id="divEmployeesHeader"></div>
+            <table class="grid kogrid input-max input-transparent nowrap" id="tblEmployees">
+                <thead>
+                    <tr>
+                        <th colname="Select">
+                            <div class="th">&nbsp;</div>
+                        </th>
+                        <th colname="Department" sortpath="Department.Name">
+                            <div class="th"><span>Отдел</span></div>
+                        </th>
+                        <th colname="Surname" sortpath="Surname,Name,Patronymic">
+                            <div class="th"><span>ФИО</span></div>
+                        </th>
+                        <th colname="Position" sortpath="Position.Name">
+                            <div class="th"><span>Должность</span></div>
+                        </th>
+                        @*<th colname="LastSalary">
+                            <div class="th"><span>Заработная плата</span></div>
+                        </th>
+                        <th colname="SalaryChangeDate">
+                            <div class="th"><span>Дата изменения</span></div>
+                        </th>*@
+                        <th colname="Archived">
+                            <div class="th"><span>Уволен</span></div>
+                        </th>
+                        <th colname="ArchiveDate">
+                            <div class="th"><span>Дата увольнения</span></div>
+                        </th>
+                        <th colname="User" sortpath="User.Login">
+                            <div class="th"><span>Логин в системе</span></div>
+                        </th>
+                        @if (Context.CurrentUser().RoleID < (int)AdCrm.Models.RolesEnum.Manager)
+                        {
+                        <th colname="Balance">
+                            <div class="th"><span>Баланс (под отчет)</span></div>
+                        </th>
+                        <th colname="SalaryBalance">
+                            <div class="th"><span>Баланс (З/П)</span></div>
+                        </th>
+                        }
+                        <th colname="Comments">
+                            <div class="th"><span>Примечание</span></div>
+                        </th>
+                        <th colname="Save">
+                            <div class="th">
+                                <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: koModel.grid.save, visible: !koModel.grid.inProgress()"></a>
+                                <span class="loading" data-bind="visible: koModel.grid.inProgress()"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="template: { name: 'trDepartment', foreach: $root.departments().orderBy('val=>val.orderNumber()') }">
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colname="Select"></td>
+                        <td colname="Department"></td>
+                        <td colname="Surname"></td>
+                        <td colname="Position"></td>
+                        @*<td colname="LastSalary"></td>
+                        <td colname="SalaryChangeDate"></td>*@
+                        <td colname="Archived"></td>
+                        <td colname="ArchiveDate"></td>
+                        <td colname="User"></td>
+                        @if (Context.CurrentUser().RoleID < (int)AdCrm.Models.RolesEnum.Manager)
+                        {
+                        <td colname="Balance"></td>
+                        <td colname="SalaryBalance"></td>
+                        }
+                        <td colname="Comments"></td>
+                        <td colname="Save"></td>
+                    </tr>                    
+                    <tr>
+                        <td colspan="11" class="pager-container">
+                            <div class="pager">
+                                <div class="toLeft">
+                                    Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                </div>
+                                <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                    <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="separator"></div>
+        </div>
+    </div>
+</div>
+
+<script id="trDepartment" type="text/html">
+    <tr class="group pointer" data-bind="click: function() { rowsVisible(!rowsVisible()); }">
+        <td>
+            <div class="td">
+                <a class="icon small " data-bind="css: { 'toggle-minus': rowsVisible(), 'toggle-plus': !rowsVisible() }, click: function() { rowsVisible(!rowsVisible()); }, clickBubble: false"></a>
+            </div>
+        </td>
+        <td colspan="10">
+            <div class="td bold">
+                <div data-bind="html: name"></div>
+            </div>
+        </td>
+    </tr>
+    <!-- ko template: { name: 'trEmployee', foreach: employees } -->
+    <!-- /ko -->
+</script>
+
+<script type="text/html" id="trEmployee">
+    <tr class="pointer" data-bind="css: { selected: koModel.employee.selectedArray().contains(id().toString()), disabled: archived }, visible: $parent.rowsVisible, event: { dblclick: $root.employee.edit }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: koModel.employee.selectedArray" />
+            </div>
+        </td>
+        <td colname="Department">
+            <div class="td">
+                <div data-bind="html: department() ? department().name() : ''"></div>
+            </div>
+        </td>
+        <td colname="Surname">
+            <div class="td">
+                <a href="javascript:" data-bind="attr: { href: ApplicationRootPath + 'Employee/Index/' + id() }"><span data-bind="html: flfullName"></span></a>
+            </div>
+        </td>
+        <td colname="Position">
+            <div class="td">
+                <div data-bind="html: flposition"></div>
+            </div>
+        </td>
+        <td colname="Archived">
+            <div class="td text-center">
+                <input type="checkbox" data-bind="checked: archived" disabled="disabled"/>
+            </div>
+        </td>
+        <td colname="ArchiveDate">
+            <div class="td">
+                <span data-bind="text: archiveDate"></span>
+            </div>
+        </td>
+        <td colname="User">
+            <div class="td">
+                <div data-bind="html: fluserLogin"></div>
+            </div>
+        </td>
+        @if (Context.CurrentUser().RoleID < (int)AdCrm.Models.RolesEnum.Manager)
+        {
+            <td colname="Balance">
+                <div class="td">
+                    <div data-bind="html: z.toDs(balance())" class="text-right"></div>
+                </div>
+            </td>
+            <td colname="SalaryBalance">
+                <div class="td">
+                    <div data-bind="html: z.toDs(salaryBalance())" class="text-right"></div>
+                </div>
+            </td>
+        }
+        <td colname="Comments">
+            <div class="td">
+                <div data-bind="html: comments().html()"></div>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small delete" title="Удалить запись" data-bind="click: $root.employee.remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>
+
+<div id="divEmployee" data-bind="with: $root.employee.inserted()" title="Новый сотрудник">
+    <div class="box">
+        <form id="frmEmployee" data-bind="validate: true" action="" onsubmit="koModel.employee.update(); return false;">
+            <table class="adjuster">
+                <tr>
+                    <th>
+                        <span>ФИО:</span>
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <input type="text" class="required w250px" maxlength="250" data-bind="value: name" name="Name" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <span>Отдел:</span>
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <select data-bind="options: $root.departments().where('val=>!val.deleted()').orderBy('val=>val.orderNumber()'), value: departmentID, optionsText: 'name', optionsValue: 'id'" class="required w250px" name="DepartmentID">
+                        </select>
+                    </td>
+                </tr>
+                <tr data-bind="if: department()">
+                    <th>
+                        <span>Должность:</span>
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <select data-bind="options: department().positions().where('val=>!val.deleted()').orderBy('val=>val.orderNumber()'), value: positionID, optionsText: 'name', optionsValue: 'id'" class="required w250px" name="PositionID">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                    </th>
+                    <td>
+                        <input type="button" value="Добавить" data-bind="click: $root.employee.update" />
+                        <input type="button" value="Отмена" data-bind="click: $root.employee.cancel" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>

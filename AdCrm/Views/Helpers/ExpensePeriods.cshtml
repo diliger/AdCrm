@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Периоды расходов";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Helpers/ExpensePeriods.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.remove, css: { disabled: !koModel.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.expensePeriods().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <form action="" data-bind="validate: true" onsubmit="return false;">
+            <div class="scroll kogrid" id="divExpensePeriods">
+                <div id="divExpensePeriodsHeader"></div>
+                <table class="grid kogrid input-max nowrap" id="tblExpensePeriods">
+                    <thead>
+                        <tr>
+                            <th colname="Select" title="Столбец для выделения">
+                                <div class="th">&nbsp;</div>
+                            </th>
+                            <th colname="OrderNumber">
+                                <div class="th"><span>Номер</span></div>
+                            </th>
+                            <th colname="Name">
+                                <div class="th"><span>Название</span></div>
+                            </th>
+                            <th colname="Count">
+                                <div class="th"><span>Кол-во месяцев</span></div>
+                            </th>
+                            <th colname="Comments">
+                                <div class="th"><span>Примечание</span></div>
+                            </th>
+                            <th colname="Save">
+                                <div class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { foreach: $root.grid.sorted, name: 'trExpensePeriod' }">
+                        
+                    </tbody>
+                    <tfoot>
+                        <tr data-bind="{ if: !$root.expensePeriods().any() }">
+                            <td colname="Select"></td>
+                            <td colname="OrderNumber"></td>
+                            <td colname="Name"></td>
+                            <td colname="Count"></td>
+                            <td colname="Comments"></td>
+                            <td colname="Save"></td>
+                        </tr> 
+                    </tfoot>
+                </table>
+                <div class="separator"></div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/html" id="trExpensePeriod">
+    <tr data-bind="css: { selected: koModel.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: koModel.selectedArray" />
+            </div>
+        </td>
+        <td colname="OrderNumber">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: orderNumber, numeric: true" precision="0"  />
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td">
+                <input type="text" data-bind="value: name, uniqueName: true" class="required" />
+            </div>
+        </td>
+        <td colname="Count">
+            <div class="td ">
+                <input type="text" class="text-right" data-bind="value: count, numeric: true, disable: id() > 0" precision="0"  />
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="1" data-bind="value: comments, html: comments"></textarea>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small delete" title="Удалить запись" data-bind="click: $root.remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>

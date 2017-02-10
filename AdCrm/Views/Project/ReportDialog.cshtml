@@ -1,0 +1,299 @@
+﻿@{
+    Layout = null;
+}
+<div id="divProjectReportDialog" class="project-pivot" data-bind="with: $root.project">
+    <div class="box">
+        <table class="max nowrap">
+            <thead class="header">
+                <tr>
+                    <th colspan="11">
+                        <div data-bind="html: name() + ', ' + address() + (contractor() ? ', ' + contractor().name() : '')"></div>
+                    </th>
+                </tr>
+            </thead>
+            <thead class="first">
+                <tr>
+                    <th>
+                        <div class="th">
+                            <div>Договор (№, Дата)</div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            Стадия
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            Стоимость
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Аванс</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Дата</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Платежи</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Дата</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <div>Всего</div>
+                            <div>получено</div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <div>Остаток</div>
+                            <div>по договору</div>
+                        </div>
+                    </th>
+                    <th class="deadline">
+                        <div class="th">
+                            <span>Срок сдачи</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <div>Нет</div>
+                            <div>документов</div>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="first">
+                <tr>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" >
+                        <span data-bind="with: contract">
+                            <span data-bind="html: number"></span>,
+                        </span>
+                        <span data-bind="html: dateSign"></span>
+                    </td>
+                    <td style="white-space: normal;" data-bind="foreach: stages, attr: { rowspan: payments().length > 0 ? payments().length : 1 }" >
+                        <span data-bind="html: stage().shortName() + ($index() < $parent.stages().length - 1 ? ',' : '')"></span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="text-right money" >
+                        <span data-bind="html: cost.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="text-right money" >
+                        <span data-bind="html: advanceSum.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" >
+                        <span data-bind="html: advanceDate"></span>
+                    </td>
+                    <td data-bind="with: payments().first()" class="text-right money">
+                        <span data-bind="html: sum.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="with: payments().first()">
+                        <span data-bind="html: date"></span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="text-right money" >
+                        <span data-bind="html: incomeSum.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="text-right money" >
+                        <span data-bind="html: leftIncome.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="deadline" >
+                        <span data-bind="html: dateEnd"></span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" >
+                        <span data-bind="html: missingDocuments()"></span>
+                    </td>
+                </tr>
+                <!-- ko template: { foreach: payments().skip(1) } -->
+                <tr>
+                    <td class="text-right money">
+                        <span data-bind="html: sum.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td>
+                        <span data-bind="html: date"></span>
+                    </td>
+                </tr>
+                <!-- /ko --> 
+            </tbody>
+            <thead class="second">
+                <tr>
+                    <th>
+                        <div class="th">
+                            <div>Работы по договору</div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            Субподрядчик
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            Стоимость
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Аванс</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Дата</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Платежи</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Дата</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <div>Всего</div>
+                            <div>выплачено</div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <div>Остаток</div>
+                            <div>по договору</div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Срок сдачи</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th">
+                            <div>Нет</div>
+                            <div>документов суб.</div>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: works().orderBy('val=>val.orderNumber()')" class="second">
+                <tr>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="stage">
+                        <span data-bind="html: name()"></span>
+                    </td>
+                    <td style="white-space: normal;" data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }, if: contractor()" >
+                        <span data-bind="html: contractor().name"></span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="text-right" >
+                        <span data-bind="html: cost.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="text-right" >
+                        <span data-bind="html: advanceSum.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" >
+                        <span data-bind="html: advanceDate"></span>
+                    </td>
+                    <td data-bind="with: payments().first()" class="text-right">
+                        <span data-bind="html: sum.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="with: payments().first()">
+                        <span data-bind="html: date"></span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="text-right" >
+                        <span data-bind="html: payedSum.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" class="text-right" >
+                        <span data-bind="html: z.toDs(costContractor() - payedSum())"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" >
+                        <span data-bind="html: dateEnd"></span>
+                    </td>
+                    <td data-bind="attr: { rowspan: payments().length > 0 ? payments().length : 1 }" >
+                        <span data-bind="html: missingDocuments()"></span>
+                    </td>
+                </tr>
+                <!-- ko template: { foreach: payments().skip(1) } -->
+                <tr>
+                    <td class="text-right">
+                        <span data-bind="html: sum.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td>
+                        <span data-bind="html: date"></span>
+                    </td>
+                </tr>
+                <!-- /ko --> 
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        <div>Сумма для оплаты </div>
+                        <div>субподрядчикам:</div>
+                    </td>
+                    <td></td>
+                    <td class="text-right">
+                        <span data-bind="text: worksCost.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td colspan="4" class="bold text-right">
+                        <div>Итого</div>
+                        <div>субподрядчикам:</div>
+                    </td>
+                    <td class="bold text-right">
+                        <span data-bind="text: outgoingSum.text"></span>
+                        <span>руб.</span>
+                    </td>
+                    <td class="bold text-right">
+                        <span data-bind="text: leftOutgoing.text"></span>
+                        <span>руб.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Доход текущий</td>
+                    <td class="text-right">
+                        <span data-bind="text: z.toDs(incomeSum() - outgoingSum() - expensesSum())"></span>
+                        <span>руб.</span>
+                    </td>
+                </tr>
+                <tr class="bold">
+                    <td>
+                        <div>Доход по окончании</div>
+                        <div>договора</div>
+                    </td>
+                    <td class="text-right">
+                        <span data-bind="text: z.toDs(cost() - worksCost() - expensesSum())"></span>
+                        <span>руб.</span>
+                    </td>
+                </tr>
+                <tr class="bold gain">
+                    <td>Прибыль по проекту</td>
+                    <td class="text-right">
+                        <span data-bind="text: gain.text"></span>
+                        <span>руб.</span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<script type="text/javascript" src="@Url.ContentVersion("~/Scripts/Views/Project/ReportDialog.js")"></script>

@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = this.BLocalResource("title");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/User/Edit.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="box container scroll">
+        <div class="" id="divUsers">
+            <div id="divTabs">
+                <ul>
+                    <li>
+                        <a href="#divSettings">Профиль</a>
+                    </li>
+                    <li>
+                        <a href="#divPassword">@this.BLocalResource("aPassword")</a>
+                    </li>
+                </ul>
+                <div class="box">
+                    <div id="divSettings" data-bind="with: $root.user">
+                        <form action="" id="frmUser" data-bind="validate: true">
+                                <table class="adjuster">
+                                    <tr>
+                                        <th>
+                                            @this.BLocalResource("thLogin")
+                                        </th>
+                                        <td>
+                                            <span class="bold" data-bind="text: login"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            ФИО
+                                            <span class="required">*</span>
+                                        </th>
+                                        <td>
+                                            <input type="text" data-bind="value: fullName" class="required" name="FullName" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            @this.BLocalResource("thEmail")
+                                            <span class="required">*</span>
+                                        </th>
+                                        <td>
+                                            <input type="text" data-bind="value: email" class="email" name="Email" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            @this.BLocalResource("thPhone")
+                                        </th>
+                                        <td>
+                                            <input type="text" data-bind="value: user.phone"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                        </th>
+                                        <td>
+                                            <div>
+                                                <input type="button" value="@this.BLocalResource("btnSave")" data-bind="click: $root.updateAll" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                    </div>
+                    <div id="divPassword">
+                        <form action="" id="frmPassword">
+                                <table class="adjuster">
+                                    <tr>
+                                        <th>
+                                            @this.BLocalResource("thOldPassword")
+                                            <span class="required">*</span>
+                                        </th>
+                                        <td>
+                                            <input type="password" class="required" data-bind="value: password.previous" maxlength="50" name="OldPassword" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            @this.BLocalResource("thNewPassword")
+                                            <span class="required">*</span>
+                                        </th>
+                                        <td>
+                                            <input type="password" class="required" data-bind="value: password.next" maxlength="50" name="NewPassword" id="txtNewPassword" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            @this.BLocalResource("thRepeatNewPassword")
+                                            <span class="required">*</span>
+                                        </th>
+                                        <td>
+                                            <input type="password" class="required" data-bind="value: password.repeatNext" equalTo="#txtNewPassword" maxlength="50" name="RepeatNewPassword" />
+                                            <span class="invalid" data-bind="visible: password.next() && password.repeatNext() && password.next() != password.repeatNext()">@this.BLocalResource("spnDifferentPasswords")</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                        </th>
+                                        <td>
+                                            <input type="button" value="@this.BLocalResource("btnChangePassword")" data-bind="click: $root.changePassword" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

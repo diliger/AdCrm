@@ -1,0 +1,126 @@
+﻿div#content {
+    padding-top: 70px;
+}
+
+/*div#content > .background {
+    background-color:white;
+}*/
+
+div#divFiles {
+    position: relative;
+}
+
+div#divDropZone {
+    display: none;
+    position: fixed;
+    z-index: 5;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    opacity: 0.7;
+    text-align: center;
+    color: gray;
+    font-size: xx-large;
+    top: 0;
+    left: 0;
+}
+
+div#divDropZone > div {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+}
+
+select {
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+}
+
+input[type=text],
+input[type=number], select, textarea {
+    padding: 4px;
+    border: 1px solid #ADADAD;
+    /* round the corners */
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    /* make it glow! */
+    -webkit-box-shadow: 0px 0px 3px #ADADAD;
+    -moz-box-shadow: 0px 0px 3px #ADADAD;
+    box-shadow: 0px 0px 3px #ADADAD;
+}
+
+form label.control-label {
+    display: inline-block;
+    width: 150px;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+form label.control-label.left {
+    display: block;
+    float: left;
+}
+
+form label.control-label.second {
+    width: 70px;
+    margin-left: 40px;
+    margin-right: 20px;
+}
+
+form .control-group div.control {
+    margin-left: 160px;
+    overflow: hidden;
+}
+
+form div.emphasize {
+    background-color: lightgray;
+}
+
+form div.control-group {
+    padding: 5px 10px;
+    overflow: hidden;
+}
+
+div.file {
+    float: left;
+    position: relative;
+    max-width: 90px;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+div.file a.preview {
+    /*width:60px;*/
+    /*padding-left:5px;*/
+    margin-right: 5px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+div.file a.delete {
+    position: absolute;
+    left: 75px;
+}
+
+div.task-title h2 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+input.task-title {
+    width: 99%;
+    font-size: inherit;
+}
+
+img.file-preview {
+    /*opacity:0.7;*/
+    /*margin-left:-5px;*/
+    width: 80px;
+    max-height: 80px;
+}
+
+div.file a:hover img {
+    opacity: 1;
+}

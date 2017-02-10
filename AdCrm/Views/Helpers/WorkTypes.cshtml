@@ -1,0 +1,176 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Справочник работ";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Helpers/WorkTypes.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.remove, css: { disabled: !koModel.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.workTypes().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="header">
+        <div class="w350px">
+            <form onsubmit="return false;">
+                <span class="input-wrapper max">
+                    <span class="image">
+                        <input type="text" class="max nice" placeholder="Поиск..." data-bind="value: $root.filter.text" />
+                    </span>
+                </span>
+            </form>
+        </div>
+    </div>
+    <div class="container">
+        <form action="" data-bind="validate: true" onsubmit="return false;">
+            <div class="scroll kogrid" id="divWorkTypes">
+                <div id="divWorkTypesHeader"></div>
+                <table class="grid kogrid input-max input-transparent nowrap" id="tblWorkTypes">
+                    <thead>
+                        <tr>
+                            <th colname="Select">
+                                <span class="th">&nbsp;</span>
+                            </th>
+                            <th colname="OrderNumber">
+                                <span class="th"><span>Номер</span></span>
+                            </th>
+                            <th colname="Code">
+                                <span class="th"><span>Код ТЦП</span></span>
+                            </th>
+                            <th colname="UnitName">
+                                <span class="th"><span>Ед. Измерения</span></span>
+                            </th>
+                            @*<th colname="CustomerName" sortpath="Customer.Name">
+                                <span class="th"><span>Заказчик</span></span>
+                            </th>*@
+                            <th colname="Price">
+                                <span class="th"><span>Цена без НДС</span></span>
+                            </th>
+                            @*<th colname="ParentName" sortpath="ParentType.Name">
+                                <span class="th"><span>Группа</span></span>
+                            </th>*@
+                            <th colname="Name">
+                                <span class="th"><span>Название</span></span>
+                            </th>
+                            <th colname="ShortName">
+                                <span class="th"><span>Сокращенное</span></span>
+                            </th>
+                            <th colname="Comments">
+                                <span class="th"><span>Примечание</span></span>
+                            </th>
+                            <th colname="Save">
+                                <span class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { foreach: $root.workTypes, name: 'trWorkType' }">
+                        
+                    </tbody>
+                    <tfoot>
+                        <tr data-bind="{ if: !$root.workTypes().any() }">
+                            <td colname="Select"></td>
+                            <td colname="OrderNumber"></td>
+                            <td colname="Code"></td>
+                            <td colname="UnitName"></td>
+                            @*<td colname="CustomerName"></td>*@
+                            <td colname="Price"></td>
+                            @*<td colname="ParentName"></td>*@
+                            <td colname="Name"></td>
+                            <td colname="ShortName"></td>
+                            <td colname="Comments"></td>
+                            <td colname="Save"></td>
+                        </tr> 
+                    </tfoot>
+                </table>
+                <div class="separator"></div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/html" id="trWorkType">
+    <tr data-bind="css: { selected: koModel.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: koModel.selectedArray" />
+            </div>
+        </td>
+        <td colname="OrderNumber">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: orderNumber, numeric: true" precision="0"  />
+            </div>
+        </td>
+        <td colname="Code">
+            <div class="td">
+                <input type="text" data-bind="value: code"/>
+            </div>
+        </td>
+        <td colname="UnitName">
+            <div class="td">
+                <input type="text" data-bind="value: unitName"/>
+            </div>
+        </td>
+        @*<td colname="CustomerName">
+            <div class="td">
+                <div class="nowrap">
+                    <a href="javascript:" data-bind="click: function(e,a){ $root.openAutocomplete(e,a);}" class="icon small lupa input-right"></a>
+                    <input type="text" class="max" data-bind="autocomplete: $root.loadCustomers, value: customerName, selected: { source: 'id', target: 'customerID' }" />
+                </div>
+            </div>
+        </td>*@
+        <td colname="Price">
+            <div class="td">
+                <input type="text" data-bind="value: price.text"/>
+            </div>
+        </td>
+        @*<td colname="ParentName">
+            <div class="td">
+                <select data-bind="value: parentID, options: $root.activeGroups($data), optionsText: 'name', optionsValue: 'id', optionsCaption: 'Является группой'"></select>
+            </div>
+        </td>*@
+        <td colname="Name">
+            <div class="td">
+                <input type="text" data-bind="value: name, uniqueName: true" class="required" />
+            </div>
+        </td>
+        <td colname="ShortName">
+            <div class="td">
+                <input type="text" data-bind="value: shortName" />
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="2" data-bind="value: comments, html: comments"></textarea>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small delete" title="Удалить запись" data-bind="click: $root.remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>

@@ -1,0 +1,13 @@
+﻿@if (Request.IsAuthenticated)
+{
+    AdCrm.Models.User user = Context.CurrentUser();
+    <div id="user" class="text-right toRight smaller">
+        <div>
+            <a href="@(user.RoleID == (int)AdCrm.Models.RolesEnum.Client ? Url.Action("Profile", "Home") : user.EmployeeID > 0 ? Url.Action("Index", "Employee", new { Area = "" }) : Url.Action("Edit", "User", new { Area = "" }))" id="userName">
+                <span class="bold">@Context.CurrentUser().FullName</span>
+                (@Context.CurrentUser().Role.Name)
+            </a> |
+            <a href="@Url.Action("Logout", "User", new { Area = "" })">Выход</a>
+        </div>
+    </div>
+}

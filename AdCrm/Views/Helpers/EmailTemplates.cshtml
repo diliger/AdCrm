@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Email шаблоны";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/jq.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/ko.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Helpers/EmailTemplates.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.createEmailTemplate" class="icon big document-add">Добавить</a>
+    </div>
+    @*<div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.remove, css: { disabled: !koModel.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>*@
+    @*<div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.demountTypes().any() }" class="icon big excel">Экспорт</a>
+    </div>*@
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll, css: { disabled: !koModel.hasChanges() }" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    @*<div class="header">
+        <div class="w350px">
+            <form onsubmit="return false;">
+                <span class="input-wrapper max">
+                    <span class="image">
+                        <input type="text" class="max nice" placeholder="Поиск..." data-bind="value: $root.filter.text" />
+                    </span>
+                </span>
+            </form>
+        </div>
+    </div>*@
+    <div class="container">
+        <div class="ejsgrid beige" id="divEmailTemplates">
+                
+        </div>
+    </div>
+</div>

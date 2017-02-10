@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "Печать транзакции";
+    AdCrm.Models.Transfer transfer = ViewBag.Transfer; 
+    this.Layout = "~/Views/Shared/_LayoutClear.cshtml";
+}
+
+<table>
+    <thead>
+        <tr>
+            <th colspan="2">
+                Транзакция №@transfer.ID
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                С кошелька:
+            </td>
+            <td>
+                @transfer.WalletFrom.Name
+            </td>
+        </tr>
+        <tr>
+            <td>
+                На кошелек:
+            </td>
+            <td>
+                @transfer.WalletTo.Name
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Дата транзакции:
+            </td>
+            <td>
+                @transfer.Date.ToShortDateString()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Сумма отправлено:
+            </td>
+            <td>
+                @transfer.AmountSent
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Сумма доставлено:
+            </td>
+            <td>
+                @transfer.AmountReceived
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    window.print();
+</script>

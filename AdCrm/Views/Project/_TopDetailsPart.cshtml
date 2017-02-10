@@ -1,0 +1,44 @@
+﻿@{
+    AdCrm.Models.Project project = ViewBag.Project;
+    bool sub = project.ParentID.HasValue;
+}
+
+<div id="topMenu">
+    <div class="box">
+        <a href="@Url.Content("~/Manager/Index")" class="icon medium text back">Назад на главную</a>
+        <span>&nbsp;</span>
+        <a href="javascript:" class="icon medium text archive" data-bind="visible: !project.archived(), click: function() { project.archived(true); }">Проект в архив</a>
+        <span data-bind="visible: project.archived">Проект в архиве</span>
+        <span>&nbsp;</span>
+        <a href="javascript:" class="icon medium text save" data-bind="visible: !project.archived(), click: function () { $root.updateAll('', true); }, css: { disabled: !koModel.hasChanges() }">Сохранить изменения</a>
+    </div>
+</div>
+<div>
+    <table>
+        <tr>
+            <td>
+                <img src="@Url.Content("~/Content/images/house.png")" alt="" class="nice" width="55" height="55" />
+                <span>&nbsp;</span>
+            </td>
+            <td>
+                <div>
+                    <span class="bold f18px clickToEdit edit" data-bind="clickToEdit: project.name, text: project.name"></span>
+                    <input class="w400px" type="text" data-bind="value: project.name" placeholder="Название проекта" />
+                </div>
+                <div class="f15px">
+                    <span>Создан: </span>
+                    <span data-bind="text: project.createDate"></span>
+                    <span>&nbsp;&nbsp;</span>
+                    @if(sub)
+                    {
+                    <span>Родительский проект: </span>
+                    <a href="@Url.Action("Index", new { ID = project.ParentID })" title="Открыть страницу родительского проекта">@project.ParentProject.Name</a>
+                    <span>&nbsp;&nbsp;</span>
+                    }
+                    <span>Тип @(sub ? "подпроекта:" : "проекта:")</span>
+                    <span data-bind="text: project.typeName"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

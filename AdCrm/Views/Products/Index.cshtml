@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Товары";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Products/Index.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+<div id="actions">
+    @*<div class="item">
+        <a href="javascript:" data-bind="click: $root.createTransfer" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.removeSelectedTransfers, css: { disabled: !koModel.selectManyTransfer().any() }" class="icon big delete">Удалить</a>
+    </div>
+    <div class="separator"></div>*@
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.productsCrud.export, css: { disabled: !koModel.products().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    @*<div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll, css: { disabled: !koModel.hasChanges() }" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>*@
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="header">
+        @*<div>
+                <span class="input-wrapper">
+                    <span class="image">
+                        <input type="text" class="w350px nice" placeholder="Введите фразу или слово для поиска" data-bind="value: $root.filter.text, event: { keypress: $root.searchKeyPress }" />
+                    </span>
+                </span>
+            </div>*@
+    </div>
+    <div class="container">
+        <div class="ejsgrid beige" id="divProducts">
+
+        </div>
+    </div>
+</div>
+
+@*<script id="scrActions" type="text/html">
+    <div>
+        <a href="javascript:" title="Печатать запись" class="icon small icon-print" data-bind="attr: { href: host.arp + 'Transfers/Print/' + id() }" target="_blank"></a>
+    </div>
+</script>*@

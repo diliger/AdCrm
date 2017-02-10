@@ -1,0 +1,41 @@
+﻿<script src="@Url.ContentVersion("~/Scripts/jquery-1.10.2.min.js")" type="text/javascript" defer="defer"></script>
+<script src="@Url.ContentVersion("~/Scripts/jquery.validate.min.ru.js")" type="text/javascript" defer="defer"></script>
+<script src="@Url.ContentVersion("~/Scripts/jquery-ui-1.11.2.min.js")" type="text/javascript" defer="defer"></script>
+<script src="@Url.ContentVersion("~/Scripts/knockout-3.2.0.js")" type="text/javascript" defer="defer"></script>
+<script src="@Url.ContentVersion("~/Scripts/ru.js")" type="text/javascript" defer="defer"></script>
+<script src="@Url.ContentVersion("~/Scripts/linq.js")" type="text/javascript" defer="defer"></script>
+@if(ViewBag.MainJs != false)
+{
+<script src="@Url.ContentVersion("~/Scripts/main.js")" type="text/javascript" defer="defer"></script>
+}else
+{
+<script src="@Url.ContentVersion("~/Scripts/main.min.js")" type="text/javascript" defer="defer"></script>
+}
+<script type="text/javascript" defer="defer">
+    var ApplicationRootPath = '@Url.Content("~/")';
+    var UserFullName = '@(Request.IsAuthenticated ? Context.CurrentUser().FullName : "")';
+    var UserID = @(Request.IsAuthenticated ? Context.CurrentUser().ID : 0);
+    var UserRoleID = @(Request.IsAuthenticated ? Context.CurrentUser().RoleID : 0);
+    var ApplicationTimeZoneOffset = '@DateTimeOffset.Now.Offset.TotalHours';
+    var PrintMode = "@(ViewBag.Print)".toLowerCase() == "true";
+    var onLoad = typeof host == "undefined" ? [] : host.onLoad || [];
+    var host = {
+        onLoad: onLoad,
+        arp: ApplicationRootPath,
+        p: '@ViewBag.Page',
+        ur: UserRoleID,
+        uid: UserID,
+        login: '@(Request.IsAuthenticated ? Context.CurrentUser().Login : string.Empty)',
+        eid: @(Request.IsAuthenticated ? Context.CurrentUser().EmployeeID ?? 0 : 0),
+        cid: @(Request.IsAuthenticated ? Context.CurrentUser().ContractorID ?? 0 : 0),
+        uname: UserFullName,
+        roles: { admin: 1, boss: 2, manager: 3, employee: 4, watcher: 5, client: 6 },
+        walletTypes: { employee: 101, company: 102, invoice: 103 },
+        contractorTypes: { person: 1, company: 2 },
+        statbooks: { walletTypes: 1, genders: 2, taskStatuses: 3, taskPriorities: 5, taskTurns: 6, taskVisibilities: 7 },
+        taskStatuses: { "new": 301, discussion: 302, toDo: 303, inProgress: 304, toTest: 305, completed: 306 },
+        taskPriorities: { critical: 501, urgent: 502, important: 503, normal: 504, low: 504 },
+        taskVisibilities: { visible: 701, hidden: 702 },
+        projectStatuses: { request: 1, negotiation: 2, inProgress: 3, invoice: 4, closed: 5, hidden: 8 }
+    };
+</script>

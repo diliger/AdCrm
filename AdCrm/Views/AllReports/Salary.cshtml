@@ -1,0 +1,223 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Отчет по зарплате";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/AllReports/Salary.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div class="header">
+    <div class="box">
+        <span>Период:</span>
+        <span class="ml25px">с</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateFrom, datepicker: true"  />
+        <span>по</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateTo, datepicker: true" />
+        <a href="javascript:" class="icon small calendar2" title="Выбрать месяц" data-bind="click: $root.selectMonth"></a>
+
+        <span data-bind="with: $root.filter.employee" class="nowrap inline-block w200px">
+            <a href="javascript:" data-bind="click: function (a, b) { $root.openAutocomplete(a, b); }" class="icon small lupa input-right"></a>
+            <input type="text" class="max" data-bind="autocomplete: $root.loadEmployees, value: name, selected: { source: 'id', target: 'id' }" placeholder="Сотрудник..."/>
+        </span>
+
+        <input type="button" value="Показать" data-bind="click: $root.refresh" />
+        <span class="loading" data-bind="visible: $root.inProgress"></span>
+
+        <a class="icon medium excel text ml25px" data-bind="click: $root.toExcel" href="javascript:" >Экспорт</a>
+        <a class="icon medium filter text ml25px" data-bind="click: $root.showFilters" href="javascript:" >Фильтры</a>
+
+    </div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <div class="p10px">
+            <span class="bold f18px clickToEdit edit" data-bind="text: $root.filter.name, clickToEdit: $root.filter.name"></span>
+            <input class="w200px bold f18px " type="text" data-bind="value: filter.name" placeholder="Новый фильтр">
+            <a data-bind="click: $root.saveFilter" href="javascript:">сохранить</a>
+            
+            <a data-bind="click: $root.clearFilter, visible: $root.reportFilter()" href="javascript:">новый</a>
+        </div>
+        <div id="divSalary">
+            <div class="scroll kogrid ">
+                <div id="divSalaryHeader"></div>
+                <table class="grid kogrid input-max nowrap" id="tblSalary">
+                    <thead>
+                        <tr>
+                            <th colname="Employee">
+                                <div class="th">
+                                    <span>Сотрудник</span>
+                                </div>
+                            </th>
+                            <th colname="Date">
+                                <div class="th">
+                                    <span>Дата начисления</span>
+                                </div>
+                            </th>
+                            <th colname="Type">
+                                <div class="th">
+                                    <span>Тип начисления</span>
+                                </div>
+                            </th>
+                            <th colname="Creator">
+                                <div class="th">
+                                    <span>Автор начисления</span>
+                                </div>
+                            </th>
+                            <th colname="Project">
+                                <div class="th">
+                                    <span>Проект</span>
+                                </div>
+                            </th>
+                            <th colname="PayrollAmount">
+                                <div class="th">
+                                    <span>Сумма начислено</span>
+                                </div>
+                            </th>
+                            <th colname="ExpenseAmount">
+                                <div class="th">
+                                    <span>Сумма выплачено</span>
+                                </div>
+                            </th>
+                            <th colname="DebtAmount">
+                                <div class="th">
+                                    <span>Сумма долг</span>
+                                </div>
+                            </th>
+                            <th colname="Month">
+                                <div class="th">
+                                    <span>Месяц З/П</span>
+                                </div>
+                            </th>
+                            <th colname="Save">
+                                <div class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размер и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { name: 'trSalary', foreach: $root.rows }"></tbody>
+                    <tfoot>
+                        <tr data-bind="if: !$root.rows().any()">
+                            <td colname="Employee"></td>
+                            <td colname="Date"></td>
+                            <td colname="Type"></td>
+                            <td colname="Creator"></td>
+                            <td colname="Project"></td>
+                            <td colname="PayrollAmount"></td>
+                            <td colname="ExpenseAmount"></td>
+                            <td colname="DebtAmount"></td>
+                            <td colname="Month"></td>
+                            <td colname="Save"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="11" class="pager-container">
+                                <div class="toRight">
+                                    <div data-bind="visible: $root.selectedArray().any()" class="box-float">
+                                        <div class="toLeft w150px text-left">Сумма по выделенным:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.selectedTotalPayroll()) + ' руб.'"></div>
+                                    </div>
+                                                
+                                    <div class="box-float">
+                                        <div class="toLeft w150px text-left">Итого начислено:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.rows().where('val=>val.id<0').sum('val=>val.amount')) + ' руб.'"></div>
+                                    </div>
+                                    <div class="box-float">
+                                        <div class="toLeft w150px text-left">Итого выплачено:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.rows().where('val=>val.id>0').sum('val=>val.amount')) + ' руб.'"></div>
+                                    </div>
+                                    <div class="box-float">
+                                        <div class="separator small" data-bind="visible: !$root.selectedArray().any()"></div>
+                                        <div class="toLeft w150px text-left">Итого за период:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.rows().sum('val=>(val.id>0?1:-1)*val.amount')) + ' руб.'"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="trSalary">
+    <tr>
+        <td colname="Employee">
+            <span data-bind="text: employeeName"></span>
+        </td>
+        <td colname="Date">
+            <span data-bind="text: date"></span>
+        </td>
+        <td colname="Type">
+            <span data-bind="text: type == 'payroll' ? 'Начисление' : 'Выплата'"></span>
+        </td>
+        <td colname="Creator">
+            <span data-bind="text: $data.creator"></span>
+        </td>
+        <td colname="Project">
+            <span data-bind="text: project"></span>
+        </td>
+        <td colname="PayrollAmount">
+            <span data-bind="text: type == 'payroll' ? z.toDs(amount) : ''"></span>
+        </td>
+        <td colname="ExpenseAmount">
+            <span data-bind="text: type == 'expense' ? z.toDs(amount) : ''"></span>
+        </td>
+        <td colname="DebtAmount">
+            <span data-bind="text: z.toDs(debt)"></span>
+        </td>
+        <td colname="Month">
+            <span data-bind="text: month > 0 ? $root.months()[month - 1].name : ''"></span>
+        </td>
+        <td colname="Save"></td>
+    </tr>
+</script>
+
+<div id="divMonths" title="Выбор периода">
+    <div class="box">
+        <table class="adjuster">
+            <thead>
+                <tr>
+                    <th>
+                        <span>Год:</span>
+                    </th>
+                    <td>
+                        <select data-bind="options: $root.years, optionsText: 'name', optionsValue: 'id', value: $root.year" class="w100px"></select>
+                    </td>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: $root.months">
+                <tr>
+                    <th>
+                        <input type="radio" name="Month" data-bind="value: id, attr: { id: 'rbtMonth' + id }, checked: $root.month" />
+                    </th>
+                    <td>
+                        <label data-bind="html: name, attr: { 'for': 'rbtMonth' + id }"></label>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class="h10px"></div>
+                        <input type="button" value="Выбрать" data-bind="click: confirmMonth" />
+                        <input type="button" value="Отмена" data-bind="click: cancelMonth" />
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+@{
+    Html.RenderPartial("_ReportFilters");
+}

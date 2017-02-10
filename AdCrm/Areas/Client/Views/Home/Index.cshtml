@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Home";
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/ckeditor/ckeditor.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/jq.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/ko.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Client/Home/Index.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+@{ Html.RenderPartial("_LeftMenu"); }
+
+<div class="right-content" id="divRightContent">
+    <div class="scroll-no two">
+        <div class="tab-content left-col">
+            <div class="ejsgrid beige upper-col table" id="divClientProjects"></div>
+            <div class="ejsgrid beige lower-col table" id="divClientInvoices"></div>
+        </div>
+        <div class="tab-content right-col">
+            <div class="ejsgrid beige upper-col table" id="divClientTasks"></div>
+            <div class="ejsgrid beige lower-col table" id="divClientPayments" style="min-height: 250px;"></div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/html" id="scrAddTask">
+    <a class="icon small add text" data-bind="click: $root.createTask">задача</a>
+</script>
+<script type="text/html" id="scrDescription">
+    <textarea cols="0" rows="5" data-bind="uniqueName: true, value: fldescription" id="txtDescription"></textarea>
+</script>

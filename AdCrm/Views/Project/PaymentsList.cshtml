@@ -1,0 +1,121 @@
+﻿<div>
+    <form action="" data-bind="validate: true">
+        <table class="grid-simple max nowrap">
+            <thead>
+                <tr>
+                    <!-- ko if: $data.showContractor -->
+                    <th colname="Contractor">
+                        <div class="th">
+                            <span>Субподрядчик</span>
+                        </div>
+                    </th>
+                    <!-- /ko -->
+                    <th colname="Number">
+                        <div class="th">
+                            <span>№ счета</span>
+                        </div>
+                    </th>
+                    <th colname="Date">
+                        <div class="th">
+                            Дата платежа
+                        </div>
+                    </th>
+                    <th colname="TypeID">
+                        <div class="th">
+                            Кошелек
+                        </div>
+                    </th>
+                    <th colname="Sum">
+                        <div class="th">
+                            <span>Сумма</span>
+                        </div>
+                    </th>
+                    <th colname="IsAdvance">
+                        <div class="th">
+                            <span>Аванс</span>
+                        </div>
+                    </th>
+                    <th colname="Comments">
+                        <div class="th">
+                            <span>Комментарий</span>
+                        </div>
+                    </th>
+                    <th colname="Actions">
+                        <div class="th">
+                            <span>&nbsp;</span>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: payments">
+                <tr>
+                    <!-- ko if: $parent.showContractor -->
+                    <td>
+                        <div class="td">
+                            <div class="toRight">
+                                <a href="javascript:" data-bind="click: $root.chooseSubContractor" class="edit">Выбрать</a>
+                            </div>
+                            <div class="mr60px" >
+                                <span data-bind="if: contractor" >
+                                    <a href="javascript:" data-bind="html: contractor().name, click: $root.editSubContractor"></a>
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <!-- /ko -->
+                    <td>
+                        <div class="td">
+                            <div class="nowrap">
+                                <a href="javascript:" data-bind="click: function (a, b, c) { $root.openAutocomplete(a, b, c); }" class="icon small lupa input-right"></a>
+                                <input type="text" class="max" data-bind="autocomplete: $root.loadInvoices(), value: number, selected: { source: 'id', target: 'invoiceID' }, onchange: $root.invoiceChange, uniqueName: true" />
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <input type="text" class="required w100px" data-bind="uniqueName: true, value: date, datepicker: true" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <div class="nowrap">
+                                <a href="javascript:" data-bind="click: function(a,b,c) { $root.openAutocomplete(a,b,c); }" class="icon small lupa input-right"></a>
+                                <input type="text" class="max required" data-bind="autocomplete: $parent.showContractor ? $root.loadWallets : $root.loadInvoiceWallets, value: walletName, selected: { source: 'id', target: 'walletID' }, uniqueName: true" />
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <input type="text" class="text-right w100px" data-bind="value: sum.text" />
+                            <span>руб. </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <input type="checkbox" data-bind="checked: isAdvance" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <textarea data-bind="value: comments, html: comments" rows="1"></textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <a href="javascript:" class="icon small delete" data-bind="click: $root.removePayment"></a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody data-bind="if: !payments().any()">
+                <tr>
+                    <td colspan="8">
+                        <div class="text-center text-italic disabled large">
+                            Нет ни одного платежа.
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>

@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="aAdd" xml:space="preserve">
+    <value>Создать</value>
+  </data>
+  <data name="aAdd.Title" xml:space="preserve">
+    <value>Создать новый проект</value>
+  </data>
+  <data name="aClearFilter" xml:space="preserve">
+    <value>Сбросить все фильтры</value>
+  </data>
+  <data name="aClose" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="aCloseFail.Title" xml:space="preserve">
+    <value>Закрыть как "Закрыт и не реализован"</value>
+  </data>
+  <data name="aCloseSuccess.Title" xml:space="preserve">
+    <value>Закрыть как "Закрыт и успешно реализован"</value>
+  </data>
+  <data name="aCourirers" xml:space="preserve">
+    <value>Курьеры</value>
+  </data>
+  <data name="aCourirers.Title" xml:space="preserve">
+    <value>График загружености курьеров</value>
+  </data>
+  <data name="aDelete" xml:space="preserve">
+    <value>В архив</value>
+  </data>
+  <data name="aDelete.Title" xml:space="preserve">
+    <value>Поместить проект в архив</value>
+  </data>
+  <data name="aEdit" xml:space="preserve">
+    <value>Править</value>
+  </data>
+  <data name="aEdit.Title" xml:space="preserve">
+    <value>Редактировать проект</value>
+  </data>
+  <data name="aLoadFile" xml:space="preserve">
+    <value>Загрузить файл</value>
+  </data>
+  <data name="aOnlyMyProjects" xml:space="preserve">
+    <value>Только мои проекты</value>
+  </data>
+  <data name="aPrice" xml:space="preserve">
+    <value>Прайс</value>
+  </data>
+  <data name="aPrice.Title" xml:space="preserve">
+    <value>Открыть прайс лист</value>
+  </data>
+  <data name="aSaveGridState" xml:space="preserve">
+    <value>Сохранить размеры и положение колонок</value>
+  </data>
+  <data name="aShowArchive" xml:space="preserve">
+    <value>Показать архивные</value>
+  </data>
+  <data name="aShowCurrent" xml:space="preserve">
+    <value>Показать действующие</value>
+  </data>
+  <data name="aStocks" xml:space="preserve">
+    <value>Склад</value>
+  </data>
+  <data name="aStocks.Title" xml:space="preserve">
+    <value>Перейти на склад</value>
+  </data>
+  <data name="btnCancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="btnCreate" xml:space="preserve">
+    <value>Создать</value>
+  </data>
+  <data name="btnSearch" xml:space="preserve">
+    <value>Искать</value>
+  </data>
+  <data name="ddlProjectState" xml:space="preserve">
+    <value>Состояние проекта</value>
+  </data>
+  <data name="ddlProjectStatus" xml:space="preserve">
+    <value>Статус проекта</value>
+  </data>
+  <data name="ddlType" xml:space="preserve">
+    <value>Тип проекта</value>
+  </data>
+  <data name="divEventsCalendar" xml:space="preserve">
+    <value>Календарь событий</value>
+  </data>
+  <data name="hAnalysis" xml:space="preserve">
+    <value>Аналитика</value>
+  </data>
+  <data name="hClassifications" xml:space="preserve">
+    <value>Классификаторы</value>
+  </data>
+  <data name="hClients" xml:space="preserve">
+    <value>Клиенты</value>
+  </data>
+  <data name="hOrders" xml:space="preserve">
+    <value>Заказы</value>
+  </data>
+  <data name="hProjects" xml:space="preserve">
+    <value>Проекты</value>
+  </data>
+  <data name="hTasts" xml:space="preserve">
+    <value>Задачи</value>
+  </data>
+  <data name="rbtClientTypeLegal" xml:space="preserve">
+    <value>Юр. лицо</value>
+  </data>
+  <data name="rbtClientTypeNatural" xml:space="preserve">
+    <value>Физ. лицо</value>
+  </data>
+  <data name="spnAttachments" xml:space="preserve">
+    <value>Приложения</value>
+  </data>
+  <data name="spnClient" xml:space="preserve">
+    <value>Клиент</value>
+  </data>
+  <data name="spnClientType" xml:space="preserve">
+    <value>Тип клиента</value>
+  </data>
+  <data name="spnComments" xml:space="preserve">
+    <value>Примечание:</value>
+  </data>
+  <data name="spnContactPerson" xml:space="preserve">
+    <value>Контактное лицо</value>
+  </data>
+  <data name="spnCreationDate" xml:space="preserve">
+    <value>Дата создания:</value>
+  </data>
+  <data name="spnCurrency" xml:space="preserve">
+    <value>руб.</value>
+  </data>
+  <data name="spnDate" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+  <data name="spnEditHint" xml:space="preserve">
+    <value>Двойной клик по строке для редактирования</value>
+  </data>
+  <data name="spnEmail" xml:space="preserve">
+    <value>E-mail:</value>
+  </data>
+  <data name="spnEstimateNumber" xml:space="preserve">
+    <value>Номер сметы</value>
+  </data>
+  <data name="spnFullName" xml:space="preserve">
+    <value>ФИО контактного лица:</value>
+  </data>
+  <data name="spnInvoiceDate" xml:space="preserve">
+    <value>Дата счета</value>
+  </data>
+  <data name="spnInvoiceNumber" xml:space="preserve">
+    <value>Номер счета</value>
+  </data>
+  <data name="spnName" xml:space="preserve">
+    <value>Название проекта</value>
+  </data>
+  <data name="spnNumber" xml:space="preserve">
+    <value>№</value>
+  </data>
+  <data name="spnPaid" xml:space="preserve">
+    <value>Оплачено по проекту</value>
+  </data>
+  <data name="spnPhone" xml:space="preserve">
+    <value>Телефон:</value>
+  </data>
+  <data name="spnPosition" xml:space="preserve">
+    <value>Должность:</value>
+  </data>
+  <data name="spnPriceSum" xml:space="preserve">
+    <value>Сумма проекта</value>
+  </data>
+  <data name="spnProject" xml:space="preserve">
+    <value>Проект</value>
+  </data>
+  <data name="spnProjectClient" xml:space="preserve">
+    <value>Клиент:</value>
+  </data>
+  <data name="spnProjectClientType" xml:space="preserve">
+    <value>Тип клиента:</value>
+  </data>
+  <data name="spnProjectName" xml:space="preserve">
+    <value>Название проекта:</value>
+  </data>
+  <data name="spnProjectType" xml:space="preserve">
+    <value>Тип проекта:</value>
+  </data>
+  <data name="spnSearch" xml:space="preserve">
+    <value>Быстрый поиск:</value>
+  </data>
+  <data name="spnSelected" xml:space="preserve">
+    <value>Выбрано</value>
+  </data>
+  <data name="spnState" xml:space="preserve">
+    <value>Состояние</value>
+  </data>
+  <data name="spnStatus" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="spnTotal" xml:space="preserve">
+    <value>Итого:</value>
+  </data>
+  <data name="spnType" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="spnWishes" xml:space="preserve">
+    <value>Пожелания клиента:</value>
+  </data>
+  <data name="title" xml:space="preserve">
+    <value>Проекты</value>
+  </data>
+  <data name="txtSearch" xml:space="preserve">
+    <value>Введите фразу или слово для поиска</value>
+  </data>
+</root>

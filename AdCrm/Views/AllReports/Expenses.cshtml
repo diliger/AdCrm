@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Отчет по расходам";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/AllReports/Expenses.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div class="header">
+    <div class="box">
+        <span>Период:</span>
+        <span class="ml25px">с</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateFrom, datepicker: true"  />
+        <span>по</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateTo, datepicker: true" />
+        <a href="javascript:" class="icon small calendar2" title="Выбрать месяц" data-bind="click: $root.selectMonth"></a>
+        <input type="button" value="Показать" data-bind="click: $root.refresh" />
+        <span class="loading" data-bind="visible: $root.inProgress"></span>
+        <a class="icon medium excel text ml25px" data-bind="click: $root.toExcel" href="javascript:" >Экспорт</a>
+
+    </div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <div class=" scroll kogrid" id="divExpenses" >
+            <div id="divExpensesHeader"></div>
+            <table class="grid grid-simple max nowrap" id="tblExpenses" >
+                <thead>
+                    <tr>
+                        <th>
+                            <div class="th">
+                                <span>Расход</span>
+                            </div>
+                        </th>
+                        <!-- ko foreach: $root.data() ? $root.data().monthes : []-->
+                        <th>
+                            <div class="th">
+                                <span data-bind="text: $root.months()[month - 1].name"></span>
+                                <span data-bind="text: year, visible: $root.yearsVisible" class="ml5px"></span>
+                            </div>
+                        </th>
+                        <!-- /ko -->
+                        <th>
+                            <div class="th">
+                                <span>Итого</span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: $root.data() ? $root.data().rows : []">
+                    <tr>
+                        <td>
+                            <div class="td" data-bind="text: name">
+
+                            </div>
+                        </td>
+                        <!-- ko foreach: values -->
+                        <td>
+                            <div class="td text-right">
+                                <a href="javascript:" data-bind="click: function() { $root.showDetails($parent, $root.data().monthes[$index()]); }, text: z.toDs($data), visible: $data * 1 > 0"> </a>
+                                <span data-bind="text: z.toDs($data), visible: $data * 1 == 0"></span>
+                            </div>
+                        </td>
+                        <!-- /ko -->
+                        <td>
+                            <div class="text-right td">
+                                <span data-bind="text: z.toDs(total)"></span>
+                                <span>руб.</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot> 
+                    <tr data-bind="visible: $root.data() && !$root.data().rows.any()">
+                        <td data-bind="attr: { colspan: $root.data() ? $root.data().monthes.length + 2 : 2 }">
+                            <div class="text-center text-italic disabled large">
+                                 В этом периоде нет расходов.
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-bind="attr: { colspan: $root.data() ? $root.data().monthes.length + 2 : 2 }" class="pager-container totals">
+                            <div class="toRight pager">
+                                <div class="box-float">
+                                    <div class="toLeft w150px text-left">Итого за период:</div>
+                                    <div class="toRight w150px bold text-right" data-bind="text: ($root.data() ? z.toDs($root.data().rows.sum('val=>val.total*1')*1) : 0) + ' руб.'"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="divMonths" title="Выбор периода">
+    <div class="box">
+        <table class="adjuster">
+            <thead>
+                <tr>
+                    <th>
+                        <span>Год:</span>
+                    </th>
+                    <td>
+                        <select data-bind="options: $root.years, optionsText: 'name', optionsValue: 'id', value: $root.year" class="w100px"></select>
+                    </td>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: $root.months">
+                <tr>
+                    <th>
+                        <input type="radio" name="Month" data-bind="value: id, attr: { id: 'rbtMonth' + id }, checked: $root.month" />
+                    </th>
+                    <td>
+                        <label data-bind="html: name, attr: { 'for': 'rbtMonth' + id }"></label>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class="h10px"></div>
+                        <input type="button" value="Выбрать" data-bind="click: confirmMonth" />
+                        <input type="button" value="Отмена" data-bind="click: cancelMonth" />
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div type="text/html" id="divDetailsDialog">
+    <div class="box">
+        <table class="grid-simple grid max">
+            <thead>
+                <tr>
+                    <th>
+                        Проект
+                    </th>
+                    <th>
+                        Сотрудник/Подрядчик
+                    </th>
+                    <th>
+                        <div class="th">
+                            <span>Дата</span>
+                        </div>
+                    </th>
+                    <th>
+                        Сумма
+                    </th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: $root.details()">
+                <tr>
+                    <td>
+                        <a href="javascript:" data-bind="text: projectName, attr: { href: host.arp + 'Project/Index/' + projectID }" target="_blank"></a>
+                    </td>
+                    <td>
+                        <a href="javascript:" data-bind="text: employee, attr: { href: host.arp + 'Employee/Index/' + employeeID }, visible: employeeID > 0" target="_blank"></a>
+                        <span data-bind="text: contractor"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: date"></span>
+                    </td>
+                    <td>
+                        <div class="text-right">
+                            <span data-bind="text: z.toDs(sum)"></span>
+                            руб.
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,334 @@
+﻿@{
+    Layout = null;
+}
+<div id="divExpensesPartial">
+    <form onsubmit="return false;" data-bind="validate: true">
+        <div>
+            @*<div>
+                <ul class="filter">
+                    <li data-bind="css: { selected: isEmpty($root.filter.categoryID() + '') }, click: function(){$root.changeCategory('');}">
+                        <a href="javascript:">Все расходы</a>
+                    </li>
+                    <li data-bind="css: { selected: $root.filter.categoryID() == 1 }, click: function(){$root.changeCategory(1);}">
+                        <a href="javascript:">@(ViewBag.ForEmployee ? "Трудозатраты" : "Работа сотрудников")</a>
+                    </li>
+                    <li data-bind="css: { selected: $root.filter.categoryID() == 2 }, click: function(){$root.changeCategory(2);}">
+                        <a href="javascript:">Транспорт</a>
+                    </li>
+                    <li data-bind="css: { selected: $root.filter.categoryID() === 0 }, click: function(){$root.changeCategory(0);}">
+                        <a href="javascript:">Прочие расходы</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="separator small"></div>*@
+            <div class="scroll kogrid ">
+                <div id="divExpensesHeader"></div>
+                <table class="grid kogrid input-max nowrap" id="tblExpenses">
+                    <thead>
+                        <tr>
+                            <th colname="Select" title="Столбец для выделения">
+                                <div class="th">
+                                    <span>&nbsp;</span>
+                                </div>
+                            </th>
+                            <th colname="Index">
+                                <div class="th">
+                                    <span>№</span>
+                                </div>
+                            </th>
+                            <th colname="Date">
+                                <div class="th">
+                                    <span>Дата</span>
+                                </div>
+                            </th>
+                            <th colname="Creator" sortpath="UserCreator.FullName">
+                                <div class="th">
+                                    <span>Автор</span>
+                                </div>
+                            </th>
+                            @if (ViewBag.ForEmployee)
+                            {
+                                <th colname="Project" sortpath="Project.Name">
+                                    <div class="th">
+                                        <span>Проект</span>
+                                    </div>
+                                </th>
+                            }
+                            @if (ViewBag.ForProject)
+                            {
+                                <th colname="Employee" sortpath="Employee.Surname,Employee.Name,Employee.Patronymic">
+                                    <div class="th">
+                                        <span>Сотрудник</span>
+                                    </div>
+                                </th>
+                            }                            
+                            <th colname="Sum">
+                                <div class="th">
+                                    <span>Сумма (руб.)</span>
+                                </div>
+                            </th>
+                            @*<th colname="UnitName" sortpath="Type.UnitName">
+                                <div class="th">
+                                    <span>Ед. Измерения</span>
+                                </div>
+                            </th>
+                            <th colname="Count">
+                                <div class="th">
+                                    <span>Кол-во</span>
+                                </div>
+                            </th>
+                            <th colname="Price">
+                                <div class="th">
+                                    <span>Цена</span>
+                                </div>
+                            </th>*@
+                            <th colname="Type" sortpath="Type.Name">
+                                <div class="th">
+                                    <span>Статья затрат</span>
+                                </div>
+                            </th>
+                            @*<th colname="Name">
+                                <div class="th">
+                                    <span>Название</span>
+                                </div>
+                            </th>*@
+                            <th colname="Wallet" sortpath="Wallet.Name">
+                                <div class="th">
+                                    <span>Кошелек</span>
+                                </div>
+                            </th>
+                            @*<th colname="Sum">
+                                <div class="th">
+                                    <span>За месяц (руб.)</span>
+                                </div>
+                            </th>*@
+                            <th colname="Comments">
+                                <div class="th">
+                                    <span>Примечание</span>
+                                </div>
+                            </th>
+                            <th colname="Save">
+                                <div class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размер и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { name: 'trExpense', foreach: $root.expenses }"></tbody>
+                    <tfoot>
+                        <tr data-bind="{ if: !$root.expenses().any() }">
+                            <td colname="Select"></td>
+                            <td colname="Index"></td>
+                            <td colname="Date"></td>
+                            <td colname="Creator"></td>
+                            @if (ViewBag.ForEmployee)
+                            {
+                                <td colname="Project"></td>
+                            }
+                            @if (ViewBag.ForProject)
+                            {
+                                <td colname="Employee"></td>
+                            }
+                            <td colname="Sum"></td>
+                            @*<td colname="UnitName"></td>
+                            <td colname="Count"></td>
+                            <td colname="Price"></td>*@
+                            <td colname="Type"></td>
+                            @*<td colname="Name"></td>*@
+                            <td colname="Wallet"></td>
+                            @*<td colname="PeriodSum"></td>*@
+                            <td colname="Comments"></td>
+                            <td colname="Save"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="16" class="pager-container">
+                                <div class="toRight">
+                                    <div data-bind="visible: $root.expense.selectedArray().any()" class="box-float">
+                                        <div class="toLeft w150px text-left">Сумма по выделенным:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.expense.selectedTotal()) + ' руб.'"></div>
+                                    </div>
+                                    <div class="box-float">
+                                        <div class="separator small" data-bind="visible: !$root.expense.selectedArray().any()"></div>
+                                        <div class="toLeft w150px text-left">Итого за период:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.expenses().sum('val=>val.sum()')) + ' руб.'"></div>
+                                    </div>
+                                </div>
+                                <div class="pager">
+                                    <div class="toLeft">
+                                        Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                    </div>
+                                    <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                        <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/html" id="trExpense">
+    <tr data-bind="css: { selected: $root.expense.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: $root.expense.selectedArray" />
+            </div>
+        </td>
+        <td colname="Index">
+            <div class="td text-right">
+                <span data-bind="text: $index() + 1"></span>
+            </div>
+        </td>
+        <td colname="Date">
+            <div class="td">
+                <span data-bind="text: date, visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data">
+                    <input type="text" data-bind="value: date, datepicker: !(parentID() > 0)" />
+                </div>
+            </div>
+        </td>
+        <td colname="Creator">
+            <div class="td">
+                <span data-bind="text: creatorName"></span>
+            </div>
+        </td>
+        @if (ViewBag.ForEmployee)
+        {
+            <td colname="Project">
+                <div class="td">
+                    <span data-bind="text: projectName, visible: $root.expense.current() != $data"></span>
+                    <div data-bind="if: $root.expense.current() == $data" class="nowrap">
+                        <a href="javascript:" data-bind="click: $root.openAutocomplete, visible: !parentID()" class="icon small lupa input-right"></a>
+                        <input type="text" class="max" data-bind="autocomplete: $root.loadProjects, value: projectName, selected: { source: 'id', target: 'projectID' }, disable: parentID() > 0" />
+                    </div>
+                </div>
+            </td>
+        }
+        @if (ViewBag.ForProject)
+        {
+            <td colname="Employee">
+                <div class="td">
+                    <span data-bind="text: employeeName, visible: $root.expense.current() != $data"></span>
+
+                    <div data-bind="if: $root.expense.current() == $data" class="nowrap">
+                        <a href="javascript:" data-bind="click: $root.openAutocomplete, visible: !parentID()" class="icon small lupa input-right"></a>
+                        <input type="text" class="max" data-bind="autocomplete: $root.loadEmployees, value: employeeName, selected: { source: 'id', target: 'employeeID' }, disable: parentID() > 0" />
+                    </div>
+                </div>
+            </td>
+        }
+        <td colname="Sum">
+            <div class="td text-right">
+                <span data-bind="text: periodSum.text, visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: periodSum.text, disable: parentID() > 0" />
+                </div>
+            </div>
+        </td>
+        @*<td colname="UnitName" data-bind="if: type() && type().unitName()">
+            <div class="td text-right" data-bind="with: type">
+                <span data-bind="text: unitName, visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data">
+                    <input type="text" disabled="disabled" data-bind="value: unitName" />
+                </div>
+            </div>
+        </td>
+        <td colname="Count" data-bind="if: type() && type().unitName()">
+            <div class="td text-right">
+                <span data-bind="text: count.text, visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: count.text, disable: parentID() > 0" />
+                </div>
+            </div>
+        </td>
+        <td colname="Price" data-bind="if: type() && type().unitName()">
+            <div class="td text-right">
+                <span data-bind="text: price.text, visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: price.text, disable: parentID() > 0 || host.ur > 2 && (type().categoryID() == 1 || type().categoryID() == 2), attr: { placeholder: type() && type().unitName() ? 'руб/' + type().unitName() : ''}" />
+                </div>
+            </div>
+        </td>*@
+        <td colname="Type">
+            <div class="td">
+                <div data-bind="if: $root.expense.current() != $data && dispatchID() > 0">
+                    <a data-bind="text: type()?type().name:'', attr: { href: host.arp + 'Products/Dispatches/Details?DispatchID=' + dispatchID() }" target="_blank" href="javascript:"></a>
+                </div>
+                <div data-bind="if: $root.expense.current() != $data && !dispatchID()">
+                    <span data-bind="text: type()?type().name:''"></span>
+                </div>
+                    <div data-bind="if: $root.expense.current() == $data">
+                        <select data-bind="foreach: $root.activeExpenseCategories($data), value: typeID, disable: parentID() > 0" class="required" name="TypeID">
+                            <optgroup data-bind="attr: { label: name }, options: $root.activeExpenseTypes($data, $parent), optionsText: 'name', optionsValue: 'id'"></optgroup>
+                        </select>
+                    </div>
+            </div>
+            <div class="td" data-bind="visible: type().forSalary">
+                <span data-bind="text: salaryEmployeeName, visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data" class="nowrap">
+                    <a href="javascript:" data-bind="click: $root.openAutocomplete, visible: !parentID()" class="icon small lupa input-right"></a>
+                    <input type="text" class="max required" placeholder="Сотрудник..." data-bind="autocomplete: $root.loadEmployees, value: salaryEmployeeName, selected: { source: 'id', target: 'salaryEmployeeID' }, disable: parentID() > 0" />
+                </div>
+            </div>
+        </td>
+        @*<td colname="Name">
+            <div class="td">
+                <span data-bind="text: name, visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data">
+                    <input type="text" data-bind="value: name, disable: parentID() > 0" />
+                </div>
+            </div>
+        </td>*@
+        <td colname="Wallet">
+            <div class="td">
+                <span data-bind="text: walletName, visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data" class="nowrap">
+                    <a href="javascript:" data-bind="click: $root.openAutocomplete, visible: !parentID() && type() && type().walletEditable()" class="icon small lupa input-right"></a>
+                    <input type="text" class="max required" data-bind="autocomplete: $root.loadWallets, value: walletName, selected: { source: 'id', target: 'walletID' }, disable: parentID() > 0 || type() && !type().walletEditable(), uniqueName: true" />
+                </div>
+            </div>
+        </td>
+        @*<td colname="PeriodSum">
+            <div class="td text-right">
+                <span data-bind="text: periodSum.text, visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data">
+                    <input type="text" class="text-right max" data-bind="value: periodSum.text, disable: parentID() > 0" />
+                </div>
+            </div>
+        </td>*@
+        <td colname="Comments">
+            <div class="td">
+                <span data-bind="html: comments().html(), visible: $root.expense.current() != $data"></span>
+
+                <div data-bind="if: $root.expense.current() == $data">
+                    <textarea rows="1" data-bind="value: comments, html: comments, disable: parentID() > 0"></textarea>
+                </div>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td" data-bind="visible: !readOnly()">
+                <a href="javascript:" data-bind="click: $root.expense.edit, css: { disabled: parentID() > 0 }, visible: $root.expense.current() != $data" class="icon small pencil" title="Редактировать расход"></a>
+                <a href="javascript:" data-bind="click: $root.expense.apply, css: { disabled: parentID() > 0 }, visible: $root.expense.current() == $data" class="icon small check" ></a>
+                <a href="javascript:" data-bind="click: $root.expense.copy, css: { disabled: parentID() > 0 }" class="icon small copy" title="Копировать расход"></a>
+                <a href="javascript:" data-bind="click: $root.expense.remove, css: { disabled: parentID() > 0 }" class="icon small delete" title="Удалить расход"></a>
+            </div>
+        </td>
+    </tr>
+</script>
+<script type="text/javascript" src="@Url.ContentVersion("~/Scripts/Views/Expenses/ListPartial.js")"></script>
+<script type="text/html" id="scrExpensesPartialData">
+    @MvcHtmlString.Create(ViewBag.Data)
+</script>

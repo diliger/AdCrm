@@ -1,0 +1,150 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Недостающие документы ";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/AllReports/MissingDocuments.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div class="header">
+    <div class="box">
+        <span>Период:</span>
+        <span class="ml25px">с</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateFrom, datepicker: true"  />
+        <span>по</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateTo, datepicker: true" />
+        <a href="javascript:" class="icon small calendar2" title="Выбрать месяц" data-bind="click: $root.selectMonth"></a>
+        <input type="button" value="Показать" data-bind="click: $root.refresh" />
+        <span class="loading" data-bind="visible: $root.inProgress"></span>
+
+        <a class="icon medium excel text ml25px" data-bind="click: $root.toExcel" href="javascript:" >Экспорт</a>
+
+    </div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <div class=" scroll kogrid" id="divMissingDocuments" >
+            <div id="divMissingDocumentsHeader"></div>
+            <table class="grid kogrid nowrap" id="tblMissingDocuments" >
+                <thead>
+                    <tr>
+                        <th colname="Number">
+                            <div class="th">
+                                <span>№</span>
+                            </div>
+                        </th>
+                        <th colname="ContractorName">
+                            <div class="th">
+                                <span>Контрагент</span>
+                            </div>
+                        </th>
+                        <th colname="ProjectName">
+                            <div class="th">
+                                <span>Проект</span>
+                            </div>
+                        </th>
+                        <th colname="MissingDocuments">
+                            <div class="th">
+                                <span>Недостающие документы</span>
+                            </div>
+                        </th>
+                        <th colname="Save">
+                            <div class="th">
+                                <a href="javascript:" class="icon small save" title="Сохранить размер и положение колонок" data-bind="click: koModel.grid.save, visible: !koModel.grid.inProgress()"></a>
+                                <span class="loading" data-bind="visible: koModel.grid.inProgress()"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="template: { name: 'trMissingDocument', foreach: $root.grid.sorted }"></tbody>
+                <tfoot>
+                    <tr data-bind="visible: !$root.rows().any()">
+                        <td colspan="5">
+                            <div class="text-center text-italic disabled large">
+                                 В этом периоде нет недостающих документов.
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-bind="{ if: !$root.rows().any() }">
+                        <td colname="Number"></td>
+                        <td colname="ContractorName"></td>
+                        <td colname="ProjectName"></td>
+                        <td colname="MissingDocuments"></td>
+                        <td colname="Save"></td>
+                    </tr>                    
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="trMissingDocument">
+    <tr>
+        <td colname="Number">
+            <div class="td text-right">
+                <span data-bind="text: $index() + 1"></span>
+            </div>
+        </td>
+        <td colname="ContractorName">
+            <div class="td">
+                <span data-bind="text: contractorName"></span>
+            </div>
+        </td>
+        <td colname="ProjectName">
+            <div class="td">
+                <a data-bind="html: projectName, attr: { href: ApplicationRootPath + 'Project/Index/' + projectID }"></a>
+            </div>
+        </td>
+        <td colname="MissingDocuments">
+            <div class="td text-center">
+                <span data-bind="text: missingDocuments"></span>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+            </div>
+        </td>
+    </tr>
+</script>
+<div id="divMonths" title="Выбор периода">
+    <div class="box">
+        <table class="adjuster">
+            <thead>
+                <tr>
+                    <th>
+                        <span>Год:</span>
+                    </th>
+                    <td>
+                        <select data-bind="options: $root.years, optionsText: 'name', optionsValue: 'id', value: $root.year" class="w100px"></select>
+                    </td>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: $root.months">
+                <tr>
+                    <th>
+                        <input type="radio" name="Month" data-bind="value: id, attr: { id: 'rbtMonth' + id }, checked: $root.month" />
+                    </th>
+                    <td>
+                        <label data-bind="html: name, attr: { 'for': 'rbtMonth' + id }"></label>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class="h10px"></div>
+                        <input type="button" value="Выбрать" data-bind="click: confirmMonth" />
+                        <input type="button" value="Отмена" data-bind="click: cancelMonth" />
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

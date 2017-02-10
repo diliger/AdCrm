@@ -1,0 +1,126 @@
+﻿@{
+    Layout = null;
+}
+<div id="divContractorsDialog">
+    @*<div class="separator"></div>*@
+    <ul class="tabs header" data-bind="visible: $root.mode() != 'edit'">
+        <li>
+            <a href="javascript:" data-bind="css: { selected: $root.tab() == 0 }, click: $root.create">Создать</a>
+        </li>
+        <li>
+            <a href="javascript:" data-bind="css: { selected: $root.tab() == 1 }, click: $root.choose">Выбрать</a>
+        </li>
+    </ul>
+    <div class="tabs-content-full">
+        <div class="tab" id="tabCreate" data-bind="visible: $root.tab() == 0 || $root.mode() == 'edit', with: $root.contractor">
+            @{Html.RenderPartial("Details");}
+        </div>
+        <div class="tab" id="tabSelect" data-bind="visible: $root.tab() == 1 && $root.mode() != 'edit'">
+            <div class="box">
+                <div class="text-left">
+                    <span class="input-wrapper max">
+                        <a href="javascript:" class="icon medium toRight" style="margin-left:-26px;position:relative;" data-bind="click: $root.pager.refresh"></a>
+                        <span class="image">
+                            <input type="text" class="max nice" data-bind="value: $root.filter.text, event: { keypress: $root.applyFilter }" placeholder="Введите текст для поиска"/>
+                        </span>
+                    </span>
+                    @*<a href="javascript:" class="icon small refresh" data-bind="click: $root.pager.refresh"></a>*@
+                </div>
+                <div class="separator small"></div>
+                <div class="h400px scroll">
+                <table class="rowgrid max">
+                    <thead>
+                        <tr>
+                            <th>
+                            </th>
+                            <th>
+                                <span>Название</span>
+                            </th>
+                            <th>
+                                <span>Телефон</span>
+                            </th>
+                            <th data-bind="visible: $root.filter.role() != 1">
+                                <span>Отдел</span>
+                            </th>
+                            <th data-bind="visible: $root.filter.role() != 1">
+                                <span>Тип</span>
+                            </th>
+                            <th data-bind="visible: $root.filter.role() != 1">
+                            </th>
+                        </tr>
+                        <tr data-bind="with: $root.filter">
+                            <th>
+                            </th>
+                            <th>
+                                <input type="text" class="" data-bind="value: name"/>
+                            </th>
+                            <th>
+                                <input type="text" class="" data-bind="value: phone"/>
+                            </th>
+                            <th data-bind="visible: $root.filter.role() != 1">
+                                <select class="w150px1 " data-bind="value: dep, options: $root.departments.getActive(), optionsText: 'name', optionsValue: 'id', optionsCaption: 'Все отделы'"></select>
+                            </th>
+
+                            <th data-bind="visible: $root.filter.role() != 1">
+                                <select class="w150px1 " data-bind="value: type, options: $root.contractorTypes, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Все типы'"></select>
+                            </th>
+                            <th data-bind="visible: $root.filter.role() != 1">
+                                <select class="w150px1 " data-bind="value: subType, options: $root.activeSubTypes('', type(), role()), optionsText: 'name', optionsValue: 'id', optionsCaption: 'Все типы'"></select>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: $root.contractors">
+                        <tr data-bind="click: function() { $root.selected.id(id().toString()); return true; }">
+                            <td>
+                                <div class="td">
+                                    <input type="radio" name="chooseContractor" data-bind="attr: { value: id() }, checked: $root.selected.id"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="td">
+                                    <span data-bind="text: name()"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="td">
+                                    <span data-bind="text: phone()"></span>
+                                </div>
+                            </td>
+                            <td data-bind="visible: $root.filter.role() != 1">
+                                <div class="td">
+                                    <span data-bind="text: department() ? department().name : ''"></span>
+                                </div>
+                            </td>
+                            <td data-bind="visible: $root.filter.role() != 1">
+                                <div class="td">
+                                    <span data-bind="text: type() ? type().name() : ''"></span>
+                                </div>
+                            </td>
+                            <td data-bind="visible: $root.filter.role() != 1">
+                                <div class="td">
+                                    <span data-bind="text: subType() ? subType().name() : ''"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" class="pager">
+                                <div class="pager" data-bind="if: $root.pager.pages().length > 1">
+                                    <div class="toLeft">
+                                        Показано <span data-bind="html: $root.pager.shownFrom"></span> - <span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="scrContractorsDialogData">
+    @MvcHtmlString.Create(ViewBag.Data)
+</script>
+<script type="text/javascript" src="@Url.ContentVersion("~/Scripts/Views/Contractor/Dialog.js")"></script>

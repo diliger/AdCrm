@@ -1,0 +1,94 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Задачи";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/jq.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/ko.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Manager/Tasks.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.createProjectTask" class="icon big document-add">Добавить</a>
+    </div>
+    @*<div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.remove, css: { disabled: !koModel.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>*@
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.projectTasksCrud.export, css: { disabled: !koModel.projectTasks().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    @*<div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll, css: { disabled: !koModel.hasChanges() }" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>*@
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="header">
+        <div class="w350px">
+            <form onsubmit="return false;">
+                <span class="input-wrapper max">
+                    <span class="image">
+                        <input type="text" class="max nice" placeholder="Поиск..." data-bind="value: $root.filter.text" />
+                    </span>
+                </span>
+            </form>
+        </div>
+    </div>
+    <div class="container">
+        <div class="ejsgrid beige" id="divProjectTasks">
+                
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="scrTaskMessages">
+    <tr>
+        <th><strong>История задачи</strong></th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Новый комментарий</th>
+        <td>
+            <textarea cols="0" rows="5" class="" data-bind="uniqueName: true, value: newMessage"></textarea>
+        </td>
+    </tr>
+    <!-- ko foreach: messages().orderByDesc('val=>val.id()') -->
+    <tr>
+        <th>
+            <i>
+                <span data-bind="text: creatorName"></span>
+                <br />
+                <span data-bind="text: createDate"></span>
+            </i>
+        </th>
+        <td>
+            <div data-bind="html: text().html()">
+
+            </div>
+        </td>
+    </tr>
+    <!-- /ko -->
+</script>
+<script type="text/html" id="scrDuration">
+    <div data-bind="with: type()">
+        Длительность по справочнику:
+        <span data-bind="text: duration()"></span>
+        <span data-bind="text: ejs.i18n.declineCount(duration(), 'день', 'дня', 'дней')"></span>
+    </div>
+</script>

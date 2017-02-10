@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Расходы";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/jq.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/ko.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    
+    ViewBag.Scripts.Add("~/Scripts/Views/Expenses/Index.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+<div id="actions">
+    <div class="toRight bold larger p20px">
+        Итого за период: <span data-bind="text: z.toDs($root.total()) + ' руб.'"></span>
+    </div>
+
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.expensesCrud.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.removeSelectedExpenses, css: { disabled: !$root.selectManyExpense().any() }" class="icon big delete">Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.export, css: { disabled: !$root.expenses().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="excel-tabs-contianer">
+        <ul class="tabs-iframe" data-bind="foreach: $root.months">
+            <li class="tab" data-bind="css: { selected: koModel.filter.month() == id }">
+                <a href="javascript:" data-bind="html: name, click: function() { $root.filter.month(id) }"></a>
+            </li>
+        </ul>
+    </div>
+    <div class="header"></div>
+    <div class="container">
+        <div class="ejsgrid beige" id="divExpenses">
+
+        </div>
+    </div>
+</div>
+<script type="text/html" id="scrTypeSelect">
+    <select data-bind="foreach: $root.activeExpenseCategories($data), value: typeID, disable: parentID() > 0" class="required" name="TypeID">
+        <optgroup data-bind="attr: { label: name }, options: $root.activeExpenseTypes($data, $parent), optionsText: 'name', optionsValue: 'id'"></optgroup>
+    </select>
+</script>

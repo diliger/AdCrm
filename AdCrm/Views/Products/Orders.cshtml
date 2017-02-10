@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Заказы";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Products/Orders.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.createProjectDispatchOrder" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.removeSelectedProjectDispatchOrders, css: { disabled: !koModel.selectManyProjectDispatchOrder().any() }" class="icon big delete">Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.ordersCrud.export, css: { disabled: !koModel.projectDispatchOrders().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll, css: { disabled: !koModel.hasChanges() }" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="header">
+        @*<div>
+                <span class="input-wrapper">
+                    <span class="image">
+                        <input type="text" class="w350px nice" placeholder="Введите фразу или слово для поиска" data-bind="value: $root.filter.text, event: { keypress: $root.searchKeyPress }" />
+                    </span>
+                </span>
+            </div>*@
+    </div>
+    <div class="container">
+        <div class="ejsgrid beige" id="divProjectDispatchOrders">
+
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="scrProducts">
+    <table class="grid-simple w90p mAuto" data-bind="with: $root.projectDispatchOrder">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Кол-во</th>
+                <th>Цена</th>
+                <th>Стоимость</th>
+                <th>Остаток</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: products">
+            <tr data-bind="css: { warning: exists(), error: missing() }">
+                <td>
+                    <div class="nowrap" data-bind="visible: !$parent.readOnly()">
+                        <a href="javascript:" data-bind="click: function(e,a){ $root.openAutocomplete(e,a); }" class="icon small lupa input-right"></a>
+                        <input type="text" class="required max" data-bind="autocomplete: $root.loadProducts, value: productName, selected: { source: 'id', target: 'productID' }, uniqueName: true" />
+                    </div>
+
+                    <span data-bind="text: productName, uniqueName: true, visible: $parent.readOnly()"></span>
+                </td>
+                <td>
+                    <input type="text" data-bind="value: count, uniqueName: true, numeric: true, visible: !$parent.readOnly()" class=" max" />
+
+                    <span data-bind="text: count, uniqueName: true, visible: $parent.readOnly()"></span>
+                </td>
+                <td>
+                    <input type="text" data-bind="value: price.text, uniqueName: true, visible: !$parent.readOnly()" class=" max" />
+
+                    <span data-bind="text: price.text, uniqueName: true, visible: $parent.readOnly()"></span>
+                </td>
+                <td>
+                    <span data-bind="text: ejs.toDs(price() * count()), uniqueName: true"></span>
+                </td>
+                <td>
+                    <span data-bind="text: productCount, uniqueName: true"></span>
+                </td>
+                <td>
+                    <a class="icon small delete" data-bind="click: $root.removeProduct, visible: !$parent.readOnly()" href="javascript:" title="Удалить товар"></a>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="pager-container pager">
+                    <a class="icon small add text" data-bind="click: $root.createProduct, visible: !readOnly()" href="javascript:">Добавить товар</a>
+                </td>
+                <td class="pager-container pager"></td>
+                <td class="pager-container pager" colspan="2">
+                    <div class="text-right">
+                        <strong>
+                            Итого: <span data-bind="text: ejs.toDs(total())"></span>
+                        </strong>
+                    </div>
+                </td>
+                <td class="pager-container pager"></td>
+                <td class="pager-container pager"></td>
+            </tr>
+        </tfoot>
+    </table>
+</script>
+
+<script type="text/html" id="scrTdSave">
+    <a title="Создать выдачу" class="icon cart-empty" data-bind="attr: { href: host.arp + 'Products/Dispatches/Create?OrderID=' + id() }" target="_blank"></a>
+    <a title="Печатать запись" class="icon icon-print" data-bind="attr: { href: host.arp + 'Products/PrintOrder/' + id() }" target="_blank"></a>
+    <a title="Копировать запись" class="icon copy" data-bind="click: $root.copyOrder" href="javascript:"></a>
+    <a href="javascript:" title="Редактировать запись" class="icon edit" data-bind="click: $root.editProjectDispatchOrder"></a>
+    <a href="javascript:" title="Удалить запись" class="icon remove" data-bind="click: $root.removeProjectDispatchOrder"></a>
+</script>

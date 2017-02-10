@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "Задачи проекта";
+    AdCrm.Models.Project project = ViewBag.Project;
+    bool sub = project.ParentID.HasValue;
+    this.Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Project/Tasks.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+@{ Html.RenderPartial("_TopDetailsPart"); }
+<div>
+    <ul class="tabs-iframe" data-bind="template: { foreach: itabs }">
+        <li data-bind="css: { selected: $data.selected }">
+            <a href="javascript:" data-bind="text: name, attr: { href: url }"></a>
+        </li>
+    </ul>
+    <div class="clear-left"></div>
+    <div class="header actions">
+        <div class="p4px">
+            <a href="javascript:" class="icon medium save text" title="Сохранить изменения" data-bind="click: function() { $root.updateAll('', true); }, css: { disabled: !koModel.hasChanges() }" id="aSave">Сохранить</a>
+            <a class="icon medium separator"></a>
+            <a href="javascript:" class="icon medium document-add text" title="Добавить новую задачу" data-bind="click: $root.createProjectTask">Создать</a>
+            <a class="icon medium separator"></a>
+            <a href="javascript:" class="icon medium excel text" title="Выгрузка задач в excel" data-bind="click: $root.projectTasksCrud.export">Экспорт</a>
+
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="tab-content">
+            <div class="ejsgrid beige" id="divProjectTasks"></div>
+        </div>
+    </div>    
+</div>
+<script type="text/html" id="scrTaskMessages">
+    <tr>
+        <th><strong>История задачи</strong></th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Новый комментарий</th>
+        <td>
+            <textarea cols="0" rows="5" class="" data-bind="uniqueName: true, value: newMessage"></textarea>
+        </td>
+    </tr>
+    <!-- ko foreach: messages().orderByDesc('val=>val.id()') -->
+    <tr>
+        <th>
+            <i>
+                <span data-bind="text: creatorName"></span>
+                <br />
+                <span data-bind="text: createDate"></span>
+            </i>
+        </th>
+        <td>
+            <div data-bind="html: text().html()">
+
+            </div>
+        </td>
+    </tr>
+    <!-- /ko -->
+</script>
+<script type="text/html" id="scrDuration">
+    <div data-bind="with: type()">
+        Длительность по справочнику:
+        <span data-bind="text: duration()"></span>
+        <span data-bind="text: i18n.declineCount(duration(), 'день', 'дня', 'дней')"></span>
+    </div>
+</script>

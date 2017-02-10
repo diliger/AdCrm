@@ -1,0 +1,147 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Отчет по стадиям";
+    ViewBag.Scripts.Add("~/Scripts/Views/AllReports/Stages.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div class="header">
+    <div class="box">
+        <span>Период:</span>
+        <span class="ml25px">с</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateFrom, datepicker: true"  />
+        <span>по</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateTo, datepicker: true" />
+        <a href="javascript:" class="icon small calendar2" title="Выбрать месяц" data-bind="click: $root.selectMonth"></a>
+        <label><input type="checkbox" data-bind="checked: $root.filter.archived"/>Отображать архивные</label>
+        <input type="button" value="Показать" data-bind="click: $root.refresh" />
+        <span class="loading" data-bind="visible: $root.inProgress"></span>
+
+        <a class="icon medium excel text ml25px" data-bind="click: $root.toExcel" href="javascript:" >Экспорт</a>
+
+    </div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <div class="" id="divStagesContainer" style="background-color:lightgray;">
+            <div class="toLeft scroll-no" id="divStagesProjects">
+                <div id="divStagesProjectsHeader">
+                    <table class="grid grid-simple nowrap" style="width:auto;" id="tblStagesProjectsHeader" >
+                        <thead>
+                            <tr class="tr-1">
+                                <th colname="Project">
+                                    <div class="th">
+                                        <span>Проект</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div id="divStagesProjectsTable" class=" scroll-no" style="background-color:white;">
+                    <table class="grid grid-simple nowrap" style="width:auto;" id="tblStagesProjects" >
+                        <tbody data-bind="foreach: $root.filtered">
+                            <tr data-bind="attr: { 'class': 'tr' + $index() }">
+                                <td colname="Project">
+                                    <div class="td">
+                                        <a href="#" data-bind="text: name, attr: { href: host.arp + 'Project/Index/' + id }" target="_blank"></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot> 
+                            <tr data-bind="visible: !$root.filtered().any()" class="tr-2">
+                                <td colname="Project">
+                            
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div id="divStages" class="scroll-no">
+                <div id="divStagesHeader" class="scroll-no">
+                    <table class="grid grid-simple max nowrap" id="tblStagesHeader" >
+                        <thead>
+                            <tr class="tr-1">
+                                <!-- ko foreach: $root.stages-->
+                                <th data-bind="attr: { colname: 'stage' + id }">
+                                    <div class="th">
+                                        <a href="javascript:" data-bind="click: $root.toggleStage">
+                                            <span data-bind="html: (shortName || name).replace(/(.{8,}) (?=.{8,})/, function(a,b){ return b + '<br/>';})"></span>&nbsp;
+                                            <span data-bind="html: $root.filter.stages().any('val=>val=='+$data.id)?'&#8212;&nbsp;&nbsp;&nbsp;' : $root.filter.notStages().any('val=>val=='+$data.id) ? 'Все' : '&#x2713;&nbsp;&nbsp;&nbsp;'"></span>
+                                        </a>
+                                    </div>
+                                </th>
+                                <!-- /ko -->
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div id="divStagesTable" class="scroll" style="background-color:white;">
+                    <table class="grid grid-simple max nowrap" id="tblStages">
+                        <tbody data-bind="foreach: $root.filtered">
+                            <tr data-bind="attr: { 'class': 'tr' + $index() }">
+                                <!-- ko foreach: $root.stages -->
+                                <td data-bind="attr: { colname: 'stage' + id }">
+                                    <div class="td text-right" data-bind="css: { good: $parent.stages.any('val=>val=='+$data.id), bad: !$parent.stages.any('val=>val=='+$data.id) }">
+                                        <span data-bind="html: $parent.stages.any('val=>val=='+$data.id)?'&#x2713;' : '&#8212;'"></span>
+                                    </div>
+                                </td>
+                                <!-- /ko -->
+                            </tr>
+                        </tbody>
+                        <tfoot> 
+                            <tr data-bind="visible: !$root.filtered().any()" class="tr-2">
+                                <td data-bind="attr: { colspan: $root.stages.length }">
+                                    <div class="text-center text-italic disabled large">
+                                         В этом периоде нет проектов.
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="divMonths" title="Выбор периода">
+    <div class="box">
+        <table class="adjuster">
+            <thead>
+                <tr>
+                    <th>
+                        <span>Год:</span>
+                    </th>
+                    <td>
+                        <select data-bind="options: $root.years, optionsText: 'name', optionsValue: 'id', value: $root.year" class="w100px"></select>
+                    </td>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: $root.months">
+                <tr>
+                    <th>
+                        <input type="radio" name="Month" data-bind="value: id, attr: { id: 'rbtMonth' + id }, checked: $root.month" />
+                    </th>
+                    <td>
+                        <label data-bind="html: name, attr: { 'for': 'rbtMonth' + id }"></label>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class="h10px"></div>
+                        <input type="button" value="Выбрать" data-bind="click: confirmMonth" />
+                        <input type="button" value="Отмена" data-bind="click: cancelMonth" />
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

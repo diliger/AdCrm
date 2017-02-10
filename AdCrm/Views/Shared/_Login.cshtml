@@ -1,0 +1,32 @@
+﻿@if (Request.IsAuthenticated)
+{
+    <div id="user" class="text-right toRight smaller">
+        <div>
+            <a href="@(Context.CurrentUser().EmployeeID > 0 ? Url.Action("Index", "Employee") : Url.Action("Edit", "User"))" id="userName">
+                <span class="bold">@Context.CurrentUser().FullName</span>
+                (@Context.CurrentUser().Role.Name)
+            </a>
+            @*<span class="bold" id="spnCompanyName">@Context.CurrentCompany().Name</span>*@
+        </div>
+        <div>
+            @if (Context.CurrentUser().RoleID != (int)AdCrm.Models.RolesEnum.Employee)
+            {
+                <a href="@Url.Action("Index", "Manager")">Главная</a>
+                <span>|</span>
+                if (Context.CurrentUser().RoleID != (int)AdCrm.Models.RolesEnum.Manager)
+                {
+                    <a href="@Url.Action("List", "User")">Настройки</a>
+                    <span>|</span>
+                }
+            }
+            else
+            {
+                <a href="@Url.Action("Index", "Products")">Склад</a>
+                <span>|</span>
+            }
+            <a href="@Url.Action("Edit", "User")">Профиль</a>
+            |
+            <a href="@Url.Action("Logout", "User")">Выход</a>
+        </div>
+    </div>
+}

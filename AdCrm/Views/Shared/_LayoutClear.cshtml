@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    
+    <link href="@Url.ContentVersion("~/Content/themes/ui-lightness/jquery-ui-1.11.4.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.ContentVersion("~/Content/Common.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.ContentVersion("~/Content/Main.css")" rel="stylesheet" type="text/css" />
+    @if (ViewBag.Styles != null)
+    {
+        foreach (string s in ViewBag.Styles)
+        {
+            if (s.Contains(".print."))
+            {
+                <link href="@Url.ContentVersion(s)" rel="stylesheet" type="text/css" media="print" />
+            }
+            else
+            {
+                <link href="@Url.ContentVersion(s)" rel="stylesheet" type="text/css" />
+            }
+        }
+    }
+</head>
+<body>
+    @if(ViewBag.Print == true)
+    {
+    <div id="print-body">
+        @RenderBody()
+    </div>
+    }else
+    {
+    <div id="body">
+        <div class="h30px"></div>
+        
+        @RenderBody()
+    </div>
+    }
+    <script type="text/html" id="scrData">
+        @MvcHtmlString.Create(ViewBag.Data)
+    </script>
+    @{ Html.RenderPartial("_Scripts"); }
+    @if (ViewBag.Scripts != null)
+    {
+        foreach (string s in ViewBag.Scripts)
+        { 
+            <script src="@Url.ContentVersion(s)" type="text/javascript" defer="defer"></script>
+        }
+    }
+</body>
+</html>

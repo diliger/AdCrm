@@ -1,0 +1,221 @@
+﻿@{
+    ViewBag.Title = "Файлы проекта";
+    AdCrm.Models.Project project = ViewBag.Project;
+    bool sub = project.ParentID.HasValue;
+    this.Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    //ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    //ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    //ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Plupload_old/plupload.full.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Project/Files.js");
+    //ViewBag.Styles = new string[]
+    //{
+    //    "~/Content/ejs.grid.css"
+    //};
+}
+@{ Html.RenderPartial("_TopDetailsPart"); }
+<div>
+    <ul class="tabs-iframe" data-bind="template: { foreach: itabs }">
+        <li data-bind="css: { selected: $data.selected }">
+            <a href="javascript:" data-bind="text: name, attr: { href: url }"></a>
+        </li>
+    </ul>
+    <div class="clear-left"></div>
+    <div class="header actions">
+        <div class="p4px">
+            <a href="javascript:" class="icon medium save text" title="Сохранить изменения" data-bind="click: function() { $root.updateAll('', true); }, css: { disabled: !koModel.hasChanges() }" id="aSave">Сохранить</a>
+            <a class="icon medium separator"></a>
+            <a href="javascript:" class="icon medium folder-add text" title="Добавить новую папку" data-bind="click: $root.createFolder">Создать папку</a>
+            <a class="icon medium separator"></a>
+            <a href="javascript:" class="icon medium document-add text" title="Загрузить файл" id="btnAddFile">Загрузить файл</a>
+            <a class="icon medium separator"></a>
+            <a href="javascript:" class="icon medium winrar text" title="Скачать все архивом" data-bind="click: $root.downloadFolder">Скачать все</a>
+
+            <span data-bind="visible: $root.folder.selectedArray().any() || $root.file.selectedArray().any()">
+                <a class="icon medium separator"></a>
+                <a href="javascript:" class="icon medium winrar text" title="Скачать выделенные архивом" data-bind="click: $root.downloadSelected">Скачать выделенные</a>
+            </span>
+
+            <span class="inline-block w200px">
+                <span class="input-wrapper max">
+                    <span class="image">
+                        <input type="text" class="max nice" placeholder="Введите фразу или слово для поиска" data-bind="value: $root.filter.text, event: { keypress: $root.searchKeyPress }">
+                    </span>
+                </span>
+            </span>
+
+            <div class="toRight">
+                <span class="loading" data-bind="visible: $root.busy"></span>
+                <span  data-bind="foreach: $root.path">
+                    <a class="bold" data-bind="text: name, click: $root.openFolder" href="javascript:" ></a>
+                    <span>/</span>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container" id="divContainer">
+        <div class="tab-content">
+            <div class="scroll kogrid" id="divFiles">
+                <div id="divFilesHeader"></div>
+                <table class="grid kogrid input-max input-transparent nowrap" id="tblFiles">
+                    <thead>
+                        <tr>
+                            <th colname="Select">
+                                <div class="th">&nbsp;</div>
+                            </th>
+                            <th colname="Name">
+                                <div class="th"><span>Название</span></div>
+                            </th>
+                            <th colname="CreateDate">
+                                <div class="th"><span>Дата создания</span></div>
+                            </th>
+                            <th colname="Size">
+                                <div class="th"><span>Размер</span></div>
+                            </th>
+                            <th colname="Save">
+                                <div class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: koModel.grid.save, visible: !koModel.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: koModel.grid.inProgress()"></span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { name: 'trItem', foreach: $root.folders() }">
+
+                    </tbody>
+                    <tbody data-bind="template: { name: 'trItem', foreach: $root.files() }">
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colname="Select"></td>
+                            <td colname="Name"></td>
+                            <td colname="CreateDate"></td>
+                            <td colname="Size"></td>
+                            <td colname="Save"></td>
+                        </tr>                    
+                        @*<tr>
+                            <td colspan="4" class="pager-container">
+                                <div class="pager">
+                                    <div class="toLeft">
+                                        Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="    html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                    </div>
+                                    <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                        <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>*@
+                    </tfoot>
+                </table>
+                <div class="separator"></div>
+            </div>
+        </div>
+    </div>    
+</div>
+
+
+<script id="trItem" type="text/html">
+    <tr>
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: $root[entity.settings.name].selectedArray" />
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td bold">
+                <span data-bind="if: entity.settings.name == 'folder'">
+                    <a class="icon medium folder text" data-bind="text: name, click: $root.openFolder" href="javascript:"></a>
+                </span>
+                <span data-bind="if: entity.settings.name == 'file'">
+                    <a data-bind="text: name, attr: { href: ejs.fdp(name(), id()) }"></a>
+                </span>
+            </div>
+        </td>
+        <td colname="CreateDate">
+            <div class="td">
+                <div data-bind="html: createDate"></div>
+            </div>
+        </td>
+        <td colname="Size">
+            <div class="td" data-bind="if: entity.settings.name == 'file'">
+                <div data-bind="text: size"></div>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small pencil" title="Переименовать" data-bind="click: $root[entity.settings.name].edit"></a>
+                <a href="javascript:" class="icon small delete" title="Удалить" data-bind="click: $root[entity.settings.name].remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>
+
+<div id="divFolder" data-bind="with: $root.folder.current()" title="Новая папка">
+    <div class="box">
+        <form id="frmFolder" data-bind="validate: true" action="" onsubmit="koModel.folder.update(); return false;">
+            <table class="adjuster">
+                <tr>
+                    <th>
+                        <span>Название:</span>
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <input type="text" class="required w250px" maxlength="250" data-bind="value: name" name="Name" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                    </th>
+                    <td>
+                        <input type="button" value="Сохранить" data-bind="click: $root.folder.update" />
+                        <input type="button" value="Отмена" data-bind="click: $root.folder.cancel" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+
+<div id="divFile" data-bind="with: $root.file.current()" title="Файл">
+    <div class="box">
+        <form id="frmFile" data-bind="validate: true" action="" onsubmit="koModel.file.update(); return false;">
+            <table class="adjuster">
+                <tr>
+                    <th>
+                        <span>Папка:</span>
+                    </th>
+                    <td>
+                        <input type="text" class="w250px" maxlength="250" data-bind="value: $root.folder.parentName" disabled="disabled" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <span>Название:</span>
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <input type="text" class="required w250px" maxlength="250" data-bind="value: name" name="Name" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                    </th>
+                    <td>
+                        <input type="button" value="Сохранить" data-bind="click: $root.file.update" />
+                        <input type="button" value="Отмена" data-bind="click: $root.file.cancel" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>

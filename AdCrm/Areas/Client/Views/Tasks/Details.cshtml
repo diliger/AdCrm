@@ -1,0 +1,284 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/ckeditor/ckeditor.js");
+
+    ViewBag.Scripts.Add("~/Scripts/Plupload/plupload.full.min.js");
+
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/jq.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/ko.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+
+    ViewBag.Scripts.Add("~/Scripts/Views/Client/Tasks/Details.js");
+    AdCrm.Models.TaskType t = ViewBag.TaskType;
+    bool bug = t != null && t.SysName == "Bug";
+    string typeName = bug ? "ошибка" : "задача";
+    string typeNameOf = bug ? "ошибки" : "задачи";
+    string typeNameWhat = bug ? "ошибку" : "задачу";
+
+    AdCrm.Models.ProjectTask task = ViewBag.Task;
+    AdCrm.Models.User user = Context.CurrentUser();
+    ViewBag.Title = task != null ? typeName.UppercaseFirst() + " " + task.Name : "Новая " + typeName;
+    bool finance = Context.CurrentUser().RoleID < (int)AdCrm.Models.RolesEnum.Employee;
+}
+
+@{ Html.RenderPartial("_LeftMenu"); }
+
+<div id="divRightContent">
+    <div class="right-content">
+        <form id="frmTask" data-bind="validate: true, with: $root.task" onsubmit="return false;">
+            <div class="task-title">
+                <h2>
+                    <span data-bind="visible: id() > 0" class="task-name">
+                        <span data-bind="text: id"></span>.
+                        <span data-bind="text: name, click: $root.editName"></span>
+                        <span class="toRight">
+                            @if (ViewBag.PrevTaskID > 0)
+                            {
+                                <a href="@Url.Action("Details", bug ? "Bugs" : "Tasks", new { ID = ViewBag.PrevTaskID })" title="Предыдущая @typeName"><i class="fa fa-arrow-left"></i></a>
+                            }
+                            @if (ViewBag.NextTaskID > 0)
+                            {
+                                <a href="@Url.Action("Details", bug ? "Bugs" : "Tasks", new { ID = ViewBag.NextTaskID })" title="Следующая @typeName"><i class="fa fa-arrow-right"></i></a>
+                            }
+                        </span>
+                    </span>
+                    <input placeholder="Тема @typeNameOf..." type="text" data-bind="value: name, visible: id() < 0, hideOnClick: function(el) { if(id() < 0 || !name().length) return false; el.parent().find('span').show(); }" class="required task-title" name="Name" />
+                </h2>
+            </div>
+            <div>
+                <hr />
+            </div>
+            <div>
+                <button data-bind="click: $root.updateAll" class="button-b">
+                    <i class="fa fa-floppy-o"></i>
+                    Сохранить
+                </button>
+                <button data-bind="click: $root.updateAndAdd" class="button-y">+ Добавить @typeNameWhat</button>
+                <button data-bind="click: $root.updateAndClose" class="button-w">Сохранить и закрыть</button>
+                <button data-bind="click: $root.remove" class="button-w">Удалить @typeNameWhat</button>
+                <button data-bind="click: $root.cancel" class="button-w">Отмена</button>
+
+                <a href="javascript:" data-bind="click: $root.toggleSystemVisible">Системная информация</a>
+                @if(finance)
+                { 
+                <a href="javascript:" data-bind="click: $root.toggleFinanceVisible">Финансовая информация</a>
+                }
+            </div>
+            <div class="h10px"></div>
+            <div>
+                <div data-bind="visible: $root.systemVisible() && id() > 0">
+                    <div class="emphasize control-group">
+                        <label class="control-label">Дата создания:</label>
+                        <span class="inline-block w200px">
+                            <input type="text" class="max" readonly data-bind="value: createDate" placeholder="Дата создания..." name="CreateDate" />
+                        </span>
+
+                        <label class="control-label second">Автор:</label>
+                        <span class="">
+                            <input type="text" class="w150px" readonly data-bind="value: creator" placeholder="Автор..." name="Creator" />
+                        </span>
+
+                        @if (user.RoleID < (int)AdCrm.Models.RolesEnum.Employee)
+                        {
+                            <label class="control-label second">Видимость:</label>
+                            <select class="w150px" data-bind="options: $root.taskVisibilities(), optionsCaption: 'Видимость @typeNameOf...', optionsText: 'name', optionsValue: 'id', value: visibilityID" title="Видимость @typeNameOf" name="Visibility"></select>
+                        }
+                    </div>
+                    <div><hr /></div>
+                </div>
+                @if (finance)
+                {
+                    <div data-bind="visible: $root.financeVisible()">
+                        <div class="emphasize control-group">
+                            <label class="control-label">Счет:</label>
+                            <span class="nowrap inline-block w200px">
+                                <a href="javascript:" data-bind="click: function (a, b) { $root.openAutocomplete(a, b); }" class="icon small lupa input-right"></a>
+                                <input type="text" class="max" data-bind="autocomplete: $root.loadInvoices, value: invoiceNumber, selected: { source: 'id', target: 'invoiceID' }" placeholder="Счет..." name="Invoice" />
+                            </span>
+
+                            <label class="control-label second">Стоимость:</label>
+                            <input class="w150px" type="number" data-bind="numeric: true, value: price" placeholder="Стоимость..." name="Price" />
+
+                            <label class="control-label second">Часов:</label>
+                            <input class="w150px regex" type="text" data-bind="value: term" placeholder="05:00 часов на @typeNameWhat..." name="Term" regex="^\d?\d:\d?\d$" />
+                        </div>
+                        <div>
+                            <hr />
+                        </div>
+                    </div>
+                }
+
+                <div class="emphasize control-group">
+                    <label class="control-label">Проект:</label>
+                    <span class="nowrap inline-block w200px">
+                        <a href="javascript:" data-bind="click: function (a, b) { $root.openAutocomplete(a, b); }" class="icon small lupa input-right"></a>
+                        <input type="text" class="max required" data-bind="autocomplete: $root.loadProjects, value: projectName, selected: { source: 'id', target: 'projectID' }" placeholder="Проект..." name="Project" />
+                    </span>
+
+                    <label class="control-label second">Важность:</label>
+                    <select class="w150px required" data-bind="options: $root.taskPriorities(), optionsCaption: 'Важность @typeNameOf...', optionsText: 'name', optionsValue: 'id', value: priorityID" title="Важность @typeNameOf" name="Priority"></select>
+
+                    <label class="control-label second">Статус:</label>
+                    <select class="w150px required" data-bind="options: $root.taskStatuses(), optionsCaption: 'Статус @typeNameOf...', optionsText: 'name', optionsValue: 'id', value: statusID" title="Статус @typeNameOf" name="Status"></select>
+                </div>
+                <div class="emphasize control-group">
+                    <label class="control-label">Исполнитель:</label>
+                    <span class="nowrap inline-block w200px">
+                        <a href="javascript:" data-bind="click: function (a, b) { $root.openAutocomplete(a, b); }" class="icon small lupa input-right"></a>
+                        <input type="text" class="max required" data-bind="autocomplete: $root.loadEmployees, value: employeeName, selected: { source: 'id', target: 'employeeID' }" placeholder="Исполнитель..." name="Employee" />
+                    </span>
+
+                    <label class="control-label second">Чей ход:</label>
+                    <select class="w150px" data-bind="options: $root.taskTurns(), optionsCaption: 'Не указано...', optionsText: 'name', optionsValue: 'id', value: turnID" title="Чей ход" name="Turn"></select>
+
+                    <label class="control-label second">Срок:</label>
+                    <input class="w150px" type="text" data-bind="datepicker: true, value: dateEndPlan" placeholder="Срок исполнения..." name="DateEndPlan" />
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Тип задачи:</label>
+                    <span class="nowrap inline-block w200px">
+                        <select class="max required" data-bind="options: $root.taskTypes(), optionsCaption: 'Тип задачи...', optionsText: 'name', optionsValue: 'id', value: typeID" title="Тип задачи" name="Type"></select>
+                    </span>
+
+                    <label class="control-label second">Версия:</label>
+                    <input type="text" data-bind="value: version" name="Version" class="w150px" placeholder="Версия проекта..." />
+                </div>
+                <div class="description">
+                    <div class="tabs description" data-bind="tabs: analystDescription() ? 1 : 0, onchange: $root.descriptionTabChanged">
+                        <ul>
+                            <li>
+                                <a href="#divDescription">Описание</a>
+                            </li>
+                            <li>
+                                <a href="#divAnalystDescription">От аналитика</a>
+                            </li>
+                            <li>
+                                <a href="#divTesterDescription">От тестировщика</a>
+                            </li>
+                        </ul>
+
+                        <div id="divDescription">
+                            <textarea name="Description" id="txtDescription" rows="10" cols="80" data-bind="value: description"></textarea>
+                        </div>
+
+                        <div id="divAnalystDescription">
+                            <textarea name="Description" id="txtAnalystDescription" rows="10" cols="80" data-bind="value: analystDescription"></textarea>
+                        </div>
+
+                        <div id="divTesterDescription">
+                            <textarea name="Description" id="txtTesterDescription" rows="10" cols="80" data-bind="value: testerDescription"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group files" id="divFiles">
+                    <label class="control-label left">
+                        Скриншоты:
+                        <br />
+                        <a href="javascript:" id="btnAddFile" class="add-file">Добавить</a>
+                    </label>
+                    <div class="control">
+                        <div class="large colorGray lh32px" data-bind="visible: !actualFiles().length"><i>Вставьте скриншот из буфера обмена (Ctrl + V) или перетащите файл</i></div>
+                        <div data-bind="template: { name: 'scrFile', foreach: actualFiles() }"></div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label left">
+                        Комментарии:
+                        <br />
+                        <a href="javascript:" id="btnAddCommentFile" class="add-file">Добавить файл</a>
+                    </label>
+                    <div class="control">
+                        <div class="toLeft">
+                            <textarea placeholder="Введите текст комментария..." class="w500px" rows="5" data-bind="value: newMessage" id="txtMessage"></textarea>
+                        </div>
+                        <div class="toLeft ml20px" data-bind="with: $root.newMessageNotify">
+                            <span data-bind="visible: contractorVisible">
+                                <label><input type="checkbox" data-bind="checked: contractor" /> Уведомить заказчика</label>
+                                <br />
+                            </span>
+                            <span data-bind="visible: employeeVisible">
+                                <label><input type="checkbox" data-bind="checked: employee" /> Уведомить исполнителя</label>
+                                <br />
+                            </span>
+                            <span data-bind="visible: creatorVisible">
+                                <label><input type="checkbox" data-bind="checked: creator" /> Уведомить автора</label>
+                                <br />
+                            </span>
+                            <span data-bind="visible: responsibleVisible">
+                                <label><input type="checkbox" data-bind="checked: responsible" /> Уведомить ответственного</label>
+                                <br />
+                            </span>
+                            <span data-bind="visible: lastVisible">
+                                <label><input type="checkbox" data-bind="checked: last" /> Уведомить последнего комментатора</label>
+                                <br />
+                            </span>
+                            <span data-bind="visible: anotherVisible">
+                                <label><input type="checkbox" data-bind="checked: another" /> Уведомить другого пользователя</label>
+                                <br />
+                                <span class="nowrap inline-block w200px" data-bind="visible: another">
+                                    <a href="javascript:" data-bind="click: function (a, b) { $root.openAutocomplete(a, b); }" class="icon small lupa input-right"></a>
+                                    <input type="text" class="max required" data-bind="autocomplete: $root.loadUsers, value: userName, selected: { source: 'id', target: 'userID' }" placeholder="Пользователь..." name="NotifyUser" />
+                                </span>
+                            </span>
+                        </div>
+                        @*<a class="icon medium attach add-file" id="btnAddCommentFile" href="javascript:" title="Добавить файл к комментарию..."></a>*@
+                    </div>
+                    <div class="control" data-bind="template: { name: 'scrFile', foreach: $root.newMessageFiles }"></div>
+                </div>
+
+                <div data-bind="foreach: messages().orderBy('val=>val.id()>0?val.id()*-1:0')" class="">
+                    <div class="control-group comments mt10px">
+                        <label class="control-label left">
+                            @if (user.RoleID == (int)AdCrm.Models.RolesEnum.Admin)
+                            {
+                                <a class="icon small delete" href="javascript:" data-bind="click: $root.removeMessage" title="Удалить комментарий"></a>
+                            }
+                            <i>
+                                <span data-bind="text: creatorName"></span>
+                                <br />
+                                <span data-bind="text: createDate"></span>
+                            </i>
+                            <br />
+                            <a href="javascript:" data-bind="attr: { id: 'btnAddCommentFile_' + id() }" class="add-file">Добавить файл</a>
+                        </label>
+                        <div class="control">
+                            <div data-bind="html: text().html()"></div>
+                        </div>
+                        <div class="control" data-bind="template: { name: 'scrFile', foreach: files() }"></div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label"></label>
+                    <button data-bind="click: $root.updateAll" class="button-b">
+                        <i class="fa fa-floppy-o"></i>
+                        Сохранить
+                    </button>
+                    <button data-bind="click: $root.updateAndAdd" class="button-y">+ Добавить @typeNameWhat</button>
+                    <button data-bind="click: $root.updateAndClose" class="button-w">Сохранить и закрыть</button>
+                    <button data-bind="click: $root.remove" class="button-w">Удалить @typeNameWhat</button>
+                    <button data-bind="click: $root.cancel" class="button-w">Отмена</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="dropzone" id="divDropZone">
+    <div><b>Перетащите файлы сюда...</b></div>
+</div>
+
+<script type="text/html" id="scrFile">
+    <div class="file">
+        <a class="icon small delete" href="javascript:" data-bind="click: $root.removeFile" title="Удалить файл"></a>
+        <a class="preview" href="#" data-bind="attr: { href: url() }" target="_blank">
+            <span class="img">
+                <img src="@Url.Content("~/Content/Images/Icons/Big/photo_album.png")" alt="" class="file-preview" data-bind="attr: { alt: fileName, src: host.arp + 'Thumb/' + fileID() + '/' + fileName() + '?Width=128' }" />
+            </span>
+            <br />
+            <span data-bind="text: fileName"></span>
+        </a>
+    </div>
+</script>

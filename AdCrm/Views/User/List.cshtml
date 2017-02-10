@@ -1,0 +1,205 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = this.BLocalResource("title");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/User/List.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" class="icon big document-add" title="@this.BLocalResource("aAddUser.Title")" data-bind="click: $root.add">Добавить</a>
+    </div>
+</div>
+
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+        <div class="container scroll" id="divUsers">
+            <div id="divUsersHeader"></div>
+            <table class="grid kogrid" id="tblUsers">
+                <thead>
+                    <tr>
+                        <th colname="Login">
+                            <div class="th">@this.BLocalResource("thLogin")</div>
+                        </th>
+                        <th colname="Password">
+                            <div class="th">@this.BLocalResource("thPassword")</div>
+                        </th>
+                        <th colname="FullName" sortpath="Surname,Name,Patronymic">
+                            <div class="th">ФИО</div>
+                        </th>
+                        <th colname="Email">
+                            <div class="th">@this.BLocalResource("thEmail")</div>
+                        </th>
+                        <th colname="Phone">
+                            <div class="th">@this.BLocalResource("thPhone")</div>
+                        </th>
+                        <th colname="RoleName">
+                            <div class="th">@this.BLocalResource("thRole")</div>
+                        </th>
+                        <th colname="Client">
+                            <div class="th">Заказчик</div>
+                        </th>
+                        <th colname="Blocked">
+                            <div class="th">Заблокирован</div>
+                        </th>
+                        <th colname="Save">
+                            <div class="th">
+                                <a href="javascript:" class="icon small save" title="@this.BLocalResource("aSaveGridState")" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="template: { name: 'trUser', foreach: $root.users }">
+                </tbody>
+            </table>
+        </div>
+</div>
+<div id="divUser" style="display: none;">
+    <div class="box" data-bind="with: $root.user.selected()">
+        <form action="" onsubmit="return false;" data-bind="validate: true">
+            <table class="adjuster">
+                <tr>
+                    <th>
+                        @this.BLocalResource("thLogin")
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <div data-bind="visible: id() > 0, text: login"></div>
+                        <input type='text' class="w200px required" name="Login" data-bind="value: login, visible: id() < 0" />
+                        <span data-bind="visible: isNotEmpty(loginError())">
+                            <br />
+                            <span class="required" data-bind="text: loginError"></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @this.BLocalResource("thPassword")
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <input type="password" class="w200px required" name="Password" data-bind="value: password" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        ФИО
+                        <span class="required">*</span>
+                    </th>
+                    <td>
+                        <input type='text' class="w200px required" name="FullName" data-bind="value: fullName" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @this.BLocalResource("thEmail")
+                    </th>
+                    <td>
+                        <input type='text' class="w200px email" data-bind="value: email" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @this.BLocalResource("thPhone")
+                    </th>
+                    <td>
+                        <input type='text' class="w200px" data-bind="value: phone" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>@this.BLocalResource("thRole")</th>
+                    <td>
+                        <select class="w200px" data-bind="value: roleID, options: $root.activeRoles(roleID()), optionsText: 'name', optionsValue: 'id'"></select>
+                    </td>
+                </tr>
+                <tr data-bind="visible: roleID() == 6">
+                    <th>
+                        Заказчик
+                    </th>
+                    <td>
+                        <div class="nowrap">
+                            <a href="javascript:" data-bind="click: function(e,a){ $root.openAutocomplete(e,a);}" class="icon small lupa input-right"></a>
+                            <input type="text" class="max" data-bind="autocomplete: $root.loadContractors, value: contractorName, selected: { source: 'id', target: 'contractorID' }" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Заблокирован</th>
+                    <td>
+                        <input type="checkbox" data-bind="checked: blocked" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <p>
+        </p>
+        <div class="text-center">
+            <input type="button" value="@this.BLocalResource("btnSave")" data-bind="click: $root.save, visible: id() > 0" />
+            <input type="button" value="@this.BLocalResource("btnCreate")" data-bind="click: $root.save, visible: id() < 0" />
+            <input type="button" value="@this.BLocalResource("btnCancel")" data-bind="click: $root.cancel" />
+        </div>
+    </div>
+</div>
+<script type="text/html" id="scrMail">
+    @MvcHtmlString.Create(String.Format(this.BLocalResource("newUserMail"), Context.CurrentUser().FullName, 
+    Request.Url.AbsoluteUri.Substring(0, Request.Url.AbsoluteUri.LastIndexOf(Request.Url.PathAndQuery) + 1)))
+</script>
+<script type="text/html" id="scrMailSubject">
+    @MvcHtmlString.Create(this.BLocalResource("newUserMail.Subject"))
+</script>
+<script type="text/html" id="trUser">
+<tr class="pointer" data-bind="event: { dblclick: $root.edit }">
+    <td colname="Login">
+        <div>
+            <div data-bind="text: login"></div>
+        </div>
+    </td>
+    <td colname="Password">
+        <div class="td">
+            <div>********</div>
+        </div>
+    </td>
+    <td colname="FullName">
+        <div class="td">
+            <div data-bind="text: fullName"></div>
+        </div>
+    </td>
+    <td colname="Email">
+        <div class="td">
+            <div data-bind="text: email"></div>
+        </div>
+    </td>
+    <td colname="Phone">
+        <div class="td">
+            <div data-bind="text: phone"></div>
+        </div>
+    </td>
+    <td colname="RoleName">
+        <div class="td">
+            <div data-bind="text: roleName"></div>
+        </div>
+    </td>
+    <td colname="Client">
+        <div class="td">
+            <div data-bind="text: contractorName"></div>
+        </div>
+    </td>
+    <td colname="Blocked">
+        <div class="td">
+            <input type="checkbox" data-bind="checked: blocked" disabled/>
+        </div>
+    </td>
+    <td colname="Save">
+        <div class="td">
+            <a href="javascript:" class="icon small delete" title="Удалить пользователя" data-bind="click: $root.remove"></a>
+        </div>
+    </td>
+</tr>
+</script>

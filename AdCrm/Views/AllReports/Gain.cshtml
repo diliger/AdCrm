@@ -1,0 +1,308 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Отчет по прибыли";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    //ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/AllReports/Gain.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div class="header">
+    <div class="box">
+        <span>Период:</span>
+        <span class="ml25px">с</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateFrom, datepicker: true"  />
+        <span>по</span>
+        <input type="text" class="date" data-bind="value: $root.filter.dateTo, datepicker: true" />
+        <a href="javascript:" class="icon small calendar2" title="Выбрать месяц" data-bind="click: $root.selectMonth"></a>
+        <input type="button" value="Показать" data-bind="click: $root.refresh" />
+        <span class="loading" data-bind="visible: $root.inProgress"></span>
+
+        <a class="icon medium excel text ml25px" data-bind="click: $root.toExcel" href="javascript:" >Экспорт</a>
+        <a class="icon medium filter text ml25px" data-bind="click: $root.showFilters" href="javascript:" >Фильтры</a>
+
+    </div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <div class="p10px">
+            <span class="bold f18px clickToEdit edit" data-bind="text: $root.filter.name, clickToEdit: $root.filter.name"></span>
+            <input class="w200px bold f18px " type="text" data-bind="value: filter.name" placeholder="Новый фильтр">
+            <a data-bind="click: $root.saveFilter" href="javascript:">сохранить</a>
+            
+            <a data-bind="click: $root.clearFilter" href="javascript:">новый</a>
+        </div>
+        <div class=" scroll kogrid" id="divReport" >
+            <div id="divReportHeader"></div>
+            <table class="grid kogrid nowrap" id="tblReport" >
+                <thead>
+                    <tr>
+                        <th colname="Select" title="Столбец для выделения">
+                            <div class="th">
+                                @*<a href="javascript:" class="icon small filter" data-bind="click: function(){ $root.filter.visible(!$root.filter.visible()); }" title="Скрыть/показать область с фильтрами"></a>*@
+                            </div>
+                        </th>
+                        <th colname="Number" sortpath="project.number">
+                            <div class="th">
+                                <span>№</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.number }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.number"/>
+                            </div>
+                        </th>
+                        <th colname="Name" sortpath="project.name">
+                            <div class="th">
+                                <span>Проект</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.fullName }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.fullName, click: $root.filterClick, clickBubble: false"/>
+                            </div>
+                        </th>
+                        <th colname="CreateDate" sortpath="project.createDate">
+                            <div class="th">
+                                <span>Дата создания</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.createDate }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.createDate, datepicker: true, click: $root.filterClick, clickBubble: false"/>
+                            </div>
+                        </th>
+                        <th colname="Status" sortpath="project.statusName">
+                            <div class="th">
+                                <span>Статус</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.statusID }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                @*<input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.statusID, click: $root.filterClick, clickBubble: false"/>*@
+
+                                <select class="small max" data-bind="value: $root.filter.props.statusID, options: $root.projectStatuses, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Выберите статус...', click: $root.filterClick, clickBubble: false">
+                                </select>
+                            </div>
+                        </th>
+                        <th colname="Responsible" sortpath="project.responsibleName">
+                            <div class="th">
+                                <span>Ответственный</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.responsibleName }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.responsibleName, click: $root.filterClick, clickBubble: false"/>
+                            </div>
+                        </th>
+                        <th colname="Employee" sortpath="project.employeeName">
+                            <div class="th">
+                                <span>Исполнитель</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.employeeName }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.employeeName, click: $root.filterClick, clickBubble: false"/>
+                            </div>
+                        </th>
+                        <th colname="Address" sortpath="project.address">
+                            <div class="th">
+                                <span>Адрес</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.address }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.address, click: $root.filterClick, clickBubble: false"/>
+                            </div>
+                        </th>
+                        <th colname="DateSign" sortpath="project.dateSign">
+                            <div class="th">
+                                <span>Дата начала</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.dateSign }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.dateSign, datepicker: true, click: $root.filterClick, clickBubble: false"/>
+                            </div>
+                        </th>
+                        <th colname="DateEnd" sortpath="project.dateEnd">
+                            <div class="th">
+                                <span>Дата завершения</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.dateEnd }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.dateEnd, datepicker: true, click: $root.filterClick, clickBubble: false"/>
+                            </div>
+                        </th>
+                        <th colname="Client" sortpath="project.contractorName">
+                            <div class="th">
+                                <span>Клиент</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.contractorName }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.contractorName, click: $root.filterClick, clickBubble: false"/>
+                            </div>
+                        </th>
+                        <th colname="Contacts" sortpath="project.contractorContacts">
+                            <div class="th">
+                                <span>Контакты</span>
+                                <a class="icon small grid-filter" data-bind="click: $root.toggleFilter, clickBubble: false, css: { active: $root.filter.props.contractorContacts }" href="javascript:"></a>
+                            </div>
+                            <div class="filter max">
+                                <input type="text" class="max" onblur="$(this).parent().hide();" data-bind="value: $root.filter.props.contractorContacts, click: $root.filterClick, clickBubble: false"/>
+                            </div>
+                        </th>
+                        <th colname="Expenses">
+                            <div class="th">
+                                <span>Расходы</span>
+                            </div>
+                        </th>
+                        <th colname="Payrolls">
+                            <div class="th">
+                                <span>Начисления</span>
+                            </div>
+                        </th>
+                        <th colname="Invoices">
+                            <div class="th">
+                                <span>Выставлено</span>
+                            </div>
+                        </th>
+                        <th colname="Save">
+                            <div class="th">
+                                <a href="javascript:" class="icon small save" title="Сохранить размер и положение колонок" data-bind="click: koModel.grid.save, visible: !koModel.grid.inProgress()"></a>
+                                <span class="loading" data-bind="visible: koModel.grid.inProgress()"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="template: { name: 'trReport', foreach: $root.rows.filtered }"></tbody>
+                <tfoot data-bind="visible: $root.selectedRows().any(), template: { name: 'trReport', data: $root.selectedRows.total }"></tfoot>
+                <tfoot data-bind="template: { name: 'trReport', data: $root.rows.total }"></tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="trReport">
+    <tr data-bind="css: { totals: isEmpty(id+''), selected: !isEmpty(id+'') && $root.selectedArray().contains(id.toString()) }">
+        <td colname="Select">
+            <div class="td" data-bind="if: !isEmpty(id+'')">
+                <input type="checkbox" data-bind="value: id, checked: koModel.selectedArray" />
+            </div>
+        </td>
+        <td colname="Number">
+            <div class="td text-right" data-bind="with: project">
+                <span data-bind="text: number"></span>
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td" data-bind="with: project">
+                <a data-bind="html: fullName, attr: { href: host.arp + 'Project/Index/' + id }"></a>
+            </div>
+        </td>
+        <td colname="CreateDate">
+            <div class="td" data-bind="with: project">
+                <span data-bind="text: createDate"></span>
+            </div>
+        </td>
+        <td colname="Status">
+            <div class="td" data-bind="with: project">
+                <div data-bind="text: status ? status.name : '', style: { backgroundColor: status ? status.color : '' }" class="status"></div>
+            </div>
+        </td>
+        <td colname="Responsible">
+            <div class="td" data-bind="with: project">
+                <div data-bind="text: responsibleName"></div>
+            </div>
+        </td>
+        <td colname="Employee">
+            <div class="td" data-bind="with: project">
+                <div data-bind="text: employeeName"></div>
+            </div>
+        </td>
+        <td colname="Address">
+            <div class="td" data-bind="with: project">
+                <div data-bind="text: address"></div>
+            </div>
+        </td>
+        <td colname="DateSign">
+            <div class="td" data-bind="with: project">
+                <div data-bind="text: dateSign"></div>
+            </div>
+        </td>
+        <td colname="DateEnd">
+            <div class="td" data-bind="with: project">
+                <div data-bind="text: dateEnd"></div>
+            </div>
+        </td>
+        <td colname="Client">
+            <div class="td" data-bind="with: project">
+                <div data-bind="text: contractorName"></div>
+            </div>
+        </td>
+        <td colname="Contacts">
+            <div class="td" data-bind="with: project">
+                <div data-bind="text: contractorContacts"></div>
+            </div>
+        </td>
+        <td colname="Expenses">
+            <div class="td text-right">
+                <div class="toLeft" data-bind="if: isEmpty(id+'')"><span data-bind="text: caption"></span></div>
+                <span class="value" data-bind="text: z.toDs(expenses)"></span>
+            </div>
+        </td>
+        <td colname="Payrolls">
+            <div class="td text-right">
+                <div class="toLeft" data-bind="if: isEmpty(id+'')"><span data-bind="text: caption"></span></div>
+                <span class="value" data-bind="text: z.toDs(payrolls)"></span>
+            </div>
+        </td>
+        <td colname="Invoices">
+            <div class="td text-right">
+                <div class="toLeft" data-bind="if: isEmpty(id+'')"><span data-bind="text: caption"></span></div>
+                <span class="value" data-bind="text: z.toDs(invoices)"></span>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+            </div>
+        </td>
+    </tr>
+</script>
+<div id="divMonths" title="Выбор периода">
+    <div class="box">
+        <table class="adjuster">
+            <thead>
+                <tr>
+                    <th>
+                        <span>Год:</span>
+                    </th>
+                    <td>
+                        <select data-bind="options: $root.years, optionsText: 'name', optionsValue: 'id', value: $root.year" class="w100px"></select>
+                    </td>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: $root.months">
+                <tr>
+                    <th>
+                        <input type="radio" name="Month" data-bind="value: id, attr: { id: 'rbtMonth' + id }, checked: $root.month" />
+                    </th>
+                    <td>
+                        <label data-bind="html: name, attr: { 'for': 'rbtMonth' + id }"></label>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class="h10px"></div>
+                        <input type="button" value="Выбрать" data-bind="click: confirmMonth" />
+                        <input type="button" value="Отмена" data-bind="click: cancelMonth" />
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+@{
+    Html.RenderPartial("_ReportFilters");
+}

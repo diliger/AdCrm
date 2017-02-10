@@ -1,0 +1,128 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Настройки системы";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Helpers/Settings.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.remove, css: { disabled: !koModel.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    @*<div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.taskTypes().any() }" class="icon big excel">Экспорт</a>
+    </div>*@
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll, css: { disabled: !koModel.hasChanges() }" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="header">
+        <div class="w350px">
+            <form onsubmit="return false;">
+                <span class="input-wrapper max">
+                    <span class="image">
+                        <input type="text" class="max nice" placeholder="Поиск..." data-bind="value: $root.filter.text" />
+                    </span>
+                </span>
+            </form>
+        </div>
+    </div>
+    <div class="container">
+        <form action="" data-bind="validate: true" onsubmit="return false;">
+            <div class="scroll kogrid" id="divSettings">
+                <div id="divSettingsHeader"></div>
+                <table class="grid kogrid input-max input-transparent nowrap" id="tblSettings">
+                    <thead>
+                        <tr>
+                            <th colname="Select">
+                                <span class="th">&nbsp;</span>
+                            </th>
+                            <th colname="Title">
+                                <span class="th"><span>Подпись</span></span>
+                            </th>
+                            <th colname="Name">
+                                <span class="th"><span>Название</span></span>
+                            </th>
+                            <th colname="Value">
+                                <span class="th"><span>Значение</span></span>
+                            </th>
+                            <th colname="Comments">
+                                <span class="th"><span>Примечание</span></span>
+                            </th>
+                            <th colname="Save">
+                                <span class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { foreach: $root.systemSettings, name: 'trSetting' }">
+                        
+                    </tbody>
+                    <tfoot>
+                        <tr data-bind="{ if: !$root.systemSettings().any() }">
+                            <td colname="Select"></td>
+                            <td colname="Title"></td>
+                            <td colname="Name"></td>
+                            <td colname="Value"></td>
+                            <td colname="Comments"></td>
+                            <td colname="Save"></td>
+                        </tr> 
+                    </tfoot>
+                </table>
+                <div class="separator"></div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/html" id="trSetting">
+    <tr data-bind="css: { selected: koModel.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: koModel.selectedArray" />
+            </div>
+        </td>
+        <td colname="Title">
+            <div class="td">
+                <input type="text" data-bind="value: title, uniqueName: true" class="required" />
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td">
+                <input type="text" data-bind="value: name, uniqueName: true" class="required" />
+            </div>
+        </td>
+        <td colname="Value">
+            <div class="td">
+                <textarea rows="2" data-bind="value: value, html: value"></textarea>
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="2" data-bind="value: comments, html: comments"></textarea>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small delete" title="Удалить запись" data-bind="click: $root.remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>

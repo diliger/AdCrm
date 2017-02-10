@@ -1,0 +1,114 @@
+﻿@{
+    AdCrm.Models.Project p = ViewBag.Project;
+    AdCrm.Models.Statbook s = ViewBag.Status;
+    AdCrm.Models.TaskType t = ViewBag.TaskType;
+    bool bugs = t != null && t.SysName == "Bug";
+    string pname = p != null ? " по проекту " + p.Name : "";
+    string typeName = bugs ? "ошибки" : "задачи";
+    string tname = (ViewBag.Completed == true ? "Закрытые " : "Открытые ") + typeName;
+    if (s != null)
+    {
+        tname = string.Format("{1} - {0}", s.Name, typeName.UppercaseFirst());
+    }
+    ViewBag.Title = tname + pname;
+
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/ckeditor/ckeditor.js");
+
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/jq.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/ko.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Client/Tasks/Index.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+
+@{ Html.RenderPartial("_LeftMenu"); }
+
+<div id="divRightContent">
+    <div class="right-content">
+        <div class="scroll-no">
+            <div class="toRight">
+                <form onsubmit="return false;">
+
+                    <span class="nowrap inline-block" data-bind="foreach: $root.filter.projects">
+                        <span class="inline-block ml10px">
+                            <a href="javascript:" data-bind="text: name, attr: { href: $root.getUrl(id) }, css: { 'selected-black': id == $root.filter.projectID() }"></a>
+                            <a class="icon small delete" href="javascript:" title="Скрыть фильтр" data-bind="click: function() { $root.filter.projects.remove($data); }"></a>
+                        </span>
+                    </span>
+
+                    <span class="nowrap inline-block w200px" data-bind="with: $root.filter">
+                        <a href="javascript:" data-bind="click: function (a, b) { $root.openAutocomplete(a, b); }" class="icon small lupa input-right"></a>
+                        <input type="text" class="max" data-bind="autocomplete: $root.loadProjects, value: projectName, selected: { source: 'id', target: 'projectID' }" placeholder="Проект..." value="@(p != null ? p.Name : string.Empty)" />
+                    </span>
+
+                    <span class="nowrap inline-block w350px">
+                        <a href="javascript:" data-bind="click: $root.projectTasksCrud.refresh" class="icon small lupa input-right"></a>
+                        <input type="text" class="max" placeholder="Поиск..." data-bind="value: $root.filter.text" />
+                    </span>
+                </form>
+            </div>
+            <div class="toLeft">
+                <button data-bind="click: $root.createProjectTask" class="button-y">+ Добавить @(bugs ? "ошибку" : "задачу")</button>
+                <button data-bind="click: $root.filter.toggleMy, visible: host.eid > 0" class="button-w">
+                    <i class="fa " data-bind="css: { 'fa-check-square-o': $root.filter.myOnly, 'fa-square-o': !$root.filter.myOnly() }"></i>
+                    Мои @typeName
+                </button>
+            </div>
+        </div>
+        <div class="container">
+            <div class="ejsgrid beige" id="divProjectTasks">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="scrTaskMessages">
+    <tr>
+        <th><strong>История @typeName</strong></th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Новый комментарий</th>
+        <td>
+            <textarea cols="0" rows="5" class="" data-bind="uniqueName: true, value: newMessage"></textarea>
+        </td>
+    </tr>
+    <!-- ko foreach: messages().orderByDesc('val=>val.id()') -->
+    <tr>
+        <th>
+            <i>
+                <span data-bind="text: creatorName"></span>
+                <br />
+                <span data-bind="text: createDate"></span>
+            </i>
+        </th>
+        <td>
+            <div data-bind="html: text().html()">
+
+            </div>
+        </td>
+    </tr>
+    <!-- /ko -->
+</script>
+<script type="text/html" id="scrDuration">
+    <div data-bind="with: type()">
+        Длительность по справочнику:
+        <span data-bind="text: duration()"></span>
+        <span data-bind="text: ejs.i18n.declineCount(duration(), 'день', 'дня', 'дней')"></span>
+    </div>
+</script>
+
+<script type="text/html" id="scrDescription">
+    <textarea cols="0" rows="5" data-bind="uniqueName: true, value: fldescription" id="txtDescription"></textarea>
+</script>

@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = this.BLocalResource("title");
+    this.Layout = "~/Views/Shared/_LayoutClear.cshtml";
+}
+<script type="text/javascript" defer="defer">
+    window.host = window.host || {};
+    window.host.OnLoad = function () {
+        $("form").validate({
+            errorClass: "invalid",
+            errorPlacement: errorPlacement
+        });
+    };
+</script>
+<div>
+    <div id="login">
+        <div class="w500px" id="login-inner">
+            <form action="" method="post">
+                <table class="adjuster">
+                    <tr>
+                        <th>
+                        </th>
+                        <th class="title">
+                            <span class="bold" style="color:#464445">@this.BLocalResource("title")</span>
+                        </th>
+                    </tr>
+                    @if (ViewBag.LoginFailed == true)
+                    {
+                    <tr>
+                        <td colspan="2">
+                            <div class="invalid text-center">@this.BLocalResource((string)ViewBag.Error)</div> 
+                        </td>
+                    </tr>
+                    }
+                    <tr>
+                        <th>
+                            <span style="color:#464445">@this.BLocalResource("spnLogin")</span>
+                        </th>
+                        <td>
+                            <input type="text" name="Login" class="required" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <span style="color:#464445">@this.BLocalResource("spnPassword")</span>
+                        </th>
+                        <td>
+                            <input type="password" name="Password" class="required" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <span>@this.BLocalResource("spnRememberMe")</span>
+                        </th>
+                        <td>
+                            <input type="radio" name="RememberMe" id="rbtRememberMeYes" checked="checked" value="True" />
+                            <label for="rbtRememberMeYes">@this.BLocalResource("rbtYes")</label>
+                            <input type="radio" name="RememberMe" id="rbtRememberMeNo" value="False" />
+                            <label for="rbtRememberMeNo">@this.BLocalResource("rbtNo")</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td>
+                            <input type="submit" class="login" value="@this.BLocalResource("btnLogin")" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>

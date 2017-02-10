@@ -1,0 +1,180 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Типы расходов";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Helpers/ExpenseTypes.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.remove, css: { disabled: !koModel.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.expenseTypes().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll, css: { disabled: !koModel.hasChanges() }" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <form action="" data-bind="validate: true" onsubmit="return false;">
+            <div class="scroll kogrid" id="divExpenseTypes">
+                <div id="divExpenseTypesHeader"></div>
+                <table class="grid kogrid input-max input-transparent nowrap" id="tblExpenseTypes">
+                    <thead>
+                        <tr>
+                            <th colname="Select" title="Столбец для выделения">
+                                <div class="th">&nbsp;</div>
+                            </th>
+                            <th colname="OrderNumber">
+                                <div class="th"><span>Номер</span></div>
+                            </th>
+                            <th colname="Category" sortpath="Category.Name">
+                                <div class="th"><span>Категория</span></div>
+                            </th>
+                            <th colname="Name">
+                                <div class="th"><span>Название</span></div>
+                            </th>
+                            <th colname="Price">
+                                <div class="th"><span>Цена</span></div>
+                            </th>
+                            <th colname="UnitName">
+                                <div class="th"><span>Ед. измерения</span></div>
+                            </th>
+                            <th colname="Period" sortpath="Period.Name">
+                                <div class="th"><span>Период</span></div>
+                            </th>
+                            <th colname="Wallet" sortpath="Wallet.Name">
+                                <div class="th"><span>Кошелек по умолчанию</span></div>
+                            </th>
+                            <th colname="WalletEditable">
+                                <div class="th"><span>Можно менять кошелек</span></div>
+                            </th>
+                            <th colname="ManagerFee">
+                                <div class="th"><span>Премия за строительство</span></div>
+                            </th>
+                            <th colname="ForSalary">
+                                <div class="th"><span>Зарплата</span></div>
+                            </th>
+                            <th colname="Comments">
+                                <div class="th"><span>Примечание</span></div>
+                            </th>
+                            <th colname="Save">
+                                <div class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { foreach: $root.grid.sorted, name: 'trExpenseType' }">
+                        
+                    </tbody>
+                    <tfoot>
+                        <tr data-bind="{ if: !$root.expenseTypes().any() }">
+                            <td colname="Select"></td>
+                            <td colname="OrderNumber"></td>
+                            <td colname="Category"></td>
+                            <td colname="Name"></td>
+                            <td colname="Price"></td>
+                            <td colname="UnitName"></td>
+                            <td colname="Period"></td>
+                            <td colname="Wallet"></td>
+                            <td colname="WalletEditable"></td>
+                            <td colname="ManagerFee"></td>
+                            <td colname="ForSalary"></td>
+                            <td colname="Comments"></td>
+                            <td colname="Save"></td>
+                        </tr> 
+                    </tfoot>
+                </table>
+                <div class="separator"></div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/html" id="trExpenseType">
+    <tr data-bind="css: { selected: koModel.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: koModel.selectedArray" />
+            </div>
+        </td>
+        <td colname="OrderNumber">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: orderNumber, numeric: true" precision="0"  />
+            </div>
+        </td>
+        <td colname="Category">
+            <div class="td">
+                <select data-bind="value: categoryID, options: $root.expenseCategories().orderBy('val=>val.orderNumber()'), optionsText: 'name', optionsValue: 'id', optionsCaption: 'Не выбрано...'"></select>
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td">
+                <input type="text" data-bind="value: name, uniqueName: true" class="required" />
+            </div>
+        </td>
+        <td colname="Price">
+            <div class="td">
+                <input type="text" data-bind="value: price.text, uniqueName: true" class="required text-right" />
+            </div>
+        </td>
+        <td colname="UnitName">
+            <div class="td">
+                <input type="text" data-bind="value: unitName, uniqueName: true" />
+            </div>
+        </td>
+        <td colname="Period">
+            <div class="td">
+                <select data-bind="value: periodID, options: $root.activeExpensePeriods($data), optionsText: 'name', optionsValue: 'id', optionsCaption: 'Не выбрано...', disable: id() > 0"></select>
+            </div>
+        </td>
+        <td colname="Wallet">
+            <div class="td text-center">
+                <select data-bind="value: defaultWalletID, options: $root.wallets.getActive(defaultWalletID()), optionsText: 'name', optionsValue: 'id', optionsCaption: 'Не выбрано...'"></select>
+            </div>
+        </td>
+        <td colname="WalletEditable">
+            <div class="td text-center">
+                <input type="checkbox" data-bind="checked: walletEditable" />
+            </div>
+        </td>
+        <td colname="ManagerFee">
+            <div class="td text-center">
+                <input type="checkbox" data-bind="checked: managerFee" />
+            </div>
+        </td>
+        <td colname="ForSalary">
+            <div class="td text-center">
+                <input type="checkbox" data-bind="checked: forSalary" />
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="2" data-bind="value: comments"></textarea>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small delete" title="Удалить запись" data-bind="click: $root.remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>

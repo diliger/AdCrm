@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Интервалы повторений событий";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Helpers/RepeatIntervals.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.remove, css: { disabled: !koModel.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.repeatIntervals().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <form action="" data-bind="validate: true" onsubmit="return false;">
+            <div class="scroll kogrid" id="divRepeatIntervals">
+                <div id="divRepeatIntervalsHeader"></div>
+                <table class="grid kogrid input-max input-transparent nowrap" id="tblRepeatIntervals">
+                    <thead>
+                        <tr>
+                            <th colname="Select" title="Столбец для выделения">
+                                <div class="th">&nbsp;</div>
+                            </th>
+                            <th colname="OrderNumber">
+                                <div class="th"><span>Номер</span></div>
+                            </th>
+                            <th colname="Name">
+                                <div class="th"><span>Название</span></div>
+                            </th>
+                            <th colname="Days">
+                                <div class="th"><span>Дней</span></div>
+                            </th>
+                            <th colname="Months">
+                                <div class="th"><span>Месяцев</span></div>
+                            </th>
+                            <th colname="Years">
+                                <div class="th"><span>Лет</span></div>
+                            </th>
+                            <th colname="BeforeDays">
+                                <div class="th"><span>Создавать за N дней</span></div>
+                            </th>
+                            <th colname="Comments">
+                                <div class="th"><span>Примечание</span></div>
+                            </th>
+                            <th colname="Save">
+                                <div class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { foreach: $root.grid.sorted, name: 'trRepeatInterval' }">
+                        
+                    </tbody>
+                    <tfoot>
+                        <tr data-bind="{ if: !$root.repeatIntervals().any() }">
+                            <td colname="Select"></td>
+                            <td colname="OrderNumber"></td>
+                            <td colname="Name"></td>
+                            <td colname="Days"></td>
+                            <td colname="Months"></td>
+                            <td colname="Years"></td>
+                            <td colname="BeforeDays"></td>
+                            <td colname="Comments"></td>
+                            <td colname="Save"></td>
+                        </tr> 
+                    </tfoot>
+                </table>
+                <div class="separator"></div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/html" id="trRepeatInterval">
+    <tr data-bind="css: { selected: koModel.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: koModel.selectedArray" />
+            </div>
+        </td>
+        <td colname="OrderNumber">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: orderNumber, numeric: true" precision="0"  />
+            </div>
+        </td>
+        <td colname="Name">
+            <div class="td">
+                <input type="text" data-bind="value: name, uniqueName: true" class="required" />
+            </div>
+        </td>
+        <td colname="Days">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: days, numeric: true" precision="0"  />
+            </div>
+        </td>
+        <td colname="Months">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: months, numeric: true" precision="0"  />
+            </div>
+        </td>
+        <td colname="Years">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: years, numeric: true" precision="0"  />
+            </div>
+        </td>
+        <td colname="BeforeDays">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: beforeDays, numeric: true" precision="0"  />
+            </div>
+        </td>
+        
+        <td colname="Comments">
+            <div class="td">
+                <input type="text" data-bind="value: comments" />
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" class="icon small delete" title="Удалить запись" data-bind="click: $root.remove"></a>
+            </div>
+        </td>
+    </tr>
+</script>

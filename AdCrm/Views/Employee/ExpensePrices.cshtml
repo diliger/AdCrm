@@ -1,0 +1,104 @@
+﻿@{
+    Layout = null;
+}
+<div id="divExpensePricesPartial">
+    <form onsubmit="return false;" data-bind="validate: true">
+        <div class="scroll kogrid ">
+            <div id="divExpensePricesHeader"></div>
+            <table class="grid kogrid input-max nowrap" id="tblExpensePrices">
+                <thead>
+                    <tr>
+                        <th colname="Index">
+                            <div class="th">
+                                <span>№</span>
+                            </div>
+                        </th>
+                        <th colname="ExpenseType" sortpath="ExpenseType.Name">
+                            <div class="th">
+                                <span>Тип расхода</span>
+                            </div>
+                        </th>
+                        <th colname="UnitName" sortpath="ExpenseType.UnitName">
+                            <div class="th">
+                                <span>Ед. Измерения</span>
+                            </div>
+                        </th>
+                        <th colname="Value">
+                            <div class="th">
+                                <span>Стоимость</span>
+                            </div>
+                        </th>
+                        <th colname="Comments">
+                            <div class="th">
+                                <span>Примечание</span>
+                            </div>
+                        </th>
+                        <th colname="Save">
+                            <div class="th">
+                                <a href="javascript:" class="icon small save" title="Сохранить размер и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="template: { name: 'trExpensePrice', foreach: $root.grid.grid.sorted }"></tbody>
+                <tfoot>
+                    <tr data-bind="{ if: !$root.expensePrices().any() }">
+                        <td colname="Index"></td>
+                        <td colname="ExpenseType"></td>
+                        <td colname="UnitName"></td>
+                        <td colname="Value"></td>
+                        <td colname="Comments"></td>
+                        <td colname="Save"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" class="pager-container">
+                            <span>Всего:</span>&nbsp;
+                            <span data-bind="text: $root.expensePrices().length"></span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </form>
+</div>
+<script type="text/html" id="trExpensePrice">
+    <tr>
+        <td colname="Index">
+            <div class="td text-right">
+                <span data-bind="text: $index() + 1"></span>
+            </div>
+        </td>
+        <td colname="ExpenseType">
+            <div class="td">
+                <select data-bind="foreach: $root.activeExpenseCategories($data), value: expenseTypeID" class="required" name="TypeID">
+                    <optgroup data-bind="attr: { label: name }, options: $root.activeExpenseTypes($data, $parent), optionsText: 'name', optionsValue: 'id'"></optgroup>
+                </select>
+            </div>
+        </td>
+        <td colname="UnitName" data-bind="if: expenseType() && expenseType().unitName()">
+            <div class="td text-right" data-bind="with: expenseType">
+                <input type="text" disabled="disabled" data-bind="value: unitName" />
+            </div>
+        </td>
+        <td colname="Value">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: value.text" />
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="1" data-bind="value: comments"></textarea>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" data-bind="click: $root.expensePrice.remove" class="icon small delete" title="Удалить запись"></a>
+            </div>
+        </td>
+    </tr>
+</script>
+<script type="text/javascript" src="@Url.ContentVersion("~/Scripts/Views/Employee/ExpensePrices.js")"></script>
+<script type="text/html" id="scrExpensePricesPartialData">
+    @MvcHtmlString.Create(ViewBag.Data)
+</script>

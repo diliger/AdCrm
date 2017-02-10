@@ -1,0 +1,91 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Index</title>
+    <link href="@Url.ContentVersion("~/Content/themes/ui-lightness/jquery-ui-1.11.4.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.ContentVersion("~/Content/Main.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.ContentVersion("~/Content/ejs.grid.css")" rel="stylesheet" />
+
+    <script src="@Url.ContentVersion("~/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/jquery.validate.min.ru.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/jquery-ui-1.11.2.min.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/jquery.ui.timepicker.min.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/jquery.ui.timepicker-ru.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/knockout-3.2.0.js")" type="text/javascript"></script>
+
+    <script src="@Url.ContentVersion("~/Scripts/EntityJs/core.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/EntityJs/entity.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/EntityJs/set.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/EntityJs/model.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/EntityJs/pager.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/EntityJs/ko.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/EntityJs/grid.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/EntityJs/crud.js")" type="text/javascript"></script>
+
+    <script src="@Url.ContentVersion("~/Scripts/linq.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/main.js")" type="text/javascript"></script>
+    <script src="@Url.ContentVersion("~/Scripts/EntityJs/calendar.js")" type="text/javascript"></script>
+
+    <script src="@Url.ContentVersion("~/Scripts/Views/Incidents/Index.js")" type="text/javascript"></script>
+
+    <style type="text/css">
+        html, body
+        {
+            background:transparent;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/html" id="scrData">@MvcHtmlString.Create(ViewBag.Data)</script>
+    <div class="left-menu">
+        <div id="divCalendar" style="width:200px;"></div>
+    </div>
+
+    <script type="text/html" id="scrIncidentUsers">
+        <!-- ko foreach: editable() ? $data.incidentUsers() : [] -->
+        <tr>
+            <th>
+                <a href="javascript:" data-bind="click: $root.removeIUser">Удалить</a>
+            </th>
+            <td>
+                <select data-bind="value: userID, options: $root.leftUsers($data), optionsText: 'fullName', optionsValue: 'id', disable: id() > 0"></select> 
+            </td>
+        </tr>
+        <!-- /ko -->
+        <tr data-bind="visible: editable()">
+            <th></th>
+            <td>
+                <div class="toRight">
+                    <a href="javascript:" data-bind="click: $root.createIUser">Добавить</a>
+                </div>
+            </td>
+        </tr>
+    </script>
+</body>
+</html>
+
+<script type="text/javascript" defer="defer">
+    var ApplicationRootPath = '@Url.Content("~/")';
+    var UserFullName = '@(Request.IsAuthenticated ? Context.CurrentUser().FullName : "")';
+    var UserID = @(Request.IsAuthenticated ? Context.CurrentUser().ID : 0);
+    var UserRoleID = @(Request.IsAuthenticated ? Context.CurrentUser().RoleID : 0);
+    var ApplicationTimeZoneOffset = '@DateTimeOffset.Now.Offset.TotalHours';
+    var PrintMode = "@(ViewBag.Print)".toLowerCase() == "true";
+    var host = {
+        arp: ApplicationRootPath,
+        p: '@ViewBag.Page',
+        ur: UserRoleID,
+        uid: UserID,
+        login: '@(Request.IsAuthenticated ? Context.CurrentUser().Login : string.Empty)',
+        eid: @(Request.IsAuthenticated ? Context.CurrentUser().EmployeeID ?? 0 : 0),
+        roles: {admin:1,boss:2,manager:3,employee:4,watcher:5},
+        walletTypes: { employee: 101, company: 102, invoice: 103 },
+        contractorTypes: { person: 1, company: 2 },
+        statbooks: { walletTypes: 1, genders: 2, taskStatuses: 3 }
+    };
+</script>

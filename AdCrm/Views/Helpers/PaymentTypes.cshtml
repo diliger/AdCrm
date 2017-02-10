@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Типы расходов";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Helpers/PaymentTypes.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <div class="scroll kogrid" id="divPaymentTypes">
+        <form action="" data-bind="validate: true" onsubmit="return false;">
+                <div id="divPaymentTypesHeader"></div>
+                <table class="grid kogrid input-max nowrap" id="tblPaymentTypes">
+                    <thead>
+                        <tr>
+                            <th colname="Name">
+                                <div class="th"><span>Название</span></div>
+                            </th>
+                            <th colname="Factor">
+                                <div class="th"><span>Фактор пересчета</span></div>
+                            </th>
+                            <th colname="Save">
+                                <div class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размеры и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { foreach: $root.grid.sorted, name: 'trPaymentType' }">
+                        
+                    </tbody>
+                </table>
+                <div class="separator"></div>
+        </form>
+        <div>
+            <div class="separator"></div>
+            <div class="large">
+                Фактор пересчета используется следующим образом:
+            </div>
+            <div class="separator small"></div>
+            <div>
+                Для пересчета в 
+                <span class="bold">
+                    наличные платежи:
+                </span>
+                <div>
+                    Наличный платеж = Сумма платежа Х <span class="invalid">Фактор наличных платежей</span> / Фактор платежа
+                </div>
+            </div>
+            <div class="separator small"></div>
+            <div>
+                Для пересчета в 
+                <span class="bold">
+                    безналичные платежи:
+                </span>
+                <div>
+                    Безналичные платеж = Сумма платежа Х <span class="invalid">Фактор безналичных платежей</span> / Фактор платежа
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+<script type="text/html" id="trPaymentType">
+    <tr>
+        <td colname="Name">
+            <div class="td">
+                <span data-bind="text: name"></span>
+            </div>
+        </td>
+        <td colname="Factor">
+            <div class="td" >
+                <input type="text" class="text-right" data-bind="value: factor, numeric: true" precision="2"/>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+            </div>
+        </td>
+    </tr>
+</script>

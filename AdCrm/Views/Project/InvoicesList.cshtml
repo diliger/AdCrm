@@ -1,0 +1,19 @@
+﻿
+    <div class="tab-content left-col">
+        <div class="ejsgrid beige" id="divProjectInvoices"></div>
+        @*<div data-bind="with: $root.project" class="p10px">
+                <div>
+                        <div class="toRight">
+                            <strong>Остаток: <span data-bind="text: z.toDs(invoicesDebt())"></span></strong>
+                        </div>
+                    </div>
+            </div>*@
+    </div>
+    <div class="tab-content right-col">
+        <div class="ejsgrid beige" id="divProjectPayments"></div>
+    </div>
+
+
+<script type="text/html" id="scrAddPayment">
+    <a class="icon small add text" data-bind="click: $root.createInvoicePayment">платеж</a>
+</script>

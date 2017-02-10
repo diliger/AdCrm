@@ -1,0 +1,88 @@
+﻿@{
+    Layout = null;
+}
+<div>
+    <div class="hidden" data-bind="text: number() + ' ' + id()"></div>
+    <form action="" onsubmit="return false;" data-bind="validate: true" >
+        <table class="grid-simple max nowrap">
+            <thead>
+                <tr>
+                    <th colname="Number">
+                        <div class="th">
+                            <span>№ акта</span>
+                        </div>
+                    </th>
+                    <th colname="Date">
+                        <div class="th">
+                            Дата
+                        </div>
+                    </th>
+                    <th colname="Signed">
+                        <div class="th">
+                            Подписан
+                        </div>
+                    </th>
+                    <th colname="Sum">
+                        <div class="th">
+                            <span>Наличие в бух.</span>
+                        </div>
+                    </th>
+                    <th colname="Comments">
+                        <div class="th">
+                            <span>Комментарий</span>
+                        </div>
+                    </th>
+                    <th colname="Actions">
+                        <div class="th">
+                            <span>&nbsp;</span>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: acts">
+                <tr>
+                    <td>
+                        <div class="td">
+                            <input type="text" class="custom-width max" data-bind="value: number" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <input type="text" class="required" data-bind="uniqueName: true, value: createDate, datepicker: true" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <input type="checkbox" data-bind="checked: signed" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <input type="checkbox" data-bind="checked: originalExists" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <textarea data-bind="value: comments, html: comments" class="max" rows="1"></textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td">
+                            <a href="javascript:" class="icon small delete" data-bind="click: $root.removeAct"></a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody data-bind="if: !acts().any()">
+                <tr>
+                    <td colspan="6">
+                        <div class="text-center text-italic disabled large">
+                            Нет ни одного Акта.
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            @*<tfoot></tfoot>*@
+        </table>
+    </form>
+</div>

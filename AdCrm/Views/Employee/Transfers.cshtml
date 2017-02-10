@@ -1,0 +1,164 @@
+﻿@{
+    Layout = null;
+}
+<div id="divTransfersPartial">
+    <form onsubmit="return false;" data-bind="validate: true">
+        <div>
+            <div class="scroll kogrid ">
+                <div id="divTransfersHeader"></div>
+                <table class="grid kogrid input-max nowrap" id="tblTransfers">
+                    <thead>
+                        <tr>
+                            <th colname="Select" title="Столбец для выделения">
+                                <div class="th">
+                                    <span>&nbsp;</span>
+                                </div>
+                            </th>
+                            <th colname="Index">
+                                <div class="th">
+                                    <span>№</span>
+                                </div>
+                            </th>
+                            <th colname="Date">
+                                <div class="th">
+                                    <span>Дата</span>
+                                </div>
+                            </th>
+                            <th colname="Wallet" sortpath="WalletTo.Name">
+                                <div class="th">
+                                    <span>На кошелек</span>
+                                </div>
+                            </th>
+                            <th colname="AmountSent">
+                                <div class="th">
+                                    <span>Сумма, отправлено</span>
+                                </div>
+                            </th>
+                            <th colname="Ratio">
+                                <div class="th">
+                                    <span>Коэффициент</span>
+                                </div>
+                            </th>
+                            <th colname="AmountReceived">
+                                <div class="th">
+                                    <span>Сумма, доставлено</span>
+                                </div>
+                            </th>
+                            <th colname="Comments">
+                                <div class="th">
+                                    <span>Примечание</span>
+                                </div>
+                            </th>
+                            <th colname="Save">
+                                <div class="th">
+                                    <a href="javascript:" class="icon small save" title="Сохранить размер и положение колонок" data-bind="click: $root.grid.save, visible: !$root.grid.inProgress()"></a>
+                                    <span class="loading" data-bind="visible: $root.grid.inProgress()"></span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="template: { name: 'trTransfer', foreach: $root.transfers }"></tbody>
+                    <tfoot>
+                        <tr data-bind="{ if: !$root.transfers().any() }">
+                            <td colname="Select"></td>
+                            <td colname="Index"></td>
+                            <td colname="Date"></td>
+                            <td colname="Wallet"></td>
+                            <td colname="AmountSent"></td>
+                            <td colname="Ratio"></td>
+                            <td colname="AmountReceived"></td>
+                            <td colname="Comments"></td>
+                            <td colname="Save"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="9" class="pager-container">
+                                <div class="toRight">
+                                    <div data-bind="visible: $root.transfer.selectedArray().any()" class="box-float">
+                                        <div class="toLeft w150px text-left">Сумма по выделенным:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.transfer.selectedTotal()) + ' руб.'"></div>
+                                    </div>
+                                    <div class="box-float">
+                                        <div class="separator small" data-bind="visible: !$root.transfer.selectedArray().any()"></div>
+                                        <div class="toLeft w150px text-left">Итого за период:</div>
+                                        <div class="toRight bold" data-bind="text: z.toDs($root.transfers().sum('val=>val.amountSent()')) + ' руб.'"></div>
+                                    </div>
+                                </div>
+                                <div class="pager">
+                                    <div class="toLeft">
+                                        Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                    </div>
+                                    <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                        <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/html" id="trTransfer">
+    <tr data-bind="css: { selected: $root.transfer.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: $root.transfer.selectedArray" />
+            </div>
+        </td>
+        <td colname="Index">
+            <div class="td text-right">
+                <span data-bind="text: $index() + 1"></span>
+            </div>
+        </td>
+        <td colname="Date">
+            <div class="td">
+                <input type="text" data-bind="value: date, datepicker: true, uniqueName: true, visible: !readOnly()" class="required" />
+                <span data-bind="text: date, visible: readOnly()"></span>
+            </div>
+        </td>
+        <td colname="Wallet">
+            <div class="td">
+                <div class="nowrap" data-bind="visible: !readOnly()">
+                    <a href="javascript:" data-bind="click: function(a,b) { $root.openAutocomplete(a,b); }" class="icon small lupa input-right"></a>
+                    <input type="text" class="max required" data-bind="autocomplete: $root.loadWalletsTo, value: walletToName, selected: { source: 'id', target: 'walletToID' }, uniqueName: true" />
+                </div>
+                <span data-bind="text: walletToName, visible: readOnly()"></span>
+            </div>
+        </td>
+        <td colname="AmountSent">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: amountSent.text, visible: !readOnly()" />
+                <span data-bind="text: amountSent.text, visible: readOnly()"></span>
+            </div>
+        </td>
+        <td colname="Ratio">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: ratio.text, visible: !readOnly()" />
+                <span data-bind="text: ratio.text, visible: readOnly()"></span>
+            </div>
+        </td>
+        <td colname="AmountReceived">
+            <div class="td">
+                <input type="text" class="text-right" data-bind="value: amountReceived.text, visible: !readOnly()" />
+                <span data-bind="text: amountReceived.text, visible: readOnly()"></span>
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="1" data-bind="value: comments, visible: !readOnly()"></textarea>
+                <span data-bind="text: comments, visible: readOnly()"></span>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" data-bind="click: $root.transfer.remove, visible: !readOnly()" class="icon small delete" title="Удалить запись"></a>
+            </div>
+        </td>
+    </tr>
+</script>
+<script type="text/javascript" src="@Url.ContentVersion("~/Scripts/Views/Employee/Transfers.js")"></script>
+<script type="text/html" id="scrTransfersPartialData">
+    @MvcHtmlString.Create(ViewBag.Data)
+</script>

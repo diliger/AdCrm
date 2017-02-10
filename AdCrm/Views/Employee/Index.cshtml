@@ -1,0 +1,292 @@
+﻿@{
+    ViewBag.Title = "Сотрудник -- " + ViewBag.Employee.FullName;
+    this.Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Employee/Index.Model.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Employee/Index.js");
+}
+
+<div data-bind="with: $root.employee">
+    @if (Context.CurrentUser().RoleID != (int)AdCrm.Models.RolesEnum.Employee)
+    {
+    <div id="topMenu">
+        <div class="box">
+            <a href="@Url.Content("~/Manager/Employees")" class="icon medium text back">Назад к списку</a> 
+            <span>&nbsp;</span>
+            <a href="javascript:" class="icon medium text discharge" data-bind="visible: !archived(), click: function() { archived(true); }">Уволить сотрудника</a> 
+            <span data-bind="visible: archived" class="invalid">Сотрудник уволен</span>
+        </div>
+    </div>
+    }
+    <div data-bind="css: { disabled: disabled }">
+        <table>
+            <tr>
+                <td>
+                    <img src="@Url.Content("~/Content/images/employee.png")" alt="" class="nice pointer" width="55" height="55" 
+                        data-bind="click: $root.selectPhoto, attr: { src: pictureID() ? host.arp + 'Thumb/' + pictureID() + '/' + pictureName() : '@(Url.Content("~/Content/images/employee.png"))' }"/>
+                    <span>&nbsp;</span>
+                </td>
+                <td>
+                    <div>
+                        <span class="bold larger clickToEdit" data-bind="clickToEdit: fullName, text: fullName"></span>
+                        <input class="w400px" type="text" data-bind="value: fullName" placeholder="ФИО сотрудника" />
+                    </div>
+                    <div>
+                        <span class="larger" data-bind="text: department() ? department().name : ''"></span>
+                        <span class="larger" data-bind="text: position() ? position().name : ''"></span>
+                    </div>
+                    <div>
+                        <span>Добавлен в систему: </span>
+                        <span data-bind="text: createDate"></span>
+                        <span>  </span>
+                        <span data-bind="if: archived">
+                            <span>Уволен: </span>
+                            <span data-bind="text: archiveDate"></span>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div data-bind="css: { disabled: $root.employee.disabled() }">
+    <ul class="tabs-iframe" data-bind="template: { foreach: itabs }">
+        <li data-bind="css: { selected: id == koModel.selected.itabID() }">
+            <a href="javascript:" data-bind="text: name, click: $root.selectTab"></a>
+        </li>
+    </ul>
+    <div class="clear-left"></div>
+    <div class="header">
+        <div class="p4px">
+            <a href="javascript:" class="icon medium save text" title="Сохранить изменения" data-bind="click: function() { $root.updateAll('', true); }, css: { disabled: !koModel.hasChanges() }" id="aSave">Сохранить</a>
+            &nbsp;&nbsp;
+            <div class="toRight p4px bold larger">
+                Баланс (под отчет): <span data-bind="text: z.toDs($root.employee.balance()) + ' руб.', css: { invalid: $root.employee.balance() < 0, valid: $root.employee.balance() > 0 }"></span>
+                 &nbsp;&nbsp;
+                Баланс (З/П): <span data-bind="text: z.toDs($root.employee.salaryBalance()) + ' руб.', css: { invalid: $root.employee.salaryBalance() < 0, valid: $root.employee.salaryBalance() > 0 }"></span>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <table class="splitter" id="tblEmployeeDetails">
+            <tr>
+                <td class="left">
+                    <div>
+                        <fieldset class="collapsable eReadOnly" id="fldInformation">
+                            <legend>
+                                <span class="title">Информация</span>
+                            </legend>
+                            <div class="fieldset pr10px">
+                                <form onsubmit="return false;" data-bind="validate: true">
+                                    <table class="max">
+                                        <tbody data-bind="with: $root.employee">
+                                            <tr>
+                                                <td>
+                                                    <span >Отдел: </span>
+                                                </td>
+                                                <td>
+                                                    <select data-bind="options: $root.activeDepartments(), value: departmentID, optionsText: 'name', optionsValue: 'id'" name="DepartmentID" class="max small">
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Должность:
+                                                </td>
+                                                <td>
+                                                    <select data-bind="options: $root.activePositions(), value: positionID, optionsText: 'name', optionsValue: 'id'" name="PositionID" class="max small">
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    <span>Логин в системе:</span>
+                                                </th>
+                                                <td>
+                                                    <div class="nowrap">
+                                                        <a href="javascript:" data-bind="click: function(e,a){ $root.openAutocomplete(e,a);}" class="icon small lupa input-right"></a>
+                                                        <input type="text" class="max" data-bind="autocomplete: $root.loadUsers, value: userLogin, selected: { source: 'id', target: 'userID' }" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span>Email:</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="max" data-bind="value: email, uniqueName: true" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <div class="separator"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Уволен:
+                                                </td>
+                                                <td>
+                                                    <input type="checkbox" data-bind="checked: archived" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Дата увольнения:
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: archiveDate, datepicker: true" class="max" />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </form>
+                            </div>
+                        </fieldset>
+                        <fieldset class="collapsable" id="fldDetails">
+                            <legend>
+                                <span class="title">Реквизиты</span>
+                            </legend>
+                            <div class="fieldset pr10px">
+                                <form onsubmit="return false;" data-bind="validate: true">
+                                    <table class="max">
+                                        <tbody data-bind="with: $root.employee">
+                                            <tr>
+                                                <td>
+                                                    Серия, № паспорта:
+                                                </td>
+                                                <td>
+                                                    <div class="max two">
+                                                        <div class="col">
+                                                            <div class=" pr10px">
+                                                                <input type="text" data-bind="value: passportSerie" class="max" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <input type="text" data-bind="value: passportNumber" class="max" />
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Кем выдан:
+                                                </td>
+                                                <td>
+                                                    <textarea cols="0" rows="2" class="max" data-bind="value: passportIssuer"></textarea>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Когда выдан:
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: passportIssueDate, datepicker: true" class="max" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Адрес регистрации:
+                                                </td>
+                                                <td>
+                                                    <textarea cols="0" rows="2" class="max" data-bind="value: addressRegistration"></textarea>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Адрес проживания:
+                                                </td>
+                                                <td>
+                                                    <textarea cols="0" rows="2" class="max" data-bind="value: addressLive"></textarea>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Телефон:
+                                                </td>
+                                                <td>
+                                                    <input type="text" data-bind="value: phone" class="max" />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </form>
+                            </div>
+                        </fieldset>
+                        <fieldset class="collapsable">
+                            <legend>
+                                <span class="title">События</span>
+                            </legend>
+                            <div class="fieldset pr10px mAuto">
+                                @{ Html.RenderPartial("_Calendar"); }
+                            </div>
+                        </fieldset>
+                    </div>
+                </td>
+                <td class="line">
+                    <div class="line">
+                        <div class="button"></div>
+                    </div>
+                </td>
+                <td class="right pl10px">
+                    <div>
+                        <div class="tab-content" data-bind="visible: $root.selected.itabID() <= 3">
+                            <div class="fieldset">
+                                <div class="excel-tabs-contianer">
+                                    <div class="toRight">
+                                        <select data-bind="options: $root.years(), value: $root.filter.year" class="w100px" ></select>
+                                    </div>
+                                    <ul class="tabs-iframe" data-bind="foreach: $root.monthes">
+                                        <li class="tab" data-bind="css: { selected: $root.filter.month() == id }">
+                                            <a href="javascript:" data-bind="html: name, click: function() { $root.filter.month(id) }"></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="header"></div>
+                                <div class="separator"></div>
+                                <div data-bind="visible: $root.selected.itabID() == 1">
+                                    <div id="divExpenses"></div>
+                                    <div class="separator"></div>
+                                    <div>
+                                        <input type="button" value="Добавить запись"  data-bind="click: $root.createExpense, visible: !$root.employee.disabled()"/>
+                                    </div>
+                                </div>
+                                <div class="eReadOnly" data-bind="visible: $root.selected.itabID() == 2">
+                                    <div id="divIncomes"></div>
+                                    <div class="separator"></div>
+                                    <div>
+                                        <input type="button" value="Добавить запись"  data-bind="click: $root.createIncome, visible: !$root.employee.disabled()"/>
+                                    </div>
+                                </div>
+                                <div data-bind="visible: $root.selected.itabID() == 3">
+                                    <div id="divTransfers"></div>
+                                    <div class="separator"></div>
+                                    <div>
+                                        <input type="button" value="Добавить запись"  data-bind="click: $root.createTransfer, visible: !$root.employee.disabled()"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content eReadOnly" data-bind="visible: $root.selected.itabID() == 4">
+                            <div id="divExpensePrices"></div>
+                            <div class="separator"></div>
+                            <div>
+                                <input type="button" value="Добавить запись"  data-bind="click: $root.createExpensePrice, visible: !$root.employee.disabled()"/>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<iframe style="display:none;" class="upload" frameborder="0" width="100%" scrolling="no" seamless="seamless" data-bind="attr: { src: ejs.fup('employeePhoto', $root.employee.pictureID()) }" id="frmUploadPhoto"></iframe>

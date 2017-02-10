@@ -1,0 +1,61 @@
+﻿
+
+<div id="divFilter" title="Фильтр">
+    <div class="box">
+        <table class="adjuster">
+            <thead>
+                <tr>
+                    <th>
+                        <span>Название:</span>
+                    </th>
+                    <td>
+                        <input data-bind="value: $root.filter.name" class="w200px"/>
+                    </td>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class="h10px"></div>
+                        <input type="button" value="Сохранить" data-bind="click: confirmFilter" />
+                        <input type="button" value="Отмена" data-bind="click: cancelFilter" />
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div id="divFilters" title="Фильтры">
+    <div class="box">
+        <table class="adjuster">
+            <tbody  data-bind="foreach: $root.reportFilters">
+                <tr>
+                    <th></th>
+                    <td>
+                        <div>
+                            <div>
+                                <a href="javascript:" data-bind="text: name, click: $root.setFilter" title="Применить фильтр"></a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <a class="icon small delete" data-bind="click: $root.removeFilter" href="javascript:" title="Удалить фильтр"></a>
+                    </td>
+                </tr>
+            </tbody>
+            @*<tfoot>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class="h10px"></div>
+                        <input type="button" value="Сохранить" data-bind="click: confirmFilter" />
+                        <input type="button" value="Отмена" data-bind="click: cancelFilter" />
+                    </td>
+                </tr>
+            </tfoot>*@
+        </table>
+    </div>
+</div>
+<script type="text/javascript" src="@Url.ContentVersion("~/Scripts/Views/AllReports/_ReportFilters.js")"></script>

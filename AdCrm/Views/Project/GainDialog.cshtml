@@ -1,0 +1,75 @@
+﻿@{
+    Layout = null;
+}
+<div id="divGainDialog">
+    <div class="box">
+        <table class="grid-simple max" data-bind="with: $root.data()">
+            <thead>
+                <tr>
+                    <td colspan="2">
+                        <div>
+                            Доходы по проекту: 
+                            <span data-bind="text: z.toDs(income)"></span>
+                            руб.
+                        </div>
+                    </td>
+                    <td colspan="3">
+                        <div class="bold">
+                            Прибыль по проекту: 
+                            <span data-bind="text: z.toDs(gain)"></span>
+                            руб.
+                        </div>
+                        <div>
+                            Расходы по проекту: 
+                            <span data-bind="text: z.toDs(expenses)"></span>
+                            руб.
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Месяц
+                    </th>
+                    <th>
+                        Сумма
+                    </th>
+                    <th>
+                        Месяц
+                    </th>
+                    <th>
+                        Сумма
+                    </th>
+                    <th>
+                        Тип расхода
+                    </th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: rows">
+                <tr>
+                    <td data-bind="if: income > 0">
+                        <span data-bind="text: year"></span>
+                        <span data-bind="text: $root.monthes[month - 1]"></span>
+                    </td>
+                    <td data-bind="if: income > 0">
+                        <div class="text-right">
+                            <span data-bind="text: z.toDs(income)"></span>руб.
+                        </div>
+                    </td>
+                    <td data-bind="if: expense > 0">
+                        <span data-bind="text: year"></span>
+                        <span data-bind="text: $root.monthes[month - 1]"></span>
+                    </td>
+                    <td data-bind="if: expense > 0">
+                        <div class="text-right">
+                            <span data-bind="text: z.toDs(expense)"></span>руб.
+                        </div>
+                    </td>
+                    <td data-bind="if: expense > 0">
+                        <span data-bind="text: expenseType == 1 ? 'Постоянные расходы' : 'Субподряд'"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript" src="@Url.ContentVersion("~/Scripts/Views/Project/GainDialog.js")"></script>

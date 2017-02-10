@@ -1,0 +1,157 @@
+﻿@{
+    List<AdCrm.Models.Statbook> taskStatuses = ViewBag.TaskStatuses ?? null;
+}
+<div class="left-menu black">
+
+    <div class="menu-group">
+        <div class="menu-header">
+            <h3>
+                <a href="@Url.Content("~/Client/Home")">
+                    <i class="fa fa-line-chart"></i>
+                    Главная
+                </a>
+            </h3>
+        </div>
+    </div>
+
+    <div class="menu-group @(ViewBag.Page.StartsWith("Client.Tasks") ? "expanded selected" : "collapsed")">
+        <div class="menu-header">
+            <h3>
+                <a href="@Url.Content("~/Client/Tasks/Index")">
+                    <i class="fa fa-paper-plane"></i>
+                    Все задачи
+                    <i class="fa fa-angle-left"></i>
+                    <i class="fa fa-angle-down"></i>
+                </a>
+            </h3>
+        </div>
+        <ul>
+            <li class="@(ViewBag.Page.StartsWith("Client.Tasks.Details") && ViewBag.Task == null ? "selected" : "")">
+                <a href="@Url.Action("Details", "Tasks", new { ID = "", Type = "" })">
+                    <i class="fa fa-cog"></i>
+                    + новая задача
+                </a>
+            </li>
+            <li class="@(ViewBag.Page.StartsWith("Client.Tasks.Index") && ViewBag.Completed != true && ViewBag.Status == null ? "selected" : "")">
+                <a href="@Url.Content("~/Client/Tasks/Index")">
+                    <i class="fa fa-cog"></i>
+                    открытые задачи
+                </a>
+            </li>
+            @if (taskStatuses != null && taskStatuses.Any())
+            {
+                foreach (var st in taskStatuses)
+                {
+                    if (st.ID == AdCrm.Models.TaskStatusesEnum.Completed)
+                    {
+                        continue;
+                    }
+                    <li class="@(ViewBag.Page.StartsWith("Client.Tasks.Index") && ViewBag.Completed != true && ViewBag.Status == st ? "selected" : "")">
+                        <a href="@Url.Action("Index", "Tasks", new { StatusID = st.ID, Type = "" })">
+                            <i>@st.Name</i>
+                        </a>
+                    </li>
+                }
+            }
+            <li class="@(ViewBag.Page.StartsWith("Client.Tasks.Index") && ViewBag.Completed == true ? "selected" : "")">
+                <a href="@Url.Action("Index", "Tasks", new { Completed = true, Type = "" })">
+                    <i class="fa fa-cog"></i>
+                    закрытые задачи
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="menu-group @(ViewBag.Page.StartsWith("Client.Bugs") ? "expanded selected" : "collapsed")">
+        <div class="menu-header">
+            <h3>
+                <a href="@Url.Action("Index", "Bugs")">
+                    <i class="fa fa-wrench"></i>
+                    Ошибки
+                    <i class="fa fa-angle-left"></i>
+                    <i class="fa fa-angle-down"></i>
+                </a>
+            </h3>
+        </div>
+        <ul>
+            <li class="@(ViewBag.Page.StartsWith("Client.Bugs.Details") && ViewBag.Task == null ? "selected" : "")">
+                <a href="@Url.Action("Details", "Bugs", new { ID = "" })">
+                    <i class="fa fa-cog"></i>
+                    + новая ошибка
+                </a>
+            </li>
+            <li class="@(ViewBag.Page.StartsWith("Client.Bugs.Index") && ViewBag.Completed != true && ViewBag.Status == null ? "selected" : "")">
+                <a href="@Url.Action("Index", "Bugs")">
+                    <i class="fa fa-cog"></i>
+                    открытые ошибки
+                </a>
+            </li>
+            @if (taskStatuses != null && taskStatuses.Any())
+            {
+                foreach (var st in taskStatuses)
+                {
+                    if (st.ID == AdCrm.Models.TaskStatusesEnum.Completed)
+                    {
+                        continue;
+                    }
+                    <li class="@(ViewBag.Page.StartsWith("Client.Bugs.Index") && ViewBag.Completed != true && ViewBag.Status == st ? "selected" : "")">
+                        <a href="@Url.Action("Index", "Bugs", new { StatusID = st.ID })">
+                            <i>@st.Name</i>
+                        </a>
+                    </li>
+                }
+            }
+            <li class="@(ViewBag.Page.StartsWith("Client.Bugs.Index") && ViewBag.Completed == true ? "selected" : "")">
+                <a href="@Url.Action("Index", "Bugs", new { Completed = true })">
+                    <i class="fa fa-cog"></i>
+                    закрытые ошибки
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="menu-group collapsed">
+        <div class="menu-header">
+            <h3>
+                <a href="#">
+                    <i class="fa fa-university"></i>
+                    Проекты
+                    <i class="fa fa-angle-left"></i>
+                    <i class="fa fa-angle-down"></i>
+                </a>
+            </h3>
+        </div>
+        <ul>
+            <li>
+                <a href="#">+ новый проект</a>
+            </li>
+            <li>
+                <a href="#">открытые проекты</a>
+            </li>
+            <li>
+                <a href="#">закрытые проекты</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="menu-group collapsed">
+        <div class="menu-header">
+            <h3>
+                <a href="#">
+                    <i class="fa fa-usd"></i>
+                    Финансы
+                    <i class="fa fa-angle-left"></i>
+                    <i class="fa fa-angle-down"></i>
+                </a>
+            </h3>
+        </div>
+        <ul>
+            <li>
+                <a href="#">Счета</a>
+            </li>
+            <li>
+                <a href="#">Оплаты</a>
+            </li>
+        </ul>
+    </div>
+</div>

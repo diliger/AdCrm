@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Сотрудник -- " + ViewBag.Employee.FullName + " -- задачи";
+    this.Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Employee/Tasks.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+
+<div data-bind="with: $root.employee">
+    @if (Context.CurrentUser().RoleID != (int)AdCrm.Models.RolesEnum.Employee)
+    {
+    <div id="topMenu">
+        <div class="box">
+            <a href="@Url.Content("~/Manager/Employees")" class="icon medium text back">Назад к списку</a> 
+            <span>&nbsp;</span>
+            <a href="javascript:" class="icon medium text discharge" data-bind="visible: !archived(), click: function() { archived(true); }">Уволить сотрудника</a> 
+            <span data-bind="visible: archived" class="invalid">Сотрудник уволен</span>
+        </div>
+    </div>
+    }
+    <div data-bind="css: { disabled: disabled }">
+        <table>
+            <tr>
+                <td>
+                    <img src="@Url.Content("~/Content/images/employee.png")" alt="" class="nice pointer" width="55" height="55" 
+                        data-bind="click: $root.selectPhoto, attr: { src: pictureID() ? host.arp + 'Thumb/' + pictureID() + '/' + pictureName() : '@(Url.Content("~/Content/images/employee.png"))    ' }"/>
+                    <span>&nbsp;</span>
+                </td>
+                <td>
+                    <div>
+                        <span class="bold larger clickToEdit" data-bind="clickToEdit: fullName, text: fullName"></span>
+                        <input class="w400px" type="text" data-bind="value: fullName" placeholder="ФИО сотрудника" />
+                    </div>
+                    <div>
+                        <span class="larger" data-bind="text: department() ? department().name : ''"></span>
+                        <span class="larger" data-bind="text: position() ? position().name : ''"></span>
+                    </div>
+                    <div>
+                        <span>Добавлен в систему: </span>
+                        <span data-bind="text: createDate"></span>
+                        <span>  </span>
+                        <span data-bind="if: archived">
+                            <span>Уволен: </span>
+                            <span data-bind="text: archiveDate"></span>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div>
+    <ul class="tabs-iframe" data-bind="template: { foreach: itabs }">
+        <li data-bind="css: { selected: $data.selected }">
+            <a href="javascript:" data-bind="text: name, attr: { href: url }"></a>
+        </li>
+    </ul>
+    <div class="clear-left"></div>
+    <div class="header actions">
+        <div class="p4px">
+            <a href="javascript:" class="icon medium save text" title="Сохранить изменения" data-bind="click: function () { $root.updateAll('', true); }, css: { disabled: !koModel.hasChanges() }" id="aSave">Сохранить</a>
+            <a class="icon medium separator"></a>
+            <a href="javascript:" class="icon medium document-add text" title="Добавить новую задачу" data-bind="click: $root.createProjectTask">Создать</a>
+            <a class="icon medium separator"></a>
+            <a href="javascript:" class="icon medium excel text" title="Выгрузка задач в excel" data-bind="click: $root.projectTasksCrud.export">Экспорт</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="tab-content">
+            <div class="ejsgrid beige" id="divProjectTasks"></div>
+        </div>
+    </div>    
+</div>
+<script type="text/html" id="scrTaskMessages">
+    <tr>
+        <th><strong>История задачи</strong></th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Новый комментарий</th>
+        <td>
+            <textarea cols="0" rows="5" class="" data-bind="uniqueName: true, value: newMessage"></textarea>
+        </td>
+    </tr>
+    <!-- ko foreach: messages().orderByDesc('val=>val.id()') -->
+    <tr>
+        <th>
+            <i>
+                <span data-bind="text: creatorName"></span>
+                <br />
+                <span data-bind="text: createDate"></span>
+            </i>
+        </th>
+        <td>
+            <div data-bind="html: text().html()">
+
+            </div>
+        </td>
+    </tr>
+    <!-- /ko -->
+</script>
+<script type="text/html" id="scrDuration">
+    <div data-bind="with: type()">
+        Длительность по справочнику:
+        <span data-bind="text: duration()"></span>
+        <span data-bind="text: i18n.declineCount(duration(), 'день', 'дня', 'дней')"></span>
+    </div>
+</script>

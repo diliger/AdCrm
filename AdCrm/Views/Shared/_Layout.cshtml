@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="@Url.ContentVersion("~/Content/themes/ui-lightness/jquery-ui-1.11.4.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.ContentVersion("~/Content/Common.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.ContentVersion("~/Content/Main.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.ContentVersion("~/Content/font-awesome.min.css")" rel="stylesheet" type="text/css" />
+    @if (ViewBag.Styles != null)
+    {
+        foreach (string s in ViewBag.Styles)
+        {
+            if (s.Contains(".print."))
+            {
+                <link href="@Url.ContentVersion(s)" rel="stylesheet" type="text/css" media="print" />
+            }
+            else
+            {
+                <link href="@Url.ContentVersion(s)" rel="stylesheet" type="text/css" />
+            }
+        }
+    }
+</head>
+<body>
+    <div id="divLocker" data-bind="css: { hidden: !$root.hideThePage || !$root.hideThePage() }"></div>
+    <div id="body">
+        <div id="content">
+            @RenderBody()
+        </div>
+        <div class="text-center clear">
+            <a href="http://www.advance-dev.net" target="_blank">Developed by Advance-Dev v@(AdCrm.MvcApplication.Version)</a>
+        </div>
+        <div id="header">
+            <div class="toLeft" id="logo">
+                <a href="@(Context.CurrentUser().RoleID == (int)AdCrm.Models.RolesEnum.Employee ? Url.Action("Index", "Employee", new { ID = Context.CurrentUser().EmployeeID }) : Url.Action("Index", "Manager"))">
+                    @if(HttpContext.Current.Request.RequestContext.HttpContext.User.Identity.IsAuthenticated)
+                    {
+                    <img src="@Url.Content("~/content/images/logo.png")" alt=""/>
+                    }
+                </a>
+            </div>
+            @{ Html.RenderPartial("_Login"); }
+            @if (HttpContext.Current.Request.RequestContext.HttpContext.CurrentUser().RoleID == (int)AdCrm.Models.RolesEnum.Watcher)
+            {
+            <div class="text-center large bold ">
+                <div class="separator"> </div>
+                <span class="invalid">Внимание!</span> Вы можете только просматривать данные.
+                Любые изменения будут утеряны после обновления.
+            </div>
+            }
+        </div>
+    </div>
+    <script type="text/html" id="scrData">
+        @MvcHtmlString.Create(ViewBag.Data)
+    </script>
+    @{ Html.RenderPartial("_Scripts"); }
+    @if (ViewBag.Scripts != null)
+    {
+        foreach (string s in ViewBag.Scripts)
+        { 
+            <script src="@Url.ContentVersion(s)" type="text/javascript" defer="defer"></script>
+        }
+    }
+</body>
+</html>

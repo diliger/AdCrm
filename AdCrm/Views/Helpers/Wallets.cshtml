@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Кошельки";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/grid.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/crud.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Helpers/Wallets.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+    ViewBag.Styles = new string[]
+    {
+        "~/Content/ejs.grid.css"
+    };
+}
+<div id="actions">
+    <div class="toRight bold larger p20px">
+        Итого остаток: <span data-bind="text: z.toDs($root.balance()) + ' руб.', css: { invalid: $root.balance() < 0, valid: $root.balance() > 0 }"></span>
+    </div>
+
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.createWallet" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.removeSelectedWallets, css: { disabled: !koModel.selectManyWallet().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.walletsCrud.export, css: { disabled: !koModel.wallets().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll, css: { disabled: !koModel.hasChanges() }" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="container">
+        <div class="ejsgrid beige" id="divWallets">
+                
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="scrAccessTemplate">
+    <tr><td colspan="2">
+        <div class="ml60px">
+            <div>
+               <span class="large bold">Доступы</span> <a href="javascript:" data-bind="click: $root.createEmployeeWallet" class="icon small add text toRight">Добавить сотрудника</a>
+            </div>
+            <div class="maxh200px scroll">
+                <table class="employeeWallets" style="border-spacing:0px;">
+                    <tbody data-bind="foreach: employeeWallets">
+                        <tr>
+                            <td style="padding:0px;">
+                                <a class="icon small delete" title="Удалить запись..." href="javascript:" data-bind="click: $root.removeEmployeeWallet"></a>
+                            </td>
+                            <td>
+                                <div class="nowrap">
+                                    <a href="javascript:" data-bind="click: function(a,b,c) { $root.openAutocomplete(a,b,c); }" class="icon small lupa input-right"></a>
+                                    <input type="text" class="max required" data-bind="autocomplete: $root.loadEmployees, value: employeeName, selected: { source: 'id', target: 'employeeID' }, uniqueName: true" />
+                                </div>
+                            </td>
+                            <td>
+                                <label><input type="checkbox" data-bind="checked: expense"/> Для расходов</label>
+                            </td>
+                            <td>
+                                <span>Трансфер</span> <label>c <input type="checkbox" data-bind="checked: transferFrom"/> </label><label>на <input type="checkbox" data-bind="checked: transferTo"/> </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </td></tr>
+</script>
+
+<script type="text/html" id="scrRatioTemplate">
+    <tr>
+        <td colspan="2">
+            <div class="ml60px">
+                <div>
+                   <span class="large bold">Коэффициенты трансфера</span> <a href="javascript:" data-bind="click: $root.createWalletRatio" class="icon small add text toRight">Добавить запись</a>
+                </div>
+                <div class="maxh200px scroll">
+                <table class="walletRatios" style="border-spacing:0px;">
+                    <tbody data-bind="foreach: walletRatios">
+                        <tr>
+                            <td style="padding:0px;">
+                                <a class="icon small delete" title="Удалить запись..." href="javascript:" data-bind="click: $root.removeWalletRatio"></a>
+                            </td>
+                            <td>
+                                <div class="nowrap">
+                                    <a href="javascript:" data-bind="click: function(a,b,c) { $root.openAutocomplete(a,b,c); }" class="icon small lupa input-right"></a>
+                                    <input type="text" class="max" placeholder="На все кошельки" data-bind="autocomplete: $root.loadWallets, value: walletToName, selected: { source: 'id', target: 'walletToID' }, uniqueName: true, css: { required: $parent.walletRatios().any('val=>!val.walletToID()&&val.id()!=' + id()) }" />
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" data-bind="value: ratio.text" class="custom-width w50px text-right"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </td>
+    </tr>
+</script>

@@ -1,0 +1,83 @@
+﻿body {
+}
+
+#ui-dialog-title-divProjectReportDialog,#ui-dialog-title-divGainDialog
+{
+    float:none;
+}
+
+.ui-dialog thead.header
+{
+    display:none;
+}
+
+.project-pivot table, .project-pivot table td, .project-pivot table th
+{
+    border-collapse:collapse;
+    border:1px solid black;
+}
+
+.project-pivot table thead.first th
+{
+    background-color:#DA9695;
+}
+
+.project-pivot table thead.first th:last-child
+{
+    background-color:#8EB4E1;
+}
+
+.project-pivot table thead.first th.deadline
+{
+    background-color:#CDC0DA;
+}
+
+.project-pivot table thead.second th
+{
+    background-color:#BFBFBF;
+}
+
+.project-pivot table thead.second th:first-child
+{
+    background-color:#A6A6A6;
+}
+
+.project-pivot table tbody.first tr:first-child td:last-child
+{
+    background-color:#C5D9F2;
+}
+
+.project-pivot table tbody.first tr td.money
+{
+    background-color:#F2DDDC;
+}
+
+.project-pivot table tbody.first td.deadline
+{
+    background-color:#E3DFED;
+}
+
+.project-pivot table tbody.second tr td.stage
+{
+    background-color:#F2F2F2;
+}
+
+.project-pivot table tfoot tr td:first-child
+{
+    background-color:#FBBE8F;
+}
+
+.project-pivot table tfoot tr td:last-child
+{
+    background-color:#FDD5B2;
+}
+
+.project-pivot table tfoot tr:first-child td
+{
+    background-color: #FCE9DA;
+}
+
+.project-pivot table tfoot tr.gain td
+{
+    background-color:#93D04F;
+}

@@ -1,0 +1,247 @@
+﻿@{
+    ViewBag.Scripts = new List<string>();
+    ViewBag.Title = "Расходы";
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/core.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/entity.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/set.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/model.js");
+    ViewBag.Scripts.Add("~/Scripts/EntityJs/pager.js");
+    ViewBag.Scripts.Add("~/Scripts/jquery.kogrid.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Manager/WorkLogs.js");
+    ViewBag.Scripts.Add("~/Scripts/Views/Shared/LeftMenu.js");
+}
+<div id="actions">
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.workLog.create" class="icon big document-add">Добавить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.workLog.remove, css: { disabled: !koModel.workLog.selectedArray().any() }" class="icon big delete" >Удалить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.toExcel, css: { disabled: !koModel.workLogs().any() }" class="icon big excel">Экспорт</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.updateAll" class="icon big save">Сохранить</a>
+    </div>
+    <div class="separator"></div>
+    <div class="item">
+        <a href="javascript:" data-bind="click: $root.refresh, css: { disabled: !koModel.filter.visible() }" class="icon big filter">Фильтровать</a>
+    </div>
+    <div class="separator"></div>
+</div>
+@{
+    Html.RenderPartial("LeftMenu");
+}
+<div class="box right-content" id="divRightContent">
+    <div class="excel-tabs-contianer">
+        <ul class="tabs-iframe" data-bind="foreach: $root.months">
+            <li class="tab" data-bind="css: { selected: koModel.filter.month() == id }">
+                <a href="javascript:" data-bind="html: name, click: function() { $root.filter.month(id) }"></a>
+            </li>
+        </ul>
+    </div>
+    <div class="header"></div>
+    <div class="container">
+        <div class=" scroll kogrid" id="divWorkLogs">
+            <div id="divWorkLogsHeader"></div>
+            <table class="grid kogrid input-max input-transparent nowrap" id="tblWorkLogs">
+                <thead>
+                    <tr>
+                        <th colname="Select" title="Столбец для выделения">
+                            <div class="th">
+                                <a href="javascript:" class="icon small filter" data-bind="click: function(){$root.filter.visible(!$root.filter.visible());}" title="Скрыть/показать область с фильтрами"></a>
+                            </div>
+                        </th>
+                        <th colname="Department" sortpath="Employee.Department.Name">
+                            <div class="th">
+                                <span>Отдел</span>
+                            </div>
+                        </th>
+                        <th colname="Project" sortpath="Project.Name">
+                            <div class="th">
+                                <span>Проект</span>
+                            </div>
+                        </th>
+                        <th colname="Position" sortpath="Employee.Position.Name">
+                            <div class="th">
+                                <span>Должность</span>
+                            </div>
+                        </th>
+                        <th colname="Employee" sortpath="Employee.Surname,Employee.Name,Employee.Patronymic">
+                            <div class="th">
+                                <span>Сотрудник</span>
+                            </div>
+                        </th>
+                        <th colname="Comments">
+                            <div class="th">
+                                <span>Примечание</span>
+                            </div>
+                        </th>
+                        <th colname="Hours">
+                            <div class="th text-center">
+                                <span>Часов по проекту</span>
+                            </div>
+                        </th>
+                        <th colname="HoursTotal">
+                            <div class="th text-center">
+                                <span>Часов по проекту по отделу</span>
+                            </div>
+                        </th>
+                        <th colname="Save">
+                            <div class="th">
+                                <a href="javascript:" class="icon small save" title="Сохранить размер и положение колонок" data-bind="click: koModel.grid.save, visible: !koModel.grid.inProgress()"></a>
+                                <span class="loading" data-bind="visible: koModel.grid.inProgress()"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="visible: $root.filter.visible">
+                    <tr class="details">
+                        <td colspan="9">
+                            <div class="three smaller">
+                                <div class="col">
+                                    <div class="box bGray scroll h100px">
+                                        <div class="bold">Отделы</div>
+                                        <ul data-bind="foreach: $root.departments().orderBy('val=>val.orderNumber()')" class="ulNone nopadding nomargin">
+                                            <li>
+                                                <label>
+                                                    <input type="checkbox" data-bind="value: id(), checked: $root.filter.departments.ids" />
+                                                    <span data-bind="html: name"></span>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="box bGray scroll h100px">
+                                        <div class="bold">Должности</div>
+                                        <ul data-bind="foreach: $root.filter.departments.positions()" class="ulNone nopadding nomargin">
+                                            <li>
+                                                <label>
+                                                    <input type="checkbox" data-bind="value: id(), checked: $root.filter.positions.ids" />
+                                                    <span data-bind="html: name"></span>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="box bGray scroll h100px">
+                                        <div class="bold">Сотрудники</div>
+                                        <ul data-bind="foreach: $root.filter.positions.employees()" class="ulNone nopadding nomargin">
+                                            <li>
+                                                <label>
+                                                    <input type="checkbox" data-bind="value: id(), checked: $root.filter.employees.ids" />
+                                                    <span data-bind="html: fullName"></span>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody data-bind="template: { name: 'trWorkLog', foreach: $root.workLogs }"></tbody>
+                <tfoot>
+                    <tr data-bind="visible: !$root.workLogs().any()">
+                        <td colspan="9">
+                            <div class="text-center text-italic disabled large">
+                                 В этом месяце нет записей по рабочему времени.
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-bind="{ if: !$root.workLogs().any() }">
+                        <td colname="Select"></td>
+                        <td colname="Department"></td>
+                        <td colname="Project"></td>
+                        <td colname="Position"></td>
+                        <td colname="Employee"></td>
+                        <td colname="Comments"></td>
+                        <td colname="Hours"></td>
+                        <td colname="HoursTotal"></td>
+                        <td colname="Save"></td>
+                    </tr>                    
+                    <tr>
+                        <td colspan="9" class="pager-container">
+                            <div class="toRight">
+                                <div data-bind="visible: $root.workLog.selectedArray().any()" class="box-float">
+                                    <div class="toLeft w150px text-left">Сумма по выделенным:</div>
+                                    <div class="toRight w100px bold" data-bind="text: $root.workLog.selectedTotal() + ' ч'"></div>
+                                </div>
+                                <div class="box-float">
+                                    <div class="separator small" data-bind="visible: !$root.workLog.selectedArray().any()"></div>
+                                    <div class="toLeft w150px text-left">Итого за период:</div>
+                                    <div class="toRight w100px bold" data-bind="text: $root.workLogs().sum('val=>val.hours()*1') * 1 + ' ч'"></div>
+                                </div>
+                            </div>
+                            <div class="pager">
+                                <div class="toLeft">
+                                    Показано <span data-bind="html: $root.pager.shownFrom"></span>-<span data-bind="html: $root.pager.shownTo"></span> из <span data-bind="html: $root.pager.totalCount"></span>
+                                </div>
+                                <div data-bind="foreach: $root.pager.pages" class="text-center">
+                                    <a href="javascript:" data-bind="html: text, click: go, css: { bold: selected }"></a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="trWorkLog">
+    <tr data-bind="css: { selected: $root.workLog.selectedArray().contains(id().toString()) }">
+        <td colname="Select">
+            <div class="td">
+                <input type="checkbox" data-bind="value: id(), checked: $root.workLog.selectedArray" />
+            </div>
+        </td>
+        <td colname="Department">
+            <div class="td">
+                <select data-bind="value: departmentID, options: $root.activeDepartments($data), optionsText: 'name', optionsValue: 'id'"></select>
+            </div>
+        </td>
+        <td colname="Project">
+            <div class="td">
+                <a href="javascript:" data-bind="click: $root.openAutocomplete" class="icon small lupa toRight"></a>
+                <div class="mr25px">
+                    <input type="text" data-bind="autocomplete: $root.loadProjects, value: projectName, attr: { proejctID: projectID }, selected: { source: 'id', target: 'projectID' }"/>
+                </div>
+            </div>
+        </td>
+        <td colname="Position">
+            <div class="td">
+                <select data-bind="value: positionID, options: $root.activePositions($data), optionsText: 'name', optionsValue: 'id'"></select>
+            </div>
+        </td>
+        <td colname="Employee">
+            <div class="td">
+                <select data-bind="value: employeeID, options: $root.activeEmployees($data), optionsText: 'fullName', optionsValue: 'id'"></select>
+            </div>
+        </td>
+        <td colname="Comments">
+            <div class="td">
+                <textarea rows="1" data-bind="value: comments, html: comments"></textarea>
+            </div>
+        </td>
+        <td colname="Hours">
+            <div class="td">
+                <input type="text" data-bind="value: hours" class="numeric text-center"/>
+            </div>
+        </td>
+        <td colname="HoursTotal">
+            <div class="td">
+                <input type="text" data-bind="value: hoursTotal" class="text-center disabled" disabled/>
+            </div>
+        </td>
+        <td colname="Save">
+            <div class="td">
+                <a href="javascript:" data-bind="click: $root.workLog.remove" class="icon small delete" title="Удалить запись"></a>
+            </div>
+        </td>
+    </tr>
+</script>
